@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="js/ac-cc-api-locale-ru.js"></script>
+    <script type="text/javascript" src="js/ac-cc-api.js"></script>
+<style>
+    body {
+	font-family: arial;
+    }
+    p {
+	color: #333;
+	line-height: 1.3em;
+    }
+    .btn {
+	background: #D6D4D4;
+	display: inline-block;
+        padding: 7px 14px;
+	border-radius: 20px;
+        cursor: pointer;
+	color: #333;
+    }
+    .row {
+        border: 1px solid #A7A7A7;
+	border-bottom: 3px solid #A7A7A7;
+        padding: 20px 20px;
+	padding-top: 0;
+	margin: 10px 20px;
+        border-radius: 3px;
+    }
+    .title {
+	background: #A7A7A7;
+        margin-left: -20px;
+	margin-right: -20px;
+	margin-bottom: 20px;
+        padding: 5px;
+        color: white;
+    }
+    .screen {
+	display: inline-block;
+	width: 320px;
+	margin: 20px;
+	vertical-align: top;
+	position: relative;
+    }
+    .screen .head {
+	color: white;
+	background: #373E4A;
+	padding: 18px 30px;
+        font-size: 19px;
+	text-align: center;
+    }
+    .screen .body {
+	height: 422px;
+	border: 1px solid silver;
+	border-top: 0;
+	overflow: auto;
+    }
+    .admin-block {
+	padding: 7px 14px;
+	position: relative;
+    }
+    .avatar {
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	margin-right: 15px;
+    }
+    .indicator {
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	left: 50px;
+	border-radius: 50%;
+	top: 36px;
+	border: 2px solid white;
+    }
+    .indicator.offline {
+	background: #B5B5B5;
+    }
+    .indicator.signin {
+	background: #7A5EFF;
+    }
+    .indicator.online {
+	background: #1FAD00;
+    }
+
+    div.preview {
+	border: 5px solid white;
+	margin: 10px;
+        display: inline-block;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+	position: relative;
+        font-size: 0px;
+	line-height: 0;
+        background-color: white;
+        background-image: url(/cc/img/FW/jcc-bgtr.svg);
+	background-size: 20px 20px;
+    }
+    img.preview-min {
+	max-width:200px;
+        max-height:200px;
+	vertical-align: middle;
+        background: white;
+    }
+
+    div.jcc-dialog-left-msg, div.jcc-dialog-right-msg {
+        font-size: 13px !important;
+	line-height: 1.33em;
+	word-break: break-word;
+	-moz-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+        letter-spacing: normal;
+	white-space: normal;
+	text-indent: 0;
+        -webkit-tap-highlight-color: transparent;
+	max-width: 80%;
+    }
+    div.jcc-dialog-right-msg:first-child {
+	border-radius: 14px 4px 14px 14px;
+    }
+    div.jcc-dialog-right-msg {
+	color: #3a3b3c;
+        text-shadow: 0px 1px 0px rgba(255,255,255,0.0);
+        /*margin: 7px;*/
+	margin: 5px 10px;
+	m1argin-left: 50px;
+        border-radius: 20px;
+	display: inline-block;
+        background-color: #efefef;
+	border: 1px solid #efefef;
+        box-shadow: 0px 4px 0px rgba(178,178,178,0.0), inset 0px 0px 0px rgba(255,255,255,0.0);
+        position: relative;
+	text-align: right;
+        /*padding: 15px 20px;*/
+	/*padding: 8px 13px 10px 17px;*/
+	padding: 7px 14px;
+	min-width: 20px;
+	background: -moz-linear-gradient(top, #efefef 0%, #efefef 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#efefef), color-stop(100%,#efefef));
+        background: -webkit-linear-gradient(top, #efefef 0%,#efefef 100%);
+	background: -o-linear-gradient(top, #efefef 0%,#efefef 100%);
+        background: -ms-linear-gradient(top, #efefef 0%,#efefef 100%);
+	background: linear-gradient(to bottom, #efefef 0%,#efefef 100%);
+    }
+    div.jcc-dialog-left-msg:first-child {
+        border-radius: 4px 14px 14px 14px;
+    }
+    div.jcc-dialog-left-msg {
+	color: #3a3b3c;
+	text-shadow: 0px 1px 0px rgba(255,255,255,0.0);
+        /*margin: 7px;*/
+	margin: 5px 10px;
+	ma1rgin-right: 50px;
+	border-radius: 20px;
+        display: inline-block;
+	border: 1px solid #ccdbe4;
+        box-shadow: 0px 4px 0px rgba(0,0,0,0.0), inset 0px 0px 0px rgba(255,255,255,0.0);
+        position: relative;
+        text-align: left;
+	/*padding: 15px 20px;*/
+	/*padding: 8px 17px 10px 13px;*/
+	padding: 7px 14px;
+        min-width: 20px;
+        background-color: #ccdbe4;
+	background: -moz-linear-gradient(top, #ccdbe4 0%, #ccdbe4 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccdbe4), color-stop(100%,#ccdbe4));
+	background: -webkit-linear-gradient(top, #ccdbe4 0%,#ccdbe4 100%);
+        background: -o-linear-gradient(top, #ccdbe4 0%,#ccdbe4 100%);
+	background: -ms-linear-gradient(top, #ccdbe4 0%,#ccdbe4 100%);
+	background: linear-gradient(to bottom, #ccdbe4 0%,#ccdbe4 100%);
+    }
+
+</style>
+<script language="JavaScript">
+
+// Global vars
+var brand_id = 3;			// AC Partner Identificator (3 is MTX). !!! Define static value before public app.
+var cloud_addr = 'im.matrixtelecom.ru';	// Partners proxy address. !!! Define static value before public app.
+var device_model = 'Samsung S9';	// Device model name. Operator will see in cabinet his devices by model name.
+var device_serial = 'jeke21uw2e';	// Device serial number. It can be proc serial, board serial, any number which not changed when app reinstalled.
+var app_version = '1.0';		// Use it for protocol compatible in future.
+
+// Login and pass. Get from form.
+var g_login = 'test3';
+var g_password = 'test1212';
+var g_signin_params = {
+    push_config: {"device_id": "1271e23d-b38f-4cd2-b122-2564774131e3"},
+    push_service: 1,
+    brand: brand_id,
+    dev_model: device_model,
+    dev_serial: device_serial,
+    app_ver: app_version
+};
+// Default lang 'ru', but next version get lang from SignIn Form
+var g_lang = 'ru';
+
+var cb_process_messages;
+var ol = {};	// Operators list (aka admins)
+var vl = {};	// Visitors list (website visitors)
+var rl = {};	// Room list (all chats)
+var vq;		// Virtual queues
+var aqm = {};	// Active Queued Messages (Chats)
+
+var sel_rid = 0;
+var sel_aid = 0;
+var sel_vid = 0;
+var sel_sid = 0;
+var sel_sut = 0;
+
+function ready() {
+
+    cb_process_messages = function(x) {
+	console.log('cb_process_messages');
+	console.log(x);
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Authorization (SignIn result)
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 0 && x.v == 1) { /* Success */ }
+	if (x.s == 0 && x.v == 2) { /* Invalid login or password */ }
+	if (x.s == 0 && x.v == 3) { /* Need reuse confirmation */ } // Not happens in this version
+	if (x.s == 0 && x.v == 4) { /* Internal error */ } // Show message - We are sorry, try again later.
+	if (x.s == 0 && x.v == 5) { /* Account blocked */ } // Show message same as Invalid pass
+	if (x.s == 0 && x.v == 6) { /* ASI auth failed */ } // Show message same as Invalid pass. Not used in this version
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Visitors (Web-Online mode)
+	////////////////////////////////////////////////////////////////////////////////
+	// WEB-ONLINE activated. Full list of visitors.
+	if (x.s == 1 && x.v == 10) {
+	    if (x.list) {
+		P1_s1(x.list);
+		// Get active dialogs with visitors
+		//JCC.s('13080{{-}}3{{-}}2');
+		// Get queued dialogs
+		// TODO or not
+		if (typeof x.nac !== 'undefined' && x.nac.length > 0) {
+		    for (var i = 0; i < x.nac.length; i++) {
+			// Not Allocated Conversations
+			// Check previous defined
+			if (typeof aqm[x.nac[i].dqid] !== 'undefined') {
+			    if (aqm[x.nac[i].dqid].mct > 0) { clearInterval(aqm[x.nac[i].dqid].mct); }
+			}
+			aqm[x.nac[i].dqid] = x.nac[i];
+			qmc(x.nac[i].dqid);
+		    }
+		}
+	    } else {
+		// not Destroy JCC.P1.vl
+		if (!vl) vl = {};
+	    }
+	}
+	// Updates for visitors. New visit (change url) and other activities
+	if (x.s == 1 && x.v == 20) {
+	    P1_u1(x);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Users. Event happen when success login or users changed (new user, delete user, change name etc)
+	// Update local array with users and GUI if need.
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 10) {
+	    var all_admins = '';
+	    var l = x.list;
+	    // Loop departments
+	    for (var d = 0; d < l.length; d++) { // >
+		// Loop admins
+		for (var a = 0; a < l[d].adms.length; a++) { // >
+		    var a_position = '';
+		    var a_name = '';
+
+		    ol[l[d].adms[a].id] = l[d].adms[a];
+		    ol[l[d].adms[a].id].gid = l[d].id;
+
+		    // Dont display admins with status Helper. (Its system users)
+		    if (ol[l[d].adms[a].id].helper) continue;
+		    // Dont display my
+		    if (l[d].adms[a].id == ApixCloud.CC.API.GetConfig().mid) continue;
+
+		    a_name = ApixCloud.CC.API.GetUserName(l[d].adms[a].id);
+		    if (l[d].adms[a].pn != null) {
+                	a_position = decodeURIComponent(l[d].adms[a].pn);
+		    }
+		    var a_avatar = 'https://'+cloud_addr+'/avatar'+ol[l[d].adms[a].id].ap;
+		    var indicator = '<div class="indicator offline" id="admin-ind-'+l[d].adms[a].id+'"></div>';
+		    // Add admin
+		    if (l[d].adms[a].st != 0) {
+			indicator = '<div class="indicator signin" id="admin-ind-'+l[d].adms[a].id+'"></div>';
+		    }
+		    if (l[d].adms[a].was == 1) { indicator = '<div class="indicator online" id="admin-ind-'+l[d].adms[a].id+'"></div>'; }
+
+		    all_admins += '<div class="admin-block">'+indicator+'<img class="avatar" style="float:left" src="'+a_avatar+'"><div>'+a_name+'</div><div>'+a_position+'</div><div>'+decodeURIComponent(l[d].name)+'</div></div>';
+		}
+	    }
+	    document.getElementById('admins').innerHTML = all_admins;
+
+	    // Update home screen, set open name and avatar
+	    // Get My Name
+	    var name_surname = ApixCloud.CC.API.GetUserName(ApixCloud.CC.API.GetConfig().mid);
+	    var avatar = 'https://'+cloud_addr+'/avatar'+ol[ApixCloud.CC.API.GetConfig().mid].ap+')';
+console.log(name_surname);
+console.log(avatar);
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	// Users. Event happen when user status changed (user login, logout, turn web-online etc)
+	// Update local array with users and GUI if need.
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 20) {
+	    var o;
+	    // Update admin online status
+	    if (x.adm_id > 0) {
+		if (typeof x.was !== 'undefined' && x.was == 0) {
+		    if (x.adm_id == ApixCloud.CC.API.GetConfig().mid) {
+			// Web-Online mode off
+			// update my status in GUI
+		        // ...
+		    } else {
+			// set other user status
+			if (ol[x.adm_id]) ol[x.adm_id].was = x.was;
+			// update status in GUI
+			o = document.getElementById('admin-ind-'+x.adm_id);
+			if (o) o.setAttribute('class', 'indicator signin');
+		    }
+		}
+		if (typeof x.was !== 'undefined' && x.was > 0) {
+		    if (x.adm_id == ApixCloud.CC.API.GetConfig().mid) {
+			// Web-Online mode on
+			// update status in GUI
+			// ...
+		    } else {
+			// set other user status
+			if (ol[x.adm_id]) ol[x.adm_id].was = x.was;
+			// update status in GUI
+			o = document.getElementById('admin-ind-'+x.adm_id);
+			if (o) o.setAttribute('class', 'indicator online');
+		    }
+		}
+		if (typeof x.st !== 'undefined' && x.st == 0) {
+		    // SingOut
+		    if (typeof ol[x.adm_id] !== 'undefined') ol[x.adm_id].st = x.st;
+
+		    // update status in GUI
+		    o = document.getElementById('admin-ind-'+x.adm_id);
+		    if (o) o.setAttribute('class', 'indicator offline');
+		}
+		if (typeof x.st !== 'undefined' && x.st > 0) {
+		    // SignIn
+		    if (typeof ol[x.adm_id] !== 'undefined') ol[x.adm_id].st = x.st;
+
+		    // update status in GUI
+		    o = document.getElementById('admin-ind-'+x.adm_id);
+		    if (o) o.setAttribute('class', 'indicator signin');
+		}
+	    }
+	    // Update User Options
+	    if (x.opt_t == 1 && (x.opt_f == false || x.opt_f == true)) {
+		if (typeof ol[x.aid] !== 'undefined') ol[x.aid].o_ma = x.opt_f;
+		//if (x.aid == ApixCloud.CC.API.GetConfig().mid) // My permissions changed. Update GUI if need
+		// Change permissions, user becomes manager or else, not manager now
+	    }
+	    if (x.opt_t == 2 && (x.opt_f == false || x.opt_f == true)) {
+		if (typeof ol[x.aid] !== 'undefined') ol[x.aid].o_aa = x.opt_f;
+		//if (x.aid == ApixCloud.CC.API.GetConfig().mid) // My permissions changed. Update GUI if need
+		// Change permissions, user becomes administrator or else, not administrator now
+	    }
+
+	    // Virtual queues. New/Del/Changes
+	    if (x.qinfo) {
+		var lid = 0;
+		for (var i = 0; i < ApixCloud.CC.API.GetConfig().cl.length; i++) {
+        	    if (g_lang == ApixCloud.CC.API.GetConfig().cl[i].c) {
+            		lid = ApixCloud.CC.API.GetConfig().cl[i].id;
+            		break;
+        	    }
+    		}
+		if (lid == 0) lid = ApixCloud.CC.API.GetConfig().cl[0].id;
+
+		for (var i = 0; i < x.qinfo.length; i++) {
+		    // Update
+	    	    if (typeof vq[x.qinfo[i].id] !== 'undefined') vq[x.qinfo[i].id].qtype = x.qinfo[i].qtype;
+		    else {
+			vq[x.qinfo[i].id] = {};
+			vq[x.qinfo[i].id].id = x.qinfo[i].id;
+			vq[x.qinfo[i].id].qtype = x.qinfo[i].qtype;
+			vq[x.qinfo[i].id].qconf = {};
+		    }
+		    if (!document.getElementById('queue-btn-t-'+x.qinfo[i].id)) {
+			// Add queue to DOM
+			o = document.getElementById('jcc-qc-cnt');
+			if (o) {
+			    var n = document.createElement('div');
+			    n.setAttribute('id', 'queue-btn-'+x.qinfo[i].id);
+			    n.className = 'queue';
+			    n.innerHTML = '<div class="jcc-dep-ind" style="left:10px;right:auto;display:inline-block;padding:10px 20px;">@</div><span id="queue-btn-t-'+x.qinfo[i].id+'" class="cc-m-dep-title"></span>';
+			    o.appendChild(n);
+			    n = document.createElement('div');
+			    n.setAttribute('id', 'queue-cnt-'+x.qinfo[i].id);
+			    o.appendChild(n);
+			}
+		    }
+
+		    var qn = '';
+		    for (var ii = 0; ii < x.qinfo[i].qn.length; ii++) {
+			if (lid == x.qinfo[i].qn[ii].lid) {
+			    qn = x.qinfo[i].qn[ii].qn;
+		    	    break;
+			}
+		    }
+		    if (!qn) for (var ii = 0; ii < x.qinfo[i].qn.length; ii++) {
+			if (x.qinfo[i].qn[ii].qn) {
+			    qn = x.qinfo[i].qn[ii].qn;
+			    break;
+			}
+		    }
+		    if (qn && typeof vq[x.qinfo[i].id] !== 'undefined') vq[x.qinfo[i].id].qn = qn;
+		    if (!qn) qn = 'Новая очередь (без имени)';
+		    else qn = decodeURIComponent(qn);
+
+		    o = document.getElementById('queue-btn-t-'+x.qinfo[i].id);
+		    if (o) o.innerHTML = decodeURIComponent(qn);
+		}
+	    }
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Chats. Events
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 30) {
+	    P3_d1(x);
+	    UpdateDialogList();
+	    if (sel_rid > 0 && sel_rid == x.r) P3_d3(x.r);
+	}
+	if (x.s == 3 && x.v == 40) {
+	    P3_n1(x);
+	    UpdateDialogList();
+	    if (sel_rid > 0 && sel_rid == x.r) P3_d3(x.r);
+	}
+	if (x.s == 3 && x.v == 50) {
+	    P3_r2(x);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Virtual Queues
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 80) {
+	    switch (x.t) {
+		case 'q': {
+		    // New queue list received.
+		    // Update JS, DOM
+		    if (!vq) {
+			vq = x.q;
+		    } else {
+			// TODO in next version
+			// Just carefuly update "vq"
+			// Delete from vq if key from vq not exists in x.q (admin delete queue in configuration)
+			// Add if new key (admin create queue in configuration)
+		    }
+	    
+		    // Display Queues (next version - only queues, which not displayed early)
+		    var t = '';
+		    t += '<div id="jcc-qc-cnt" style="p111adding-bottom: 5px; display: block;">';
+
+		    for (var k in vq) {
+			t += '<div id="queue-btn-'+k+'" class="queue">';
+			t += '<div style="left:10px;right:auto;display:inline-block;padding:10px 20px;">@</div> \
+			    <span id="queue-btn-t-'+k+'" class="cc-m-dep-title">'+decodeURIComponent(vq[k].qn?vq[k].qn:'Очередь без названия')+'</span>';
+			t += '</div>';
+			t += '<div id="queue-cnt-'+k+'"></div>';	// Container for queued chats.
+		    }
+
+		    t += '</div>';
+
+		    document.getElementById('queues').innerHTML = t;
+		} break;
+		case 'n': {
+		    // New Incoming Conversation
+		    // Check previous defined
+		    if (typeof aqm[x.dqid] !== 'undefined') {
+			if (aqm[x.dqid].mct > 0) { clearInterval(aqm[x.dqid].mct); }
+		    }
+		    aqm[x.dqid] = x.nr;
+		    qmc(x.dqid);
+		} break;
+	case 't': {
+	    // Conversation taken - delete it
+	    if (aqm[x.dqid]) {
+		clearInterval(aqm[x.dqid].mct);
+		if (typeof aqm[x.dqid]._n !== 'undefined') {
+		    aqm[x.dqid]._n.close();
+		}
+	    }
+
+	    var b = document.getElementById('qm-btn'+x.dqid);
+	    if (b) b.parentNode.removeChild(b);
+
+	    delete aqm[x.dqid];
+	} break;
+    }
+
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Session closed. Event happen when user logout, when someone block/delete user and etc
+	// Update GUI if need and show message about logout reason.
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 0 && x.v == 100) {
+console.log('LOGOUT by '+x.r);
+	    // Show message for reason and then open SignIn screen
+	    // close_by_reuse
+	    // - en - (title) Successfully Logged out; (message) The user logged in from another device.
+	    // - ru - Сеанс завершен; Пользователь выполнил вход с другого устройства.
+	    // close_by_admin
+	    // - en - Session closed; The session was closed by the administrator
+	    // - ru - Сеанс прерван; Сеанс был прерван администратором.
+	    // close_by_delete
+	    // - en - Account Closed; The session was interrupted for security reasons.
+	    // - ru - Учётная запись закрыта; Сеанс прерван в целях безопастности.
+	    // close_by_block
+	    // - en - Account Blocked; The session was interrupted for security reasons.
+	    // - ru - Учётная запись заблокирована; Сеанс прерван в целях безопастности.
+	    // close_by_logout
+	    // - en - (title) Successfully Logged out; (message) You have successfully logged out of your account.
+	    // - ru - Сеанс завершен; Вы успешно вышли из своего аккаунта.
+
+	    // clear screens
+	    document.getElementById('admins').innerHTML = '';
+	    document.getElementById('queues').innerHTML = '';
+	    document.getElementById('my_dialogs').innerHTML = '';
+	    document.getElementById('dialog').innerHTML = '';
+	}
+    }
+
+    // Initialize API
+    ApixCloud.CC.API.Initialize(cloud_addr, 'ru', cb_process_messages);
+
+}
+function sign_in() {
+    // SignIn
+    ApixCloud.CC.API.SignIn(g_login, g_password, g_signin_params, g_lang);
+}
+function sign_out() {
+    // SignOut
+    ApixCloud.CC.API.SignOut();
+}
+
+/////////////////////////////////////////////////
+// Display chat in queue
+function qmc(d) {
+    // Start timer to hilight how older message: green - red - brown
+    var o = document.getElementById('queue-cnt-'+aqm[d].q);
+    var b = document.createElement('div');
+    b.setAttribute('id','qm-btn'+d);
+    var t = '';
+    var n = '';
+    var dn = '';
+    var a;
+    var l = '';
+    var lca = '';
+    var ahp = 'margin-right:20px;margin-left:10px;';
+
+    b.className = 'qm-color jcc-oper-btn-off';
+    b.setAttribute('onclick', 'tqm('+d+','+aqm[d].idq+','+aqm[d].d+')');
+    b.setAttribute('style', 'background-color: #00a651 !important; border-bottom: 1px solid #007338;');
+    b.style.display = 'none';
+
+    // Get visitor lang
+    if (aqm[d].lid && ApixCloud.CC.API.GetConfig().cl.length > 1) {
+	if (typeof ApixCloud.CC.API.GetConfig().sl[aqm[d].lid] !== 'undefined') {
+	    l = '<span style="padding: 3px 9px;border-radius: 11px;background-color: #8383FF;margin-left: 10px;font-size: 12px;" id="qm-btn-l'+d+'" class="badge badge-info avatar-badge lang-badge" title="'+decodeURIComponent(ApixCloud.CC.API.GetConfig().sl[aqm[d].lid].n)+'">'+ApixCloud.CC.API.GetConfig().sl[aqm[d].lid].c.toUpperCase()+'</span>';
+	}
+    }
+    // Last agent chat
+    if (aqm[d].lca > 0 && typeof ol[aqm[d].lca] !== 'undefined') {
+	lca = '<div style="background-size:cover;border-radius:50%;border:0;width:30px;height:30px;background-image:url('+'//'+cloud_addr+'/avatar'+ol[aqm[d].lca].ap+');position:absolute;right:-20px;margin:0;top:50%;margin-top:-15px;" class="oper_btn_avatar"></div>';
+	if (!l) ahp = 'margin-right:28px;margin-left:2px;';
+    }
+    if (aqm[d].domid) {
+	for (var i = 0; i < ApixCloud.CC.API.GetConfig().domains.length; i++) {
+	    if (aqm[d].domid == ApixCloud.CC.API.GetConfig().domains[i].id) {
+		dn = dntl(ApixCloud.CC.API.GetConfig().domains[i].domain);
+		if (ApixCloud.CC.API.GetConfig().domains[i].ctype == 200) {
+		    dn = 'Viber - '+dn;
+		}
+		if (ApixCloud.CC.API.GetConfig().domains[i].ctype == 201) {
+		    dn = 'Telegram - '+dn;
+		}
+		break;
+	    }
+	}
+	
+    }
+    if (dn == '') {
+	if (aqm[d].ei && aqm[d].ei.ecn) {
+	    dn = decodeURIComponent(aqm[d].ei.ecn);
+	} else {
+	    dn = 'Internal message';
+	}
+    }
+
+    switch (aqm[d].sut) {
+	case 1: {
+	    if (typeof ol[aqm[d].sid] !== 'undefined') {
+		n = ApixCloud.CC.API.GetUserName(aqm[d].sid);
+		a = '//'+cloud_addr+'/avatar'+ol[aqm[d].sid].ap;
+	    } else if (aqm[d].smi && aqm[d].smi.a) {
+		ol[aqm[d].sid] = {ap:aqm[d].smi.a.afn, fn:aqm[d].smi.a.fn, gid:0, helper:0, id:aqm[d].sid, ln:aqm[d].smi.a.ln, pn:aqm[d].smi.p};
+		n = ApixCloud.CC.API.GetUserName(null, null, aqm[d].smi);
+		a = '//'+cloud_addr+'/avatar'+aqm[d].smi.a.afn;
+	    } else {
+		// Unknown admin. ??? What TODO ?
+		a = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
+	    }
+	    if (!n) { n = 'Guest'; }
+	} break;
+	case 2: {
+	    if (typeof vl[aqm[d].sid+'-'+aqm[d].domid] === 'object') {
+		n = ApixCloud.CC.API.GetUserName(null, aqm[d].sid+'-'+aqm[d].domid);
+		a = '//'+cloud_addr+'/avatar'+vl[aqm[d].sid+'-'+aqm[d].domid][0].ap;
+	    } else {
+		if (typeof aqm[d].sinfo !== 'undefined') {
+		    vl[aqm[d].sid+'-'+aqm[d].domid] = [];
+		    vl[aqm[d].sid+'-'+aqm[d].domid][0] = {ap:aqm[d].sinfo.a.afn, fn:aqm[d].sinfo.a.fn, idd:aqm[d].domid, lid:aqm[d].lid, ln:aqm[d].sinfo.a.ln, vid:aqm[d].sid+'-'+aqm[d].domid, vid2:aqm[d].sid};
+		    n = ApixCloud.CC.API.GetUserName(null, aqm[d].sid+'-'+aqm[d].domid);
+		    a = '//'+cloud_addr+'/avatar'+vl[aqm[d].sid+'-'+aqm[d].domid][0].ap;
+		} else {
+		    // visitor offline. ??? What TODO ?
+		    a = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
+		}
+	    }
+	    if (!n) { n = 'Guest'; }
+	} break;
+	case 200: {
+	    if (typeof aqm[d].sinfo !== 'undefined') {
+		n = decodeURIComponent(aqm[d].sinfo.name);
+		a = decodeURIComponent(aqm[d].sinfo.avatar);
+	    }
+	} break;
+    }
+
+    t += '<table border="0" cellpadding="0" cellspacing="0" width="100%"> \
+	<tbody><tr> \
+	    <td width="1" style="padding-top:10px;padding-bottom:10px;padding-right:10px;"><div style="position:relative;background-size:cover;border-radius:50%;border:0;width:40px;height:40px;background-image:url('+a+');'+ahp+'">'+lca+'</div></td> \
+	    <td valign="middle" style="padding-left:3px;position:relative;"> \
+		<div style="position:block;left:0;right:0;top:0;bottom:0;overflow:hidden;text-overflow:ellipsys;"> \
+		    <div class="txt-title-s3" style="text-overflow:ellipsis;overflow:hidden;color:white;">'+n+'</div> \
+		    <div class="txt-title-s2" id="jcc-qm-btn-s'+d+'" style="transition:color 5s ease;padding-top:1px;text-overflow:ellipsis;overflow:hidden;color:#DEDEDE;">'+dn+l+'</div> \
+		</div> \
+		<div style="position:absolute;right:15px;top:20px;padding:3px 5px;border-radius:12px;" class="qm-tc" id="qmb-t-'+d+'"></div> \
+	</td></tr></tbody></table>';
+
+    aqm[d].mcti = 0;
+    aqm[d].mct = setInterval(function(_d) { return function() { var dd = _d; qmt(dd); };}(d), 1000);
+
+    b.innerHTML = t;
+    if (o) o.appendChild(b);
+};
+function qmt(d) {
+    if (aqm[d].mcti < 7777777) aqm[d].mcti++;
+
+    var o = document.getElementById('qmb-t-'+d);
+    var dutc = new Date((new Date()).toUTCString());
+
+    if (o) o.innerHTML = T_i(((dutc.getTime() / 1000) - aqm[d].st));
+
+    // Display btn when delay out
+    if (aqm[d].d == 0) {
+	aqm[d].d = -1;
+	o = document.getElementById('qm-btn'+d);
+	if (o && o.style.display == 'none') {
+	    o.style.display = 'block';
+	}
+    } else if (aqm[d].d > 0) {
+	if (aqm[d].mcti >= aqm[d].d * 10) {
+	    aqm[d].d = -1;
+    	    o = document.getElementById('qm-btn'+d);
+	    if (o && o.style.display == 'none') {
+		o.style.display = 'block';
+	    }
+	}
+    }
+
+    o = document.getElementById('qm-btn'+d);
+    if (!o) return;
+    dv = '';
+    if (aqm[d].mcti == 30) {
+	// BG & Border
+	if (o.style.display == 'none') dv = 'display:none;';
+	o.setAttribute('style','background-color:#fad839 !important;border-bottom:1px solid #d7b205;'+dv);
+	// Site
+	o = document.getElementById('jcc-qm-btn-s'+d);
+	o.style.color = '#949494';
+    }
+    dv = '';
+    if (aqm[d].mcti == 60) {
+	// BG
+	if (o.style.display == 'none') dv = 'display:none;';
+	o.setAttribute('style','background-color:#ec5956 !important;border-bottom:1px solid #C74440;'+dv);
+	// Site
+	o = document.getElementById('jcc-qm-btn-s'+d);
+	o.style.color = '#DEDEDE';
+    }
+    dv = '';
+    if (aqm[d].mcti == 90) {
+	if (o.style.display == 'none') dv = 'display:none;';
+	o.setAttribute('style','background-color:#cc2424 !important;border-bottom:1px solid #a81919;'+dv);
+    }
+};
+function T_i(sec) {
+    var d = 0;
+    var h = 0;
+    var m = 0;
+    var s = 0;
+    var r = '';
+
+    s = sec;
+
+    // > 1 day
+    if (s >= 86400) {
+	d = parseInt(s / 86400);
+	s = s - (86400 * d);
+    }
+    if (s >= 3600) {
+	h = parseInt(s / 3600);
+	s = s - (h * 3600);
+    }
+    if (s >= 60) {
+	m = parseInt(s / 60);
+	s = s - (m * 60);
+    }
+    
+    if (s < 10) { s = '0' + s; }
+
+    // Return format: DD, HH:MM:SS
+    if (d > 0) {
+	if (m < 10) { m = '0' + m; }
+	r = '' + d + ', ' + h + ':'+ m + ':' + s;
+    } else if (h > 0) {
+	if (m < 10) { m = '0' + m; }
+	r = '' + h + ':'+ m + ':' + s;
+    } else {
+	r = '' + m + ':' + s;
+    }
+
+    return r;
+}
+
+// Take chat from queue
+function tqm(a, b, c) {
+    ApixCloud.CC.API.TakeChatFromQueue(a, b, c)
+};
+
+// Change my available status (Web-Online)
+function cas() {
+    ApixCloud.CC.API.ChangeAvailableStatus();
+};
+euc = function(x) {
+    return encodeURIComponent(x).replace(/[!'()]/g, JCC.eucf); //'
+};
+eucf = function(x) {
+    switch(x) {
+	case '[': return '%5B';
+	case '!': return '%21';
+	case '\'': return '%27';
+	case '(': return '%28';
+	case ')': return '%29';
+	case ']': return '%5D';
+	default: return x;
+    }
+};
+
+// Visitors list.
+// Add list to 'vl' variable and update it list when event happen.
+function P1_s1(l) {
+    var o;
+    
+    var d;
+    var jtd;
+    var jjf;
+
+    if (l.length == 0) {
+    } else {
+	for (var i = 0; i < l.length; i++) {
+	    var jt = l[i];
+	    if (typeof jt === 'string') jt = JSON.parse(jt);
+
+	    vl[jt.vid] = [jt];
+
+	    // Set online status
+	    vl[jt.vid][0].vstatus = 1;
+
+	    // Decode current url and title
+	    vl[jt.vid][0].curl = decodeURIComponent(vl[jt.vid][0].curl);
+	    vl[jt.vid][0].ctitle = decodeURIComponent(vl[jt.vid][0].ctitle);
+	    if (vl[jt.vid][0].vnote) vl[jt.vid][0].vnote = decodeURIComponent(vl[jt.vid][0].vnote);
+
+	    // Add jobs icons (TODO)
+	    jtd = '';
+	    jjf = jt.jobs;
+	    vl[jt.vid][3] = jjf;
+	}
+    }
+};
+// Update visitors and some states
+function P1_u1(d) {
+	var o, n;
+
+	// Updates
+	if (d.t == 'upd') {
+	    // Open Event (url, title, event tag)
+	    if (typeof d.oje !== 'undefined' && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
+		vl[d.vid+'-'+d.domid][0].oje = d.oje;
+	    }
+	    // Visitor set name (Introduce)
+	    if (d.vn && d.vn.length > 0 && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
+		var v2 = d.vid+'-'+d.domid;
+		vl[v2][0].fn = decodeURIComponent(d.vn);
+	    }
+	    // Visitor Note
+	    if (typeof d.vnote !== 'undefined' && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
+		vl[d.vid][0].vnote = decodeURIComponent(d.vnote);
+	    }
+	    // Visitor Contact Name
+	    if (typeof d.cname !== 'undefined' && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
+		vl[d.vid][0].cn = d.cname;
+	    }
+	    // Update UA
+	    if (d.ua && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
+		vl[d.vid][0].os_name = d.ua[0];
+	        vl[d.vid][0].b_name = d.ua[1];
+		vl[d.vid][0].d_name = d.ua[2];
+	    }
+	    // Update IP
+	    if (d.ip && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
+		vl[d.vid][0].ip = d.ip;
+	    }
+	    // Banned flag
+	    if (typeof d.fo !== 'undefined' && typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
+		vl[d.vid+'-'+d.domid][0].fo = d.fo;
+	    }
+	    // Update GEO
+	    if (d.geo && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
+		vl[d.vid][0].geo_country = d.geo[0];
+		vl[d.vid][0].geo_region = d.geo[1];
+		vl[d.vid][0].geo_city = d.geo[2];
+		vl[d.vid][0].geo_lang = d.geo[3];
+		vl[d.vid][0].geo_country_en = d.geo[4];
+	    }
+	    // Update current url
+    	    if (d.curl && typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
+		vl[d.vid+'-'+d.domid][0].curl = decodeURIComponent(d.curl);
+		vl[d.vid+'-'+d.domid][0].ctitle = decodeURIComponent(d.ctitle);
+	    }
+	    if (d.calls || d.views || d.dialogs && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
+		if (d.calls) {
+		    vl[d.vid+'-'+d.domid][0].calls = d.calls;
+		}
+		if (d.views) {
+		    vl[d.vid+'-'+d.domid][0].views = d.views;
+		}
+		if (d.dialogs) {
+		    vl[d.vid+'-'+d.domid][0].dialogs = d.dialogs;
+		}
+	    }
+	    // Update job state
+	    if (d.jid && d.js) {
+		if (typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
+		    if (typeof vl[d.vid+'-'+d.domid][3] === 'undefined') vl[d.vid+'-'+d.domid][3] = {};
+		    vl[d.vid+'-'+d.domid][3]['job' + d.jid] = {vjid:d.vjid, js:d.js, jc:d.c};
+		}
+	    }
+	    if (d.ot == 1 && d.comm_rid > 0 && typeof rl[d.comm_rid] !== 'undefined') {
+		rl[d.comm_rid].a_comment = euc(o.value);
+	    }
+	}
+	// New Visitor
+	if (d.t == 'new') {
+	    var jt = d.ov;
+	    if (typeof vl[jt.vid] === 'object' && vl[jt.vid][0].vstatus == 1 ) {
+		console.log('Dublicate record! ' + jt.vid);
+	    } else {
+		vl[jt.vid] = [jt];
+		// Set online status
+	        vl[jt.vid][0].vstatus = 1;
+		vl[jt.vid][0].curl = decodeURIComponent(vl[jt.vid][0].curl);
+		vl[jt.vid][0].ctitle = decodeURIComponent(vl[jt.vid][0].ctitle);
+
+		// Decode
+	        if (vl[jt.vid][0].vnote) vl[jt.vid][0].vnote = decodeURIComponent(vl[jt.vid][0].vnote);
+
+		// Add jobs icons
+		var jjf = jt.jobs;
+		vl[jt.vid][3] = jjf;
+	    }
+	}
+	// Delete Visitor
+	if (d.t == 'del') {
+	    vl[d.vid][0].vstatus = 0;
+	    vl[d.vid][0].ed = d.ed;
+	    delete vl[d.vid][0].since;
+	    delete vl[d.vid][0].ctitle;
+	    delete vl[d.vid][0].curl;
+	    delete vl[d.vid][0].va;
+	}
+    };
+
+
+function P3_d1(d) {
+    var o;
+    var p;
+    var t;
+    var c;
+    var ct = 1;
+
+    console.log('RCV dialog update.');
+    console.log(d);
+    // 1 Is it new or exists dialog?
+
+    // New conversation
+    if (!rl[d.r] && d.msg.ut == 10 && d.msg.mid == 100) {
+	if (typeof d.msg.ovl !== 'undefined' && d.msg.ovl.length > 0) {
+            for (var vi = 0; vi < d.msg.ovl.length; vi++) {
+                if (typeof vl[d.msg.ovl[vi].vid] === 'undefined') {
+                    vl[d.msg.ovl[vi].vid] = [d.msg.ovl[vi]];
+                }
+            }
+	}
+	// New chat from admin
+	if (d.msg.sut == 1 && d.msg.sid != ApixCloud.CC.API.GetConfig().mid) {
+	    // Get sender info
+	    var sn = '';
+	    switch (d.msg.sut) {
+		case 1: {
+		    if (typeof ol[d.msg.sid] === 'object') {
+			sn = ApixCloud.CC.API.GetUserName(d.msg.sid, null, null, null, null, 1);
+		    } else { sn = '?'; }
+		} break;
+	    }
+	}
+	// New chat from visitor
+	if (d.msg.sut == 2 && d.msg.dc != 1) {
+	    // Get sender info
+	    var sn = '';
+	    switch (d.msg.sut) {
+		case 2: {
+		    if (typeof vl[d.msg.sid+'-'+d.msg.domid] === 'object') {
+			sn = ApixCloud.CC.API.GetUserName(null, d.msg.sid+'-'+d.msg.domid, null, null, null, 1);
+		    } else { sn = 'Guest'; }
+		} break;
+	    }
+	}
+
+	console.log('add new room');
+	rl[d.r] = {};
+	// state: 1 - dialog, 2 - conference
+	rl[d.r].s = d.msg.s;
+	// Current members
+	rl[d.r].m = d.msg.m;
+	// All members which touch dialog
+	rl[d.r].mmbrs = d.msg.mmbrs;
+
+	// Messages container
+	rl[d.r].msgs = [];
+
+	// Room sender/recipient. Update on transfer.
+	rl[d.r].rid = d.msg.rid;
+	rl[d.r].rut = d.msg.rut;
+	rl[d.r].sid = d.msg.sid;
+	rl[d.r].sut = d.msg.sut;
+
+	rl[d.r].id = d.r;
+	rl[d.r].domid = d.msg.domid;
+	rl[d.r].lid = d.msg.lid;
+
+	// Typing hints and stop typing hint
+	rl[d.r].th = {};
+	// Typing icon hide timer
+	rl[d.r].tht = null;
+
+	c = 'btn';
+	// Display new dialog tab
+	//ddt1(d.r, d.msg, c);
+	ct = 0;
+    }
+
+    // Last activity
+    if (rl[d.r]) rl[d.r].i_lat = Date.now();
+
+    // Transfer
+    if (rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
+	// Check member
+	if (typeof ol[d.msg.tm.m] === 'undefined') {
+            ol[d.msg.tm.m] = {ap:d.msg.tm.a.afn, fn:d.msg.tm.a.fn, gid:0, helper:0, id:d.msg.tm.m, ln:d.msg.tm.a.ln, pn:d.msg.tm.p};
+	}
+
+	// Update sender/recipient for room
+	if (d.msg.rid && d.msg.sid) {
+	    rl[d.r].rid = d.msg.rid;
+	    rl[d.r].rut = d.msg.rut;
+	    rl[d.r].sid = d.msg.sid;
+	    rl[d.r].sut = d.msg.sut;
+	}
+    }
+    
+    // Skip early 130 transfer msg
+    if (!rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
+	return;
+    }
+
+    if (rl[d.r] && d.msg.ut == 10 && d.msg.mid == 142) {
+	// Check member
+	if (typeof ol[d.msg.cm.m] === 'undefined') {
+            ol[d.msg.cm.m] = {ap:d.msg.cm.a.afn, fn:d.msg.cm.a.fn, gid:0, helper:0, id:d.msg.cm.m, ln:d.msg.cm.a.ln, pn:d.msg.cm.p};
+	}
+
+	rl[d.r].s = d.msg.s;
+    }
+
+    // check tab created, if not - add one
+    if (ct) {
+	o = document.getElementById('jcc-d'+d.r+'-tab');
+	if (!o && rl[d.r]) {
+	    c = 'btn-o';
+	console.log('--! create new tab');
+	console.log(rl[d.r]);
+	    //ddt1(d.r, rl[d.r], c);
+	}
+    }
+
+    if (typeof d.msg !== 'undefined' && rl[d.r]) {
+	if (rl[d.r].msgs) rl[d.r].msgs.push(d.msg);
+
+	// delete typing hint
+	if (d.msg.ut == 2) {
+	    if (rl[d.r].th && (rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid] || rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid] == '')) {
+		delete rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid];
+		console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid);
+	    }
+	} else {
+	    if (rl[d.r].th && (rl[d.r].th[d.msg.ut+'-'+d.msg.mid] || rl[d.r].th[d.msg.ut+'-'+d.msg.mid] == '')) {
+		delete rl[d.r].th[d.msg.ut+'-'+d.msg.mid];
+		console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid);
+	    }
+	}
+        var __the = document.getElementById('typing-hint');
+        if (__the) { __the.innerHTML = ''; __the.style.display = 'none'; }
+
+	// If chat openned - add (showing) new message at the end of dialog
+//	console.log('JCC.S.sel_rid == d.r; ' + JCC.S.sel_rid+', '+ d.r);
+	var _ro = document.getElementById('openned-room-'+d.r);
+	if (_ro) {
+	    // Chat is oppenned now, lets show new message
+
+//	    JCC.P3.d2([d.msg], JCC.$('mdialog-s2'), 2, JCC.P3.rl[d.r]);
+
+	    // System message
+	    // Send back read notify if not my msg and not system (10)
+	    if (sel_rid > 0 && ((d.msg.ut == 1 && d.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (d.msg.ut != 1 && d.msg.ut != 10))) {
+//console.log(111);
+		ApixCloud.CC.API.SendReadNotification(sel_rid, d.msg.id);
+		d.msg.read = 1;
+    	    }
+    	} else {
+	    // Animate tab - new message
+	    o = document.getElementById('jcc-d'+d.r+'-imsg');
+	    if (o) {
+		o.style.webkitAnimationName = 'blinkingX';
+	        o.style.animationName = 'blinkingX';
+		o.style.webkitAnimationIterationCount = 'infinite';
+		o.style.webkitAnimationDuration = '1.4s';
+		o.style.animationIterationCount = 'infinite';
+		o.style.animationDuration = '1.4s';
+	    }
+	    rl[d.r].thc = 0;
+	    o = document.getElementById('jcc-d'+d.r+'-itpg');
+	    if (o) {
+		o.style.opacity = 0;
+		o.style.webkitAnimationIterationCount = '0';
+		o.style.webkitAnimationDuration = '0s';
+		o.style.animationIterationCount = '0';
+		o.style.animationDuration = '0s';
+		o.style.webkitAnimationName = 'none';
+	        o.style.animationName = 'none';
+	    }
+	    o = document.getElementById('jcc-d'+d.r+'-tab');
+//	    if (o) JCC.cadd(o, 'rubberBand');
+
+	    // send back delivery notify if not my msg and not system (10)
+	    if ((d.msg.ut == 1 && d.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (d.msg.ut != 1 && d.msg.ut != 10)) {
+		ApixCloud.CC.API.SendDeliveryNotification(d.r, d.msg.id);
+		d.msg.delivered = 1;
+    	    }
+    	}
+    }
+    
+    return;
+};
+
+
+
+
+// room_id, msg, class (active/not), (1-new/2-transfer/3-conference), initiator info [id,ut]
+function ddt1(d, m, c, n, ii) {
+    var o;    
+    var ap = '';
+    var tt = '';
+    var ts = '';
+    var ut;
+    var id;
+    var prsi;
+
+//console.log('ddt1: n='+n);
+//console.log(m);
+
+    // UT. 1 - Admin; 2 - Visitor; 200 - Viber
+    // Conversation
+    if (m.s == 1) {
+	if (m.sut == 1 && m.sid == ApixCloud.CC.API.GetConfig().mid) {
+	    // Its me, show recipient avatar
+	    ut = m.rut;
+	    if (ut == 1) id = m.rid;
+	    if (ut == 2) id = m.rid+'-'+m.domid;
+	    if (ut == 200 || ut == 201) id = m.rid;
+
+	    if (m.rut == 1) {
+		// Show admin avatar
+		if (typeof ol[m.rid] !== 'undefined') {
+		    ap = '//'+cloud_addr+'/avatar' + ol[m.rid].ap;
+		    ts = ApixCloud.CC.API.GetUserFrom(m.rid, 1);
+		    if (ol[id].st >= 1) prsi = 'jcc-prs-on';
+		    else prsi = 'jcc-prs-off';
+		}
+		tt = ApixCloud.CC.API.GetUserName(m.rid);
+	    }
+	    if (m.rut == 2) {
+		// Show visitor avatar
+		if (typeof vl[id] !== 'undefined') {
+		    ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
+		} else {
+		    // Chat from social or messenger or from "offline" page (may on mobile)
+		}
+		if (rl[d] && !rl[d].et) prsi = 'jcc-prs-on';
+		else prsi = 'jcc-prs-off';
+		tt = ApixCloud.CC.API.GetUserName(null, id);
+		ts = ApixCloud.CC.API.GetUserFrom(id, 2);
+	    }
+	    if (m.rut == 200 || m.rut == 201) {
+		var si = ApixCloud.CC.API.GetMemberInfo(m.rid, m.rut, m.mmbrs);
+		if (si.length > 0) {
+		    tt = si[0];
+		    ap = si[1];
+		}
+		prsi = 'jcc-prs-off';
+	        if (rl[d]) ts = ApixCloud.CC.API.GetUserFrom(0, 0, d);
+	    }
+        } else {
+	    // New incoming dialog from world
+	    // Show admin avatar
+	    ut = m.sut;
+	    if (ut == 1) id = m.sid;
+	    if (ut == 2) id = m.sid+'-'+m.domid;
+	    if (ut == 200 || ut == 201) id = m.sid;
+
+	    if (m.sut == 1) {
+		if (typeof ol[m.sid] !== 'undefined') {
+		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
+		    ts = ApixCloud.CC.API.GetUserFrom(m.sid, 1);
+		    if (ol[id].st >= 1) prsi = 'jcc-prs-on';
+		    else prsi = 'jcc-prs-off';
+		}
+		tt = ApixCloud.CC.API.GetUserName(m.sid);
+	    }
+	    if (m.sut == 2) {
+		// Show visitor avatar
+		if (typeof vl[m.sid+'-'+m.domid] !== 'undefined') {
+		    if (typeof vl[id] !== 'undefined') {
+			ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
+		    }
+		} else {
+		    // Chat from social or messenger or from "offline" page (may on mobile)
+		}
+		if (rl[d] && !rl[d].et) prsi = 'jcc-prs-on';
+		else prsi = 'jcc-prs-off';
+		tt = ApixCloud.CC.API.GetUserName(null, id);
+		ts = ApixCloud.CC.API.GetUserFrom(id, 2);
+    	    }
+	    if (m.sut == 200 || m.sut == 201) {
+		var si = ApixCloud.CC.API.GetMemberInfo(m.sid, m.sut, m.mmbrs);
+		if (si.length > 0) {
+		    tt = si[0];
+		    ap = si[1];
+		}
+		prsi = 'jcc-prs-off';
+	        if (rl[d]) ts = ApixCloud.CC.API.GetUserFrom(m.sid, m.sut, rl[d].domid);
+	    }
+	}
+	if (ap == '') ap = '//'+cloud_addr+'/avatar/question.svg';
+    }
+    // Conference
+    if (m.s == 2) {
+	ut = m.sut;
+	prsi = 'jcc-prs-conf';
+	if (ut == 1) id = m.sid;
+	if (ut == 2) id = m.sid+'-'+m.domid;
+	if (ut == 200 || ut == 201) id = m.sid;
+	if (m.sut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap; }
+
+	if (m.sut == 1 && m.sid == ApixCloud.CC.API.GetConfig().mid) {
+	    ut = m.rut;
+	    if (ut == 1) id = m.rid;
+	    if (ut == 2) id = m.rid+'-'+m.domid;
+	    if (ut == 200 || ut == 201) id = m.rid;
+
+	    if (m.rut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[id].ap; }
+	    if (m.rut == 2) { ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap; }
+	} else if (m.rut == 1 && m.rid == ApixCloud.CC.API.GetConfig().mid) {
+	    ut = m.sut;
+	    if (ut == 1) id = m.sid;
+	    if (ut == 2) id = m.sid+'-'+m.domid;
+	    if (ut == 200 || ut == 201) id = m.sid;
+	    if (m.sut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[id].ap; }
+	    if (m.sut == 2) { ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap; }
+	} else {
+	    // Im not sender and not recipient
+	    // If visitor present - his avatar display
+	    // If admin-admin - lets initiator avatar display (sender)
+	    if (m.sut == 1 && m.rut == 1) {
+		if (m.sid == ApixCloud.CC.API.GetConfig().mid) {
+		    id = m.rid;
+		    ap = '//'+cloud_addr+'/avatar' + ol[m.rid].ap;
+		} else if (m.rid == ApixCloud.CC.API.GetConfig().mid) {
+		    id = m.sid;
+		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
+		} else {
+		    id = m.sid;
+		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
+		}
+	    } else {
+		if (m.sut == 2 && m.rut == 1) {
+		    ut = m.sut;
+		    id = m.sid+'-'+m.domid;
+		}
+		if (m.sut == 1 && m.rut == 2) {
+		    ut = m.rut;
+		    id = m.rid+'-'+m.domid;
+		}
+		if (id && typeof vl[id] === 'object') {
+		    ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
+		} else {
+		    // Messenger subscriber
+		    if (m.sut == 200 || m.sut == 201) {
+			ut = m.sut;
+			id = m.sid;
+		    } else if (m.rut == 200 || m.rut == 201) {
+			ut = m.rut;
+			id = m.rid;
+		    } else {
+		        console.log('Error: new dialog tab with visitor or messenger subscriber received, but visitor not in list. VID:'+m.sid+'-'+m.domid);
+			return -1;
+		    }
+		}		
+	    }
+	}
+	if (ut == 200 || ut == 201) {
+	    if (typeof rl[d] !== 'undefined') {
+		var ro = rl[d];
+		if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
+            	    if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == id && ro.mmbrs[__i].a) {
+                    	ap = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
+                    	if (ro.mmbrs[__i].a.afn) ap = ro.mmbrs[__i].a.afn;
+                    	break;
+            	    }
+            	}
+	    }
+	}
+
+	tt = 'Conference';
+	var m = 0, m1 = 0, m2 = 0;
+	if (typeof rl[d].m !== 'undefined') m1 = rl[d].m.length;
+	if (typeof rl[d].mmbrs !== 'undefined') m2 = rl[d].mmbrs.length;
+	m = m1;
+	if (m2 > m1) m = m2;
+	ts = m + ' member(s)';
+    }
+
+    var li = document.createElement('div')
+    li.className = 'dc';
+    li.setAttribute('id', 'jcc-d'+d+'-tab');
+    li.setAttribute('uut', ut);
+    li.setAttribute('uid', id);
+    li.setAttribute('rid', d);
+
+    var s1 = '';
+    var s2 = '';
+    var s3 = '';
+    
+    // TODO: use cptab as arg parameter
+    if (c == 'btn') c = 'cptab'; 
+    if (c == 'btn-o') c = 'cptab-o'; 
+
+    // New message counter
+    rl[d].nmc = 3; // Fake counter
+    var nmb = '';
+    if (typeof rl[d] !== 'undefined' && rl[d].nmc > 0) {
+	nmb = '<span class="badge" style="position: absolute;right: 30px;top: 50%;margin-top: -10px; background: #21A9E1; color: white; padding: 3px 7px; text-align: center;font-size: 13px;border-radius: 50%;">'+rl[d].nmc+'</span>';
+    }
+
+    li.innerHTML = '<div id="jcc-d'+d+'-btn" style="display: table; table-layout: fixed; width: 100%;"> \
+    <div id="jcc-d'+d+'-btn2" class="'+c+'" onclick="OpenDialog('+d+','+ut+',\''+id+'\', \''+encodeURIComponent(tt)+'\', \''+ts+'\', \''+ap+'\');"> \
+    <div class="d1 txt-title-s3" style="position:relative;vertical-align: top;border-bottom: 1px solid #E8E8E8;"> \
+			<div id="jcc-vt'+d+'-avail-flag" class="jcc-prs-avflag '+prsi+'"></div> \
+			'+nmb+' \
+			<div style="position: absolute;right: 10px; top: 50%; margin-top: -9px;">&gt;</div> \
+			<img border="0" width="26" height="26" style="margin: 10px 15px;vertical-align: top;" class="avatar" src="'+ap+'"> \
+			<div id="jcc-d'+d+'-tab-title" class="dbt txt-title-s3" style="font-weight: 600;color:inherit;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display: inline-block;padding-top: 15px;">'+tt+' \
+			    <br><span style="font-weight: 300;font-size: 14px;">'+decodeURIComponent(ts)+'</span></div> \
+			</div></div></div>';
+
+    o = document.getElementById('my_dialogs');
+    if (o) {
+	o.appendChild(li);
+    }
+    return {ap:ap, tt:encodeURIComponent(tt), ts:ts};
+}
+
+function DialogPanelHtml(ap, tt, ts) {
+    return '<span style="float: left;margin-left: -10px;">&lt;</span> \
+	    <img border="0" width="20" height="20" style="margin-right: -15px;vertical-align: top;width: 32px;height: 32px;margin-top: -5px;margin-bottom: -5px;float: right;" class="avatar" src="'+ap+'"> \
+	    <div style="margin-top: -5px;margin-bottom: -6px;line-height: 0.8em;"> \
+		<span style="font-size: 16px;">'+decodeURIComponent(tt)+'</span> \
+		<br> \
+		<span style="font-size: 13px;opacity: 0.7;">'+decodeURIComponent(ts)+'</span> \
+	    </div>';
+}
+
+function OpenDialog(r, ut, id, tt, ts, ap) {
+    var o, t;
+
+    if (r > 0) {
+	// Open dialog room
+	// Update head
+	o = document.getElementById('dialog-head');
+	o.innerHTML = DialogPanelHtml(ap, tt, ts);
+console.log('OpenDialog '+ut);
+	sel_rid = r;
+	sel_sid = id;
+	sel_sut = ut;
+
+	if (rl[sel_rid] && rl[sel_rid].msgs) {
+	    P3_d3(sel_rid);
+	} else {
+	    ApixCloud.CC.API.GetChatRoomMessages(sel_rid);
+	}
+
+    } else {
+	// Open empty dialog
+	sel_rid = 0;
+	sel_sid = id;
+	sel_sut = ut;
+console.log('2-OpenDialog '+ut);
+    }
+}
+
+// Display full dialog
+function P3_d3(d, e, r) {
+    var o;
+    var lastm;
+    var rm;
+
+    o = document.getElementById('dialog');
+    o.innerHTML = '';
+    rm = rl[d];
+
+    var ma = [];
+    var lm = rm.msgs[0].mid;
+    var lu = rm.msgs[0].ut;
+    
+    rm.rid = rm.msgs[0].rid;
+    rm.rut = rm.msgs[0].rut;
+    rm.sid = rm.msgs[0].sid;
+    rm.sut = rm.msgs[0].sut;
+
+    for (var m = 0; m < rm.msgs.length; m++) {
+	lastm = rm.msgs[m];
+	
+	if (lm != rm.msgs[m].mid || lu != rm.msgs[m].ut) {
+	    if (ma.length > 0) {
+		// display array
+		P3_d2(ma, o, 2, rm);
+	    }
+	    ma = [];
+	}
+	ma.push(rm.msgs[m]);
+	lm = rm.msgs[m].mid;
+	lu = rm.msgs[m].ut;
+    }
+
+    if (ma.length > 0) {
+	// display last array
+        P3_d2(ma, o, 2, rm);
+    }
+
+    if (r) {
+	o.innerHTML = '<div style="padding-bottom: 30px; min-width: 50%; display: table; border: 0px solid; margin: auto;">' + o.innerHTML + '</div>';
+    }
+
+    if (!rm.et) {
+	// update read/delivery in displayed dialog
+//        JCC.P3.u2(d);
+    
+        // display typing hints
+        P3_st(d);
+
+	// send back read notify
+        if (d && ((lastm.ut == 1 && lastm.mid != ApixCloud.CC.API.GetConfig().mid) || (lastm.ut != 1 && lastm.ut != 10)) && lastm.read != 1) {
+	    ApixCloud.CC.API.SendReadNotification(d, lastm.id);
+	    lastm.read = 1;
+	}
+    }
+
+    return;
+};
+
+function P3_dim(p1) {
+    var r = 'iM';
+
+    if (p1.sut == 1 && p1.sid == ApixCloud.CC.API.GetConfig().mid) {
+	r = 'iS';
+    }
+    if (p1.rut == 1 && p1.rid == ApixCloud.CC.API.GetConfig().mid) {
+	r = 'iR';
+    }
+    
+    return r;
+};
+
+
+// Display message. ma=MessageArray, p=Parent, l=last(show read/delivery hint), ds=DataStyle, ro=room object
+function P3_d2(ma, p, ds, ro) {
+    var t;
+    var lds = ds;
+    if (!lds) {	lds = 2; }
+    var i = ma[0].ut +'-'+ma[0].mid;
+
+    switch (ma[0].ut) {
+	// System message
+        case 10: {
+	    for (var m = 0; m < ma.length; m++) {
+		var mt;
+		var mb = '';
+		var ai = '';
+		var op = '1';
+		var h = 16;
+		var eti = '';
+
+		if (ma[m].smt) mt = ma[m].smt; else if (ma[m].et) mt = ma[m].et;
+		
+		if (ma[m].mid == 100 || ma[m].mid == 130) {
+		    // Update sender/recipient for room
+		    ro.rid = ma[m].rid;
+		    ro.rut = ma[m].rut;
+		    ro.sid = ma[m].sid;
+		    ro.sut = ma[m].sut;
+		    ro.m = ma[m].m;
+		}
+
+		// ??? or delete some code for mid100 msg?
+		if (ma[m].mid == 100 && ro.et) { return; }
+
+		if (ma[m].mid == 101 && ma[m].body) {
+		    ai = JCC.P3.eps(ma[m].body);
+		    mb = ACC.L[500];
+		}
+		if (ma[m].mid == 120) {
+		    // member leave dialog
+		    mb = ACC.L[175].replace('%person%', ApixCloud.CC.API.GetUserName(null, null, ma[m].mi));
+		}
+		if (ma[m].mid == 122) {
+		    // member open dialog
+		    mb = ACC.L[208].replace('%person%', ApixCloud.CC.API.GetUserName(null, null, ma[m].mi));
+		}
+		if (ma[m].mid == 134) {
+		    // prepare to transfer chat to queue by not delivery
+		    mb = ACC.L[489];
+		}
+		if (ma[m].mid == 138) {
+		    mb = ACC.L[491];
+		}
+
+		if (ma[m].mid == 142) {
+		    // Add new member
+		    var a = ma[m].body.split(':');
+		    a[0] = parseInt(a[0]); a[1] = parseInt(a[1]);
+		    if (ro.m && ro.m.filter(function(_m, _u){ return function(e){if (e.mid==_m && e.ut==_u) return true;};}(a[0], a[1])).length == 0) ro.m.push({"mid":a[0], "ut":a[1]});
+		    if (a[1] == 1) {
+			mb = ACC.L[64].replace('%person%', ApixCloud.CC.API.GetUserName(a[0]));
+		    }
+		}
+		if (ma[m].mid == 144) {
+		    // One member leave conference
+		    var a = ma[m].body.split(':');
+		    a[0] = parseInt(a[0]); a[1] = parseInt(a[1]);
+		    for (var ii = 0; ii < ro.m.length; ii++) { if (ro.m[ii].mid == a[0] && ro.m[ii].ut == a[1]) { ro.m.splice(ii, 1); } }
+		    if (a[1] == 1) {
+			mb = ACC.L[65].replace('%person%', ApixCloud.CC.API.GetUserName(a[0]));
+		    }
+		}
+
+		if (ma[m].mid == 150) {
+		    // Taked message by admin
+		    var a = ma[m].body.split(':');
+console.log(ma[m]);
+console.log(a);
+		    a[0] = parseInt(a[0]); a[1] = parseInt(a[1]);
+		    if (ro.m && ro.m.filter(function(_m, _u){ return function(e){if (e.mid==_m && e.ut==_u) return true;};}(a[0], a[1])).length == 0) ro.m.push({"mid":a[0], "ut":a[1]});
+		    if (a[1] == 1) {
+			mb = ACC.L[99].replace('%person%', ApixCloud.CC.API.GetUserName(a[0]));
+		    }
+console.log('#150');
+//console.log(ma[m]);
+		    sel_sid = a[0];
+		    sel_sut = a[1];
+		}
+		if (ma[m].mid == 190) {
+		    // End of dialog
+		    if (ro.s == 2) { mb = ACC.L[102]; } else { mb = ACC.L[103]; }
+		}
+
+		if (ma[m].mid == 100) {
+		    mt = ma[m].st; op = '1';
+		    mb = '';
+		}
+
+		if (ma[m].body && ma[m].body.length > 0 && !mb) { mb = ma[m].body; } else {
+		    if (ma[m].mid == 110) { mb = ACC.L[42]; }
+		}
+
+		if (mb != '' || ((ma[m].fm && ma[m].tm)||(ma[m].fm && ma[m].tq))) {
+		    h += 16;
+		    if (ma[m].mid == 130) {
+			h += 16;
+			
+			var f = '';
+			if (ma[m].fm.dc > 1) f = ma[m].fm.d +', ';
+			if (ma[m].fm.a.fn) f += ma[m].fm.a.fn +' ';
+			if (ma[m].fm.a.ln) f += ma[m].fm.a.ln;
+			var t = '';
+			if (ma[m].tm.dc > 1) t = ma[m].tm.d +', ';
+			if (ma[m].tm.a.fn) t += ma[m].tm.a.fn +' ';
+			if (ma[m].tm.a.ln) t += ma[m].tm.a.ln;
+console.log('#130');
+			sel_sid = ma[m].tm.m;
+			sel_sut = ma[m].tm.u;
+
+			ai = decodeURIComponent(f)+'<span style="height: 10px; background: url(/img/dialog-transfer-10.svg) 50% 50% no-repeat; opacity:0.35; margin-left: 5px; margin-right: 5px; padding-left: 20px;"></span>'+decodeURIComponent(t);
+			mb = ACC.L[100];
+		    } else if (ma[m].mid == 135) {
+			h += 16;
+			
+			var f = '';
+			if (ma[m].fm.dc > 1) f = ma[m].fm.d +', ';
+			if (ma[m].fm.a.fn) f += ma[m].fm.a.fn +' ';
+			if (ma[m].fm.a.ln) f += ma[m].fm.a.ln;
+			var t = '';
+			if (ma[m].tq.qn) t += ma[m].tq.qn;
+
+console.log('#135');
+			sel_sid = 0;
+			sel_sut = 0;
+
+			ai = decodeURIComponent(f)+'<span style="height: 10px; background: url(/img/dialog-transfer-10.svg) 50% 50% no-repeat; opacity: 0.35; margin-left: 5px; margin-right: 5px; padding-left: 20px;"></span>'+decodeURIComponent(t);
+			mb = ACC.L[101];
+		    }
+		}
+		
+		if (ma[m].mid == 160) {
+		    // Use Lang = try room lang/CC lang/en/first avail
+		    var ul = ApixCloud.CC.API.GetConfig().sl[ro.lid].c;
+		    var af = ApixCloud.CC.API.GetForms();
+		    if (!af[ma[m].fid].fc.f[0].h[ul]) {
+			ul = g_lang;
+			if (!af[ma[m].fid].fc.f[0].h[ul]) {
+			    if (af[ma[m].fid].fc.f[0].h['en']) ul = 'en'; else  ul = Object.keys(af[ma[m].fid].fc.f[0].h)[0];
+			}
+		    }
+		    mb = ACC.L[173];
+		    ai = '<div class="frs" on1click="JCC.P3.off('+ma[m].fid+',\''+ul+'\', null);"><img src="/cc/img/'+JCC.theme+'/jcc-icon-fill-form.svg" style="vertical-align:top"><span class="txt-title-s3" style="margin-left:10px;">'+decodeURIComponent(JCC.P3.af[ma[m].fid].fc.title[ul])+'</span></div>';
+		}
+		if (ma[m].mid == 162) {
+		    mb = ACC.L[174];
+		}
+		if (ma[m].mid == 170) {
+		    mb = ACC.L[467]
+		}
+		if (ma[m].mid == 200) {
+		    var _x1 = mb.split(':');
+		    if (mb.indexOf('IS') == 0) {
+			// Initiate upload
+			ai = '<div style="width:80%;" id="cuft-'+_x1[3]+'">'+P3_gui(mb, ro)+'</div>';
+		        mb = ACC.L[352];
+		    }
+		    if (mb.indexOf('UC') == 0) {
+			// Upload complete
+			_e_ifs = null;
+			var o = document.getElementById('cuft-'+_x1[3]);
+			if (o) {
+			    // Remove IS message from array if avail
+			    for (var _i = 0; _i < ro.msgs.length; _i++) {
+				if (ro.msgs[_i].ut == 10 && ro.msgs[_i].mid == 200 && ro.msgs[_i].body.indexOf(':'+_x1[3]+':') > 0) {
+				    ro.msgs.splice(_i, 1);
+				}
+			    }
+			    o.innerHTML = P3_gui(mb, ro);
+			    //toastr.success(JCC.L[363], JCC.L[367], JCC.__c_succ_msg_opts);
+			    alert(ACC.L[363] +' - '+ ACC.L[367]);
+			    ai = '';
+			    mb = '{{SKIP}}';
+			} else {
+			    ai = P3_gui(mb, ro);
+			    mb = ACC.L[352];
+			}
+		    }
+		}
+
+		if (eti == '') eti = gt(mt, 1);
+		if (ai != '') eti += '<br>'+ai;
+		if (mb != '{{SKIP}}') t = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="opacity: '+op+'; margin-top: 20px; margin-bottom: 20px; height: 16px; posit2ion: absolute; left: 0px;"> \
+		        <tr><td align="center" style="padding:0;"><span class="jcc-sm" style="font-size:13px;color: rgba(0,0,0,0.5);font-weight:600;width: 80%;">' + mb + '</span></td></tr> \
+			<tr><td align="center" style="padding:0;"><span class="jcc-sm" style="font-size:13px;color: rgba(0,0,0,0.5);font-weight:300;display:block;width: 80%;">' + eti + '</span></td></tr> \
+		    </table>';
+		else t = '';
+
+		if (p && t) { p.innerHTML += t; }
+	    }
+	} break;
+
+	case 1: {
+	    var md = '';
+
+	    // Left or Right?
+	    // If my message = alway right
+	    // If my companion = always left
+	    // If not = check member - chetniy/ne chetniy if members > 2
+	    var mp = ma[0].body.substring(0, 2);
+	    // Who I am. Sender, Recipient, Member (aka Supervisor)
+	    var iam = P3_dim(ro);
+
+	    // If I as sender and message from any sender
+	    if (iam == 'iS' && mp == 'S:') {
+		md = 'right';
+	    }
+	    if (iam == 'iS' && mp == 'R:') {
+		md = 'left';
+	    }
+
+	    if (iam == 'iR' && mp == 'S:') {
+		md = 'left';
+	    }
+	    if (iam == 'iR' && mp == 'R:') {
+		md = 'right';
+	    }
+
+	    if ((iam == 'iS' || iam == 'iR') && mp == 'M:') {
+		// left/right detect by member sequence (chetniy nechetniy)???
+		md = 'left';
+	    }
+
+	    if (iam == 'iM' && mp == 'S:') {
+		md = 'left';
+	    }
+	    if (iam == 'iM' && mp == 'R:') {
+		md = 'right';
+	    }
+	    if (iam == 'iM' && mp == 'M:') {
+		// Im member and msg from me or other member
+		// left/right detect by member sequence (chetniy nechetniy)???
+		md = 'right';
+	    }
+
+	    // Visitors messages always left
+	    if (ma[0].ut == 2) {
+		md = 'left';
+	    }
+
+    		t = '<div style="white-space: nowrap;text-align:'+md+';"> \
+			<div style="display: inline-block;float:'+md+';"> \
+			    <div class="oper_btn_avatar" style="margin: auto;margin-top: 0px;margin-bottom:0px;width: 30px; height: 30px; box-sizing: content-box;"> \
+				<img style="border: 0px solid; border-radius:50%;" src="'+'//'+cloud_addr+'/avatar' + ol[ma[0].mid].ap + '" height="30" width="30"/> \
+		            </div> \
+			    <div class="txt-title-s2" style="font-size:13px;opacity:0.5;">' + decodeURIComponent(ol[ma[0].mid].fn) + '</div> \
+			</div> \
+			<div style="padding-left: 10px;padding-right: 10px;margin-'+md+':4px;white-space: normal;display: inline-block;" class="msgcnt"> \
+		    ';
+
+    	    var pmt = ma[0].st; // Time of message
+    	    var pmid = ma[0].id; // Id
+    	    var mt = '';
+	    var ms = '';
+	    for (var m = 0; m < ma.length; m++) {		
+		// Insert inside body smiles
+		var mb = decodeURIComponent(ma[m].body.substring(2));
+		// Replace tag to stringable
+		mb=mb.replace(/</g,'&lt;');mb=mb.replace(/>/g,'&gt;');
+		// Replace \n to <br>
+		mb=mb.replace(/\n/g,'<br>');
+		// smiley
+		if (ApixCloud.CC.API.GetConfig().sse == '1') { mb = P3_se(mb); }
+		// hilight links & show images
+		mb = P3_r1(mb) + ' ';
+
+		// if my message, show delivered/read status
+		ms = '';
+		if (ma[m].ut == 1 && ma[m].mid == ApixCloud.CC.API.GetConfig().mid) {
+		    if (ma[m].dt > 0) {
+			ms += ' | D ' + gt(ma[m].dt, lds);
+		    }
+		    if (ma[m].rt > 0) {
+			ms += ' | R ' + gt(ma[m].rt, lds);
+		    }
+		}
+
+		mt += '<div class="jcc-dialog-'+md+'-msg txt-title-s3 ac-msg-zoom-'+md+' show" style="text-align: left;">'+mb+' <div class="txt-title-s1 msg-time" style="font-size:10px;opacity:0.4;">'+gt(pmt, lds)+ms+'</div></div><br>';
+
+		pmt = ma[m].st;
+		pmid = ma[m].id;
+	    }
+	    t += mt + '</div></div>';
+
+	    if (p) { p.innerHTML += t; }
+	} break;
+
+	case 200:
+	case 201:
+	case 2: {
+	    var md = '';
+
+	    // Left or Right?
+	    // If my message = alway right
+	    // If my companion = always left
+	    // If not = check member - chetniy/ne chetniy if members > 2
+	    var mp = ma[0].body.substring(0, 2);
+	    // Who I am. Sender, Recipient, Member (aka Supervisor)
+	    var iam = P3_dim(ro);
+	    
+	    // If I as sender and message from any sender
+	    if (iam == 'iS' && mp == 'S:') {
+		md = 'right';
+	    }
+	    if (iam == 'iS' && mp == 'R:') {
+		md = 'left';
+	    }
+
+	    if (iam == 'iR' && mp == 'S:') {
+		md = 'left';
+	    }
+	    if (iam == 'iR' && mp == 'R:') {
+		md = 'right';
+	    }
+
+	    if ((iam == 'iS' || iam == 'iR') && mp == 'M:') {
+		// left/right detect by member sequence (chetniy nechetniy)???
+		md = 'left';
+	    }
+
+	    if (iam == 'iM' && mp == 'S:') {
+		md = 'left';
+	    }
+	    if (iam == 'iM' && mp == 'R:') {
+		md = 'right';
+	    }
+	    if (iam == 'iM' && mp == 'M:') {
+		// Im member and msg from me or other member
+		// left/right detect by member sequence (chetniy nechetniy)???
+		md = 'right';
+	    }
+
+	    // Visitors messages always left
+	    if (ma[0].ut == 2 || ma[0].ut == 200 || ma[0].ut == 201) {
+		md = 'left';
+	    }
+
+    	    var vfn;
+	    var __ap;
+	    if (ma[0].ut == 200 || ma[0].ut == 201) {
+	        if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
+		    if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == ma[0].mid && ro.mmbrs[__i].a) {
+			vfn = decodeURIComponent(ro.mmbrs[__i].a.fn);
+			__ap = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
+			if (ro.mmbrs[__i].a.afn) __ap = ro.mmbrs[__i].a.afn;
+			break;
+		    }
+		}    
+	    } else {
+    		if (typeof vl[ma[0].mid+'-'+ro.domid] !== 'undefined' && vl[ma[0].mid+'-'+ro.domid][0].fn) vfn = decodeURIComponent(vl[ma[0].mid+'-'+ro.domid][0].fn);
+    		if (!vfn) {
+		    if (typeof vl[ma[0].mid+'-'+ro.domid] !== 'undefined' && vl[ma[0].mid+'-'+ro.domid][0].cn) {
+			vfn = decodeURIComponent(vl[ma[0].mid+'-'+ro.domid][0].cn);
+		    } else {
+			vfn = ACC.L[7];
+		    }
+		}
+		__ap = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
+		if (typeof vl[ma[0].mid+'-'+ro.domid] !== 'undefined') __ap = '//'+cloud_addr+'/avatar'+vl[ma[0].mid+'-'+ro.domid][0].ap;
+	    }
+
+
+
+
+    		t = '<div style="white-space: nowrap;text-align:'+md+';"> \
+			<div style="display: inline-block;float:'+md+';"> \
+			    <div class="oper_btn_avatar" style="margin: auto;margin-top: 0px;margin-bottom:0px;width: 30px; height: 30px; box-sizing: content-box;"> \
+				<img style="border: 0px solid; border-radius:50%;" src="'+__ap+'" height="30" width="30"/> \
+		            </div> \
+			    <div class="txt-title-s2" style="font-size:13px;opacity:0.5;">' + vfn + '</div> \
+			</div> \
+			<div style="padding-left: 10px;padding-right: 10px;margin-'+md+':4px;white-space: normal;display: inline-block;" class="msgcnt"> \
+		    ';
+
+
+
+    	    var pmt = ma[0].st;
+	    var pmid = ma[0].id;
+    	    var mt = '';
+	    for (var m = 0; m < ma.length; m++) {
+		// Insert inside body smiles
+		var mb = decodeURIComponent(ma[m].body.substring(2));
+		// Replace tag to stringable
+		mb=mb.replace(/</g,'&lt;');mb=mb.replace(/>/g,'&gt;');
+		// Replace \n to <br>
+		mb=mb.replace(/\n/g,'<br>');
+		// smiley
+		if (ApixCloud.CC.API.GetConfig().sse == '1') { mb = P3_se(mb); }
+		// hilight links & show images
+		mb = P3_r1(mb) + ' ';
+
+		mt += '<div class="jcc-dialog-'+md+'-msg txt-title-s3 ac-msg-zoom-'+md+' show" style="text-align: left;">'+mb+' <div class="txt-title-s1 msg-time" style="font-size:10px;opacity:0.4;">'+gt(pmt, lds)+'</div></div><br>';
+
+		pmt = ma[m].st;
+		pmid = ma[m].id;
+	    }
+	    t += mt;
+
+	    if (p) { p.innerHTML += t; }
+	} break;
+    }
+    
+    // Send read event of not readed
+    var mal = ma.length-1;
+    if (ro && ((ma[mal].ut == 1 && ma[mal].mid != ApixCloud.CC.API.GetConfig().mid) || (ma[mal].ut != 1 && ma[mal].ut != 10)) && !ma[mal].rt) {
+	ApixCloud.CC.API.SendReadNotification(ro.id, ma[mal].id);
+	ma[mal].read = 1;
+	ma[mal].rt = 1;
+    }
+};
+
+// Data Detector
+// Detect links, images, mails
+var srg = new RegExp(/(^|\<.+\>|[\?\s!#$%^&*\(\)_\-\=\+\{\}\[\]\|'";:,<>\/][\#$&\(\)%\.:\-\/>]?)((https?|ftps?):\/\/)?((([0-9\u0041-\u005A\u0061-\u007A\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376-\u0377\u037A-\u037D\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u0523\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0621-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06E5-\u06E6\u06EE-\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4-\u07F5\u07FA\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0972\u097B-\u097F\u0985-\u098C\u098F-\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC-\u09DD\u09DF-\u09E1\u09F0-\u09F1\u0A05-\u0A0A\u0A0F-\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32-\u0A33\u0A35-\u0A36\u0A38-\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2-\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0-\u0AE1\u0B05-\u0B0C\u0B0F-\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32-\u0B33\u0B35-\u0B39\u0B3D\u0B5C-\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99-\u0B9A\u0B9C\u0B9E-\u0B9F\u0BA3-\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C33\u0C35-\u0C39\u0C3D\u0C58-\u0C59\u0C60-\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0-\u0CE1\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D28\u0D2A-\u0D39\u0D3D\u0D60-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32-\u0E33\u0E40-\u0E46\u0E81-\u0E82\u0E84\u0E87-\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA-\u0EAB\u0EAD-\u0EB0\u0EB2-\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDD\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8B\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065-\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10D0-\u10FA\u10FC\u1100-\u1159\u115F-\u11A2\u11A8-\u11F9\u1200-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u1676\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F0\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u1900-\u191C\u1950-\u196D\u1970-\u1974\u1980-\u19A9\u19C1-\u19C7\u1A00-\u1A16\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE-\u1BAF\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u2094\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2C6F\u2C71-\u2C7D\u2C80-\u2CE4\u2D00-\u2D25\u2D30-\u2D65\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31B7\u31F0-\u31FF\u3400\u4DB5\u4E00-\u9FC3\uA000-\uA48C\uA500-\uA60C\uA610-\uA61F\uA62A-\uA62B\uA640-\uA65F\uA662-\uA66E\uA67F-\uA697\uA717-\uA71F\uA722-\uA788\uA78B-\uA78C\uA7FB-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA90A-\uA925\uA930-\uA946\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAC00\uD7A3\uF900-\uFA2D\uFA30-\uFA6A\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40-\uFB41\uFB43-\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC\.\-_:}][^\#$&\(\)%\?\s,;!*\/]+\.(AERO|ARPA|ASIA|A[CDEFGILMNOQRSTUWXZ]|BIZ|B[ABDEFGHIJMNORSTVWYZ]|CAT|CLOUD|COM|COOP|C[ACDFGHIKLMNORUVWXYZ]|D[EJKMOZ]|EDU|E[CEGRSTU]|F[IJKMOR]|GOV|G[ABDEFGHILMNPQRSTUWY]|H[KMNRTU]|INFO|INT|I[DELMNOQRST]|JOBS|J[EMOP]|K[EGHIMNPRWYZ]|L[ABCIKRSTUVY]|MIL|MOBI|MUSEUM|M[ACDEGHKLMNOPQRSTUVWXYZ]|NAME|NET|N[ACEFGILOPRUZ]|ORG|OM|POST|PRO|P[AEFGHKLMNRSTWY]|QA|R[EOSUW]|S[ABCDEGHIJKLMNORTUVXYZ]|TEL|TRAVEL|T[CDFGHJKLMNOPRTVWZ]|U[AGKSYZ]|V[ACEGINU]|W[FS]|XN--0ZWM56D|XN--11B5BS3A9AJ6G|XN--3E0B707E|XN--45BRJ9C|XN--80AKHBYKNJ4F|XN--80AO21A|XN--90A3AC|XN--9T4B11YI5A|XN--CLCHC0EA0B2G2A9GCD|XN--DEBA0AD|XN--FIQS8S|XN--FIQZ9S|XN--FPCRJ9C3D|XN--FZC2C9E2C|XN--G6W251D|XN--GECRJ9C|XN--H2BRJ9C|XN--HGBK6AJ7F53BBA|XN--HLCJ6AYA9ESC7A|XN--J1AMH|XN--J6W193G|XN--JXALPDLP|XN--KGBECHTV|XN--KPRW13D|XN--KPRY57D|XN--L1ACC|XN--LGBBAT1AD8J|XN--MGB9AWBF|XN--MGBAAM7A8H|XN--MGBAYH7GPA|XN--MGBBH1A71E|XN--MGBC0A9AZCG|XN--MGBERP4A5D4AR|XN--MGBX4CD0AB|XN--O3CW4H|XN--OGBPF8FL|XN--P1AI|XN--PGBS0DH|XN--S9BRJ9C|XN--WGBH1C|XN--WGBL6A|XN--XKC2AL3HYE2A|XN--XKC2DL3A5EE0H|XN--YFRO4I67O|XN--YGBI2AMMX|XN--ZCKZAH|XXX|Y[ET]|Z[AMW]|\u0627\u0644\u062c\u0632\u0627\u0626\u0631|\u09ac\u09be\u0982\u09b2\u09be|\u4e2d\u56fd|\u4e2d\u570b|\u516C\u53F8|\u7F51\u7EDC|\u0645\u0635\u0631|\u10d2\u10d4|\u9999\u6e2f|\u092d\u093e\u0930\u0924|\u0628\u06be\u0627\u0631\u062a|\u0c2d\u0c3e\u0c30\u0c24\u0c4d|\u0aad\u0abe\u0ab0\u0aa4|\u0a2d\u0a3e\u0a30\u0a24|\u09ad\u09be\u09b0\u09a4|\u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe|\u0627\u06cc\u0631\u0627\u0646|\u0627\u064a\u0631\u0627\u0646|\u0627\u0644\u0627\u0631\u062f\u0646|\u049b\u0430\u0437|\ud55c\uad6d|\u0645\u0644\u064a\u0633\u064a\u0627|\u043c\u043e\u043d|\u0627\u0644\u0645\u063a\u0631\u0628|\u0639\u0645\u0627\u0646|\u067e\u0627\u06a9\u0633\u062a\u0627\u0646|\u067e\u0627\u0643\u0633\u062a\u0627\u0646|\u0641\u0644\u0633\u0637\u064a\u0646|\u0642\u0637\u0631|\u0440\u0444|\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629|\u0627\u0644\u0633\u0639\u0648\u062f\u06cc\u0629|\u0627\u0644\u0633\u0639\u0648\u062f\u06cc\u06c3|\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0647|\u0441\u0440\u0431|\u65b0\u52a0\u5761|\u0b9a\u0bbf\u0b99\u0bcd\u0b95\u0baa\u0bcd\u0baa\u0bc2\u0bb0\u0bcd|\u0dbd\u0d82\u0d9a\u0dcf|\u0b87\u0bb2\u0b99\u0bcd\u0b95\u0bc8|\u0633\u0648\u062f\u0627\u0646|\u0633\u0648\u0631\u064a\u0629|\u0633\u0648\u0631\u064a\u0627|\u53f0\u7063|\u53f0\u6e7e|\u81fa\u7063|\u0e44\u0e17\u0e22|\u062a\u0648\u0646\u0633|\u0443\u043a\u0440|\u0627\u0645\u0627\u0631\u0627\u062a|\u0627\u0644\u064a\u0645\u0646))(:\d+)?\/[0-9\u0041-\u005A\u0061-\u007A\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376-\u0377\u037A-\u037D\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u0523\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0621-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06E5-\u06E6\u06EE-\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4-\u07F5\u07FA\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0972\u097B-\u097F\u0985-\u098C\u098F-\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC-\u09DD\u09DF-\u09E1\u09F0-\u09F1\u0A05-\u0A0A\u0A0F-\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32-\u0A33\u0A35-\u0A36\u0A38-\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2-\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0-\u0AE1\u0B05-\u0B0C\u0B0F-\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32-\u0B33\u0B35-\u0B39\u0B3D\u0B5C-\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99-\u0B9A\u0B9C\u0B9E-\u0B9F\u0BA3-\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C33\u0C35-\u0C39\u0C3D\u0C58-\u0C59\u0C60-\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0-\u0CE1\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D28\u0D2A-\u0D39\u0D3D\u0D60-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32-\u0E33\u0E40-\u0E46\u0E81-\u0E82\u0E84\u0E87-\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA-\u0EAB\u0EAD-\u0EB0\u0EB2-\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDD\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8B\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065-\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10D0-\u10FA\u10FC\u1100-\u1159\u115F-\u11A2\u11A8-\u11F9\u1200-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u1676\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F0\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u1900-\u191C\u1950-\u196D\u1970-\u1974\u1980-\u19A9\u19C1-\u19C7\u1A00-\u1A16\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE-\u1BAF\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u2094\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2C6F\u2C71-\u2C7D\u2C80-\u2CE4\u2D00-\u2D25\u2D30-\u2D65\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31B7\u31F0-\u31FF\u3400\u4DB5\u4E00-\u9FC3\uA000-\uA48C\uA500-\uA60C\uA610-\uA61F\uA62A-\uA62B\uA640-\uA65F\uA662-\uA66E\uA67F-\uA697\uA717-\uA71F\uA722-\uA788\uA78B-\uA78C\uA7FB-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA90A-\uA925\uA930-\uA946\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAC00\uD7A3\uF900-\uFA2D\uFA30-\uFA6A\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40-\uFB41\uFB43-\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC\.\/\?\:]*[^\s,;!<>*]*[^\.,;!\s<>*])|([0-9\u0041-\u005A\u0061-\u007A\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376-\u0377\u037A-\u037D\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u0523\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0621-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06E5-\u06E6\u06EE-\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4-\u07F5\u07FA\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0972\u097B-\u097F\u0985-\u098C\u098F-\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC-\u09DD\u09DF-\u09E1\u09F0-\u09F1\u0A05-\u0A0A\u0A0F-\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32-\u0A33\u0A35-\u0A36\u0A38-\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2-\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0-\u0AE1\u0B05-\u0B0C\u0B0F-\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32-\u0B33\u0B35-\u0B39\u0B3D\u0B5C-\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99-\u0B9A\u0B9C\u0B9E-\u0B9F\u0BA3-\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C33\u0C35-\u0C39\u0C3D\u0C58-\u0C59\u0C60-\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0-\u0CE1\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D28\u0D2A-\u0D39\u0D3D\u0D60-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32-\u0E33\u0E40-\u0E46\u0E81-\u0E82\u0E84\u0E87-\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA-\u0EAB\u0EAD-\u0EB0\u0EB2-\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDD\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8B\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065-\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10D0-\u10FA\u10FC\u1100-\u1159\u115F-\u11A2\u11A8-\u11F9\u1200-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u1676\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F0\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u1900-\u191C\u1950-\u196D\u1970-\u1974\u1980-\u19A9\u19C1-\u19C7\u1A00-\u1A16\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE-\u1BAF\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u2094\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2C6F\u2C71-\u2C7D\u2C80-\u2CE4\u2D00-\u2D25\u2D30-\u2D65\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31B7\u31F0-\u31FF\u3400\u4DB5\u4E00-\u9FC3\uA000-\uA48C\uA500-\uA60C\uA610-\uA61F\uA62A-\uA62B\uA640-\uA65F\uA662-\uA66E\uA67F-\uA697\uA717-\uA71F\uA722-\uA788\uA78B-\uA78C\uA7FB-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA90A-\uA925\uA930-\uA946\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAC00\uD7A3\uF900-\uFA2D\uFA30-\uFA6A\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40-\uFB41\uFB43-\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC\.\-_:][^$&\(\)%\#\?\s,;!*\/]+\.(AERO|ARPA|ASIA|A[CDEFGILMNOQRSTUWXZ]|BIZ|B[ABDEFGHIJMNORSTVWYZ]|CAT|COM|COOP|C[ACDFGHIKLMNORUVWXYZ]|D[EJKMOZ]|EDU|E[CEGRSTU]|F[IJKMOR]|GOV|G[ABDEFGHILMNPQRSTUWY]|H[KMNRTU]|INFO|INT|I[DELMNOQRST]|JOBS|J[EMOP]|K[EGHIMNPRWYZ]|L[ABCIKRSTUVY]|MIL|MOBI|MUSEUM|M[ACDEGHKLMNOPQRSTUVWXYZ]|NAME|NET|N[ACEFGILOPRUZ]|ORG|OM|POST|PRO|P[AEFGHKLMNRSTWY]|QA|R[EOSUW]|S[ABCDEGHIJKLMNORTUVXYZ]|TEL|TRAVEL|T[CDFGHJKLMNOPRTVWZ]|U[AGKSYZ]|V[ACEGINU]|W[FS]|XN--0ZWM56D|XN--11B5BS3A9AJ6G|XN--3E0B707E|XN--45BRJ9C|XN--80AKHBYKNJ4F|XN--80AO21A|XN--90A3AC|XN--9T4B11YI5A|XN--CLCHC0EA0B2G2A9GCD|XN--DEBA0AD|XN--FIQS8S|XN--FIQZ9S|XN--FPCRJ9C3D|XN--FZC2C9E2C|XN--G6W251D|XN--GECRJ9C|XN--H2BRJ9C|XN--HGBK6AJ7F53BBA|XN--HLCJ6AYA9ESC7A|XN--J1AMH|XN--J6W193G|XN--JXALPDLP|XN--KGBECHTV|XN--KPRW13D|XN--KPRY57D|XN--L1ACC|XN--LGBBAT1AD8J|XN--MGB9AWBF|XN--MGBAAM7A8H|XN--MGBAYH7GPA|XN--MGBBH1A71E|XN--MGBC0A9AZCG|XN--MGBERP4A5D4AR|XN--MGBX4CD0AB|XN--O3CW4H|XN--OGBPF8FL|XN--P1AI|XN--PGBS0DH|XN--S9BRJ9C|XN--WGBH1C|XN--WGBL6A|XN--XKC2AL3HYE2A|XN--XKC2DL3A5EE0H|XN--YFRO4I67O|XN--YGBI2AMMX|XN--ZCKZAH|XXX|Y[ET]|Z[AMW]|\u0627\u0644\u062c\u0632\u0627\u0626\u0631|\u09ac\u09be\u0982\u09b2\u09be|\u4e2d\u56fd|\u4e2d\u570b|\u516C\u53F8|\u7F51\u7EDC|\u0645\u0635\u0631|\u10d2\u10d4|\u9999\u6e2f|\u092d\u093e\u0930\u0924|\u0628\u06be\u0627\u0631\u062a|\u0c2d\u0c3e\u0c30\u0c24\u0c4d|\u0aad\u0abe\u0ab0\u0aa4|\u0a2d\u0a3e\u0a30\u0a24|\u09ad\u09be\u09b0\u09a4|\u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe|\u0627\u06cc\u0631\u0627\u0646|\u0627\u064a\u0631\u0627\u0646|\u0627\u0644\u0627\u0631\u062f\u0646|\u049b\u0430\u0437|\ud55c\uad6d|\u0645\u0644\u064a\u0633\u064a\u0627|\u043c\u043e\u043d|\u0627\u0644\u0645\u063a\u0631\u0628|\u0639\u0645\u0627\u0646|\u067e\u0627\u06a9\u0633\u062a\u0627\u0646|\u067e\u0627\u0643\u0633\u062a\u0627\u0646|\u0641\u0644\u0633\u0637\u064a\u0646|\u0642\u0637\u0631|\u0440\u0444|\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629|\u0627\u0644\u0633\u0639\u0648\u062f\u06cc\u0629|\u0627\u0644\u0633\u0639\u0648\u062f\u06cc\u06c3|\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0647|\u0441\u0440\u0431|\u65b0\u52a0\u5761|\u0b9a\u0bbf\u0b99\u0bcd\u0b95\u0baa\u0bcd\u0baa\u0bc2\u0bb0\u0bcd|\u0dbd\u0d82\u0d9a\u0dcf|\u0b87\u0bb2\u0b99\u0bcd\u0b95\u0bc8|\u0633\u0648\u062f\u0627\u0646|\u0633\u0648\u0631\u064a\u0629|\u0633\u0648\u0631\u064a\u0627|\u53f0\u7063|\u53f0\u6e7e|\u81fa\u7063|\u0e44\u0e17\u0e22|\u062a\u0648\u0646\u0633|\u0443\u043a\u0440|\u0627\u0645\u0627\u0631\u0627\u062a|\u0627\u0644\u064a\u0645\u0646)(:\d+)?[^$&\(\)%\#?\.,;!\s*<>]*))/ig);
+P3_r1 = function(t) {
+    var a = t;
+    var r = t;
+    
+    var result;
+    while ((result = srg.exec(a)) !== null) {
+        var m = result[0];
+        var a1 = result[1];
+        var a2 = result[2];
+        var a3 = result[3];
+        var a4 = result[4];
+        var a5 = result[5];
+        var a6 = result[6];
+        var a7 = result[7];
+        var a8 = result[8];
+        var a9 = result[9];
+        var a10 = result[10];
+        var a2l = a2;
+        if (!a1) a1 = '';
+        if (!a2) a2 = ''; if (!a2l) a2l = 'http://';
+        if (!a3) a3 = '';
+        if (!a4) a4 = '';
+        if (!a5) a5 = '';
+        if (!a6) a6 = a4;
+        if (!a7) a7 = '';
+        if (!a8) a8 = '';
+        if (!a9) a9 = '';
+        if (!a10) a10 = a7;
+
+	a6 = a6.replace(/:\d+[\/]?$/, '');
+    
+	// check a6 ends as matched tld
+	if (a6.match(new RegExp('\.'+a10+'[\/]?$', '')) == null) {
+	    continue;
+	}
+	if (a6.replace(/[^:]/g, '').length >= 1 && a6.replace(/[^@]/g, '').length == 0) {
+    	    continue;
+	} else if (a6.replace(/[^:]/g, '').length > 2) {
+	    continue;
+	}
+	// parse mails
+	var map = a4.indexOf('@');
+        var mdp = a6.indexOf(a10);
+	if (a3 == '' && map >= 1 && map < mdp && a6.replace(/[^:]/g, '').length == 0) {
+	    if (a4.replace(/[^@]/g, '').length > 1) { continue; }
+    	    r = r.replace(m, a1+'<a href="mailto:'+a4+'" target="_blank"><span>'+a4+'</span></a>');
+    	    continue;
+	} else
+    	    if (a4 != '') {
+		var mr;
+    		if (a6.match(/([@:])[\s\S]*?\1/) != null) { continue; }
+        	if (a6.indexOf('..') > -1) { continue; }
+        	if (m.match(/(\.png|\.jpg|\.jpeg|\.jpe|\.gif)(?=\?|$)/i)) {
+            	    r = r.replace(m, a1+' \
+<div> \
+    <div class="preview"> \
+	    <a href="'+a2l+a4+'" target="_blank" style="font-size:35px;top:10px;right:10px;position:absolute;opacity:0.8;" download><i class="entypo-down-circled"></i></a> \
+	<a href="'+a2l+a4+'" data-lightbox="ci"><img onload="this.style.background = \'transparent\';" src="'+a2+a4+'" class="preview" /></a> \
+    </div> \
+</div>');
+        	} else if ((mr = m.match(/(\.mp4|\.ogg|\.webm)(?=\?|$)/i))) {
+		    var vs = '';
+		    if (mr && mr.length > 0 && mr[0].toLowerCase() == '.mp4') vs = '<source src="'+a2+a4+'" type="video/mp4">';
+		    if (mr && mr.length > 0 && mr[0].toLowerCase() == '.ogg') vs = '<source src="'+a2+a4+'" type="video/ogg">';
+		    if (mr && mr.length > 0 && mr[0].toLowerCase() == '.webm') vs = '<source src="'+a2+a4+'" type="video/webm">';
+            	    r = r.replace(m, a1+'<div><div class="preview"><video class="preview" controls>'+vs+'Video does not support.</video></div> \
+			<br><a href="'+a2l+a4+'" style="margin-left:10px;" target="_blank"><i class="entypo-link"></i> '+ACC.L[514][0]+'</a> <i class="entypo-dot"></i> <a href="'+a2l+a4+'" download target="_blank">'+ACC.L[514][1]+'</a></div>');
+        	} else {
+		    if (r.indexOf('&lt;apix-image&gt;') > -1) {
+			var isb = r.indexOf('&lt;apix-image&gt;');
+			var il = r.substring(isb+18);
+			var ise = il.indexOf('&lt;/apix-image&gt;');
+			il = il.substring(0, ise);
+            		var is = '<div><div class="preview"><img onload="this.style.background = \'transparent\'; " src="'+il+'" class="preview"></div></div>';
+			r = r.replace(/\&lt\;apix-image\&gt\;.+\&lt\;\/apix\-image\&gt\;/, is);
+		    } else if (r.indexOf('&lt;apix-location&gt;') > -1) {
+			var isb = r.indexOf('&lt;apix-location&gt;');
+			var il = r.substring(isb+21);
+			var ise = il.indexOf('&lt;/apix-location&gt;');
+			il = il.substring(0, ise);
+            		var is = '<a href="'+il+'" style="margin-left:10px;" target="_blank"><i class="entypo-map"></i> '+ACC.L[515]+'</a>';
+			r = r.replace(/\&lt\;apix-location\&gt\;.+\&lt\;\/apix\-location\&gt\;/, is);
+		    } else if (r.indexOf('&lt;apix-sticker&gt;') > -1) {
+			var isb = r.indexOf('&lt;apix-sticker&gt;');
+			var il = r.substring(isb+20);
+			var ise = il.indexOf('&lt;/apix-sticker&gt;');
+			il = il.substring(0, ise);
+            		var is = '<img src="'+il+'" class="sticker">';
+			r = r.replace(/\&lt\;apix-sticker\&gt\;.+\&lt\;\/apix\-sticker\&gt\;/, is);
+		    } else {
+            		r = r.replace(m, a1+'<a href="'+a2l+a4+'" target="_blank"><span>'+a2+a4+'</span></a>');
+		    }
+        	}
+    	    }
+    }
+
+    //document.getElementById('c').innerHTML = r;
+    if (/🙷.*🙸/.test(r)) {
+	r = r.replace(/🙷/gm, '<div class="msg-quote">').replace(/🙸/gm, '</div>')
+    }
+
+    return r;
+};
+
+
+// Smiley icons
+function P3_se(m) {
+    var t = m;
+    var h, a;
+    // :O :-O :o :-o bawl
+    if (t.indexOf(':O') > -1 || t.indexOf(':-O') > -1 || t.indexOf(':o') > -1 || t.indexOf(':-o') > -1) {
+	a = [':O',':-O',':o',':-o'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(:O|:-O|:o|:-o)(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-bawl.svg" border="0">$3');
+	t = t.replace(/(:O|:-O|:o|:-o)(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-bawl.svg" border="0">$2');
+    }
+    // 3:) 3:-) >:) evil
+    if (t.indexOf('3:)') > -1 || t.indexOf('3:-)') > -1 || t.indexOf('&gt;:)') > -1) {
+	a = ['3:)','3:-)','&gt;:)'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(3:\)|3:-\)|&gt;:\))(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-evil.svg" border="0">$3');
+	t = t.replace(/(3:\)|3:-\)|&gt;:\))(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-evil.svg" border="0">$2');
+    }
+    // :) :-) =) happy
+    if (t.indexOf(':)') > -1 || t.indexOf(':-)') > -1 || t.indexOf('=)') > -1) {
+	a = [':)',':-)','=)'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(:\)|:-\)|=\))(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-happy.svg" border="0">$3');
+	t = t.replace(/(:\)|:-\)|=\))(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-happy.svg" border="0">$2');
+    }
+    // <3 heart
+    if (t.indexOf('&lt;3') > -1) {
+	a = ['&lt;3'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:0px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(&lt;3)(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-heart.svg" border="0">$3');
+	t = t.replace(/(&lt;3)(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-heart.svg" border="0">$2');
+    }
+    // :| :-| innocent
+    if (t.indexOf(':|') > -1 || t.indexOf(':-|') > -1) {
+	a = [':|',':-|'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(:\||:-\|)(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-innocent.svg" border="0">$3');
+	t = t.replace(/(:\||:-\|)(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-innocent.svg" border="0">$2');
+    }
+    // :D :-D =D :)) :-)) laughing
+    if (t.indexOf(':D') > -1 || t.indexOf(':-D') > -1 || t.indexOf('=D') > -1 || t.indexOf(':))') > -1 || t.indexOf(':-))') > -1 ) {
+	a = [':D',':-D','=D',':))',':-))'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(:D|:-D|=D|:\)\)|:-\)\))(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-laughing.svg" border="0">$3');
+	t = t.replace(/(:D|:-D|=D|:\)\)|:-\)\))(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-laughing.svg" border="0">$2');
+    }
+    // @>-->-- rose
+    if (t.indexOf('@&gt;--&gt;--') > -1) {
+	a = ['@&gt;--&gt;--'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:0px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(@&gt;--&gt;--)(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-rose.svg" border="0">$3');
+	t = t.replace(/(@&gt;--&gt;--)(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-rose.svg" border="0">$2');
+    }
+    // :( :-( =( :(( :-(( sad
+    if (t.indexOf(':(') > -1 || t.indexOf(':-(') > -1 || t.indexOf('=(') > -1 || t.indexOf(':((') > -1 || t.indexOf(':-((') > -1) {
+	a = [':(',':-(','=(',':((',':-(('];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(:\(\(|:-\(\(|=\(|:\(|:-\()(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-sad.svg" border="0">$3');
+	t = t.replace(/(:\(\(|:-\(\(|=\(|:\(|:-\()(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-sad.svg" border="0">$2');
+    }
+    // ;) ;-) wink
+    if (t.indexOf(';)') > -1 || t.indexOf(';-)') > -1) {
+	a = [';)',';-)'];
+	if (typeof m.trim !== 'undefined' && typeof a.indexOf !== 'undefined') {
+	    h = m.trim();
+	    if (a.indexOf(h) > -1) h = 'height:40px;margin-left:-3px;';
+	    else h = '" class="smiley-s';
+	}
+	t = t.replace(/(\s)(;\)|;-\))(\s|<|$)/g, '$1<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-wink.svg" border="0">$3');
+	t = t.replace(/(;\)|;-\))(\s|<|$)/g, '<img style="vertical-align: middle;'+h+'" src="/cc/img/FW/jcc-smile-wink.svg" border="0">$2');
+    }
+    return t;
+}
+
+
+// Get upload information
+// mb, ro
+function P3_gui(x1, x2) {
+    var mb = x1.split(':');
+    var _ud = decodeURIComponent(mb[4]).split('{{-}}');
+    var tf = 0;
+    var ts = 0;
+    var is = [];
+    var ai = '<table class="af" border="0"><tbody>';
+    for (var _i = 0; _i < _ud.length; _i++) {
+	var _fi = _ud[_i].split('{{#}}');
+	if (!_fi[0]) continue;
+	var li = '';
+	if (mb[0] == 'IS') li = '<span class="dl">'+_fi[0]+'</span>';
+	if (mb[0] == 'UC') {
+	    li = '<a href="/attachment/'+mb[3]+'/'+_fi[0]+'" class="dl"><span class="dl">'+_fi[0]+'</span></a>';
+	    if (_fi[0].match(/(\.png|\.jpg|\.jpeg|\.jpe|\.gif)(?=\?|$)/i)) {
+		is.push('/attachment/'+mb[3]+'/'+_fi[0]);
+	    }
+	}
+	ai += '<tr> \
+		<td style="padding-left:0;width:30px;"><img class="aic" src="'+gai(_fi[0])+'"></td> \
+		<td class="fn">'+li+'</td> \
+		<td class="fs" style="width:1%;">'+its(_fi[1],1)+'</td></tr>';
+	tf++;
+	ts += parseInt(_fi[1], 10);
+    }
+    var ws = '';
+    for (var ii = 0; ii < x2.mmbrs.length; ii++) {
+	if (x2.mmbrs[ii].u == mb[2] && x2.mmbrs[ii].m == parseInt(mb[1], 10)) {
+	    ws = '<span style="margin-right:7px;font-weight:400;">'+ACC.L[366]+'</span> '+ApixCloud.CC.API.GetUserName(null, null, x2.mmbrs[ii])+'<br>';
+	    break;
+	}
+    }
+    ai += '<tr><td class="jcc-sm" colspan="3" style="text-align:left;padding:0;padding-top:10px;font-weight:300;"> \
+	'+ws+'<span style="margin-right:7px;font-weight:400;">'+ACC.L[357]+'</span> '+tf+', '+ACC.L[356]+' '+its(ts)+'<br> \
+	</td></tr></tbody></table>';
+    if (x1.indexOf('IS') == 0) {
+	ai += '<div id="ccupbw-'+mb[3]+'" class="progress progress-bar-default" style="height:22px"> \
+	    <div class="progress-bar" id="ccupb-'+mb[3]+'" style="width:0%;border-radius:10px;"><span style="color:#373e4a" id="ccupbl-'+mb[3]+'"></span></div></div>';
+	ai += '<div id="ccufc-'+mb[3]+'" onc1lick="JCC.P3.ion_(this,\''+mb[3]+'\')" style="cursor:pointer;text-align:right;font-size:13px;font-weight:400;display:none;">'+ACC.L[124]+'</div>';
+    }
+    ai = ACC.L[358]+'<br>'+ai;
+
+    var ip = '';
+    if (is && is.length > 0) {
+	for (var i = 0; i < is.length; i++) {
+	    ip += '<div class="preview"><a href="'+is[i]+'" data-lightbox="ci"><img onload="this.style.background = \'transparent\';" src="'+is[i]+'" class="preview-min"></a></div>';
+	}
+    }
+    if (ip) ai += '<div>'+ip+'</div>';
+
+    return ai;
+};
+
+function gt(t, f) {
+    if (t == null) return '';
+    var cdt = new Date((new Date()).toUTCString());
+    var ydt = new Date((new Date()).toUTCString());
+    ydt.setUTCDate(ydt.getUTCDate() - 1);
+    var dt = new Date(t * 1000);
+    var ds, ts;
+    var tm = dt.getMinutes();
+    if (tm <= 9) { tm = '0' + tm; }
+
+    var pad = function(n){return(n<10)?('0'+n):n;};
+
+    switch (f) {
+	// Full present as: 7 August 2013, 18:17
+	case 1: {		
+		    ds = dt.getDate() + ' ' + ACC.L[37][dt.getMonth()] + ' ' + dt.getFullYear();
+		    ts = pad(dt.getHours()) + ':' + tm;
+		    return ds + ', ' + ts;
+	} break;
+	// Time only - HH:MM
+	case 2: {		
+		    ts = dt.getHours() + ':' + tm;
+		    return ts;
+	} break;
+	// Time only - HH:MM:SS
+	case 3: {		
+		    var s = dt.getSeconds();
+		    if (s <= 9) { s = '0' + s; }
+		    ts = dt.getHours() + ':' + tm + ':' + s;
+		    return ts;
+	} break;
+	// Full Date and Time - YYYY-MM-DD HH:mm:ss
+	case 4: {
+		    var s = dt.getSeconds();
+		    var h =  dt.getHours();
+		    if (s <= 9) { s = '0' + s; }
+		    if (h <= 9) { h = '0' + h; }
+		    ts = dt.getFullYear() +'-'+ pad(dt.getMonth()+1) +'-'+ pad(dt.getDate()) +' '+ h +':'+ tm +':'+ s;
+		    return ts;
+	} break;
+	// Time only - HH:MM (with pad zero)
+	case 5: {		
+		    ts = pad(dt.getHours()) + ':' + tm;
+		    return ts;
+	} break;
+	// Present as defaul format for current CC lang.
+	case 6: {
+	    var dtf = decodeURIComponent(ApixCloud.CC.API.GetConfig().d_dtf);
+	    if (cdt.getUTCFullYear() == dt.getUTCFullYear()) {
+		// strip Year
+		dtf = dtf.replace(' Y', '').replace('Y ', '');
+	    }
+	    dtf = dtf.replace('Y', '\''+dt.getFullYear().toString().slice(-2));
+	    dtf = dtf.replace('M', ACC.L[38][dt.getMonth()]);
+	    dtf = dtf.replace('D', dt.getDate());
+	    dtf = dtf.replace('h', dt.getHours());
+	    dtf = dtf.replace('m', tm);
+	    return dtf;
+	} break;
+	// format: today at X, yesterday at X, Apr 14 at 16:32, Nov 25 '15 at 7:01
+	case 7: {
+	    if (cdt.getUTCFullYear() == dt.getUTCFullYear() && cdt.getUTCMonth() == dt.getUTCMonth() && cdt.getUTCDate() == dt.getUTCDate()) {
+		// Today at h:m
+		return ACC.L[260] + ' ' + ACC.L[262] + ' ' + dt.getHours() + ':' + tm;
+	    } else if (ydt.getUTCFullYear() == dt.getUTCFullYear() && ydt.getUTCMonth() == dt.getUTCMonth() && ydt.getUTCDate() == dt.getUTCDate()) {
+		// Yesterday at h:m
+		return ACC.L[261] + ' ' + ACC.L[262] + ' ' + dt.getHours() + ':' + tm;
+	    } else {
+		// Date
+		return gt(t, 6);
+	    }
+	} break;
+	// format: [ today || yesterday || Apr 14, 16:32 ]
+	case 8: {
+	    if (cdt.getUTCFullYear() == dt.getUTCFullYear() && cdt.getUTCMonth() == dt.getUTCMonth() && cdt.getUTCDate() == dt.getUTCDate()) {
+		// Today at h:m
+		return [ACC.L[260], dt.getHours() + ':' + tm];
+	    } else if (ydt.getUTCFullYear() == dt.getUTCFullYear() && ydt.getUTCMonth() == dt.getUTCMonth() && ydt.getUTCDate() == dt.getUTCDate()) {
+		// Yesterday at h:m
+		return [ACC.L[261], dt.getHours() + ':' + tm];
+	    } else {
+		// Date
+		return [gd(t, 3), dt.getHours() + ':' + tm];
+	    }
+	} break;
+	// format: [ today || yesterday || Apr 14, 16:32 ] but for local time
+	case 9: {
+	    cdt = new Date((new Date()).toString());
+	    ydt = new Date((new Date()).toString());
+	    ydt.setDate(ydt.getDate() - 1);
+	    dt = new Date(t * 1000);
+	    tm = dt.getMinutes();
+	    if (tm <= 9) { tm = '0' + tm; }
+
+	    if (cdt.getFullYear() == dt.getFullYear() && cdt.getMonth() == dt.getMonth() && cdt.getDate() == dt.getDate()) {
+		// Today at h:m
+		return [ACC.L[260], dt.getHours() + ':' + tm];
+	    } else if (ydt.getFullYear() == dt.getFullYear() && ydt.getMonth() == dt.getMonth() && ydt.getDate() == dt.getDate()) {
+		// Yesterday at h:m
+		return [ACC.L[261], dt.getHours() + ':' + tm];
+	    } else {
+		// Date
+		return [gd(t, 3), dt.getHours() + ':' + tm];
+	    }
+	} break;
+    }
+
+    return '';
+};
+function gd(t, f) {
+    var dt = new Date(t * 1000);
+    var td = new Date();
+    
+    var pad = function(n){return(n<10)?('0'+n):n;};
+    var y = '';
+
+    switch (f) {
+	// format: 2014-03-11
+	case 0: {
+	    return dt.getFullYear() +'-'+ pad(dt.getMonth()+1) +'-'+ pad(dt.getDate());
+	} break;
+	// format: Wednesday, 2 April 2014
+	case 1: {
+	    return ACC.L[90][dt.getDay()]+', '+ dt.getDate() + ' ' + ACC.L[37][dt.getMonth()] + ' ' + dt.getFullYear();
+	} break;
+	// format: April 2, 2014
+	case 2: {
+	    return ACC.L[79][dt.getMonth()] + ' ' + dt.getDate() + ', ' +  + dt.getFullYear();
+	} break;
+	// format: Wed, 2 april [2014] (year if different with current)
+	case 3: {
+	    if (td.getFullYear() != dt.getFullYear()) y = ' ' + dt.getFullYear();
+	    return ACC.L[91][dt.getDay()]+', '+ dt.getDate() + ' ' + ACC.L[38][dt.getMonth()] + y;
+	} break;
+    }
+
+    return '';
+};
+
+
+// Integer to size
+function its(s, v) {
+    var r = '';
+    if (!s || s < 0) return '';
+    if (s < 1024) { if (!v) r = s + ' ' + ACC.L[353]; else r = s + ' ' + ACC.L[362]; } // byte(s) or B
+    else if (s < 1024*1024) { r = (s / (1024)).toFixed(1) + ' ' + ACC.L[354]; } // KB
+    else if (s < 1024*1024*1024) { r = (s / (1024*1024)).toFixed(1) + ' ' + ACC.L[355]; } // MB
+    return r.replace('.0 ', ' ');
+};
+// Get extension icon
+function gai(e) {
+    var ae = e.substring(e.lastIndexOf('.')+1, e.length);
+    if (e.lastIndexOf('.') == -1) ae = '';
+    var ei = '';
+    switch(ae.toLowerCase()) {
+	case 'ai': { ei = 'ai.'; } break;
+	case 'avi': { ei = 'avi.'; } break;
+	case 'css': { ei = 'css.'; } break;
+	case 'doc': { ei = 'doc.'; } break;
+	case 'docx': { ei = 'docx.'; } break;
+	case 'eps': { ei = 'eps.'; } break;
+	case 'htm':
+	case 'html': { ei = 'html.'; } break;
+	case 'jpeg': { ei = 'jpeg.'; } break;
+	case 'jpg': { ei = 'jpg.'; } break;
+	case 'mp3': { ei = 'mp3.'; } break;
+	case 'pdf': { ei = 'pdf.'; } break;
+	case 'png': { ei = 'png.'; } break;
+	case 'ppt': { ei = 'ppt.'; } break;
+	case 'pptx': { ei = 'pptx.'; } break;
+	case 'psd': { ei = 'psd.'; } break;
+	case 'rar': { ei = 'rar.'; } break;
+	case 'wav': { ei = 'wav.'; } break;
+	case 'xls': { ei = 'xls.'; } break;
+	case 'xlsx': { ei = 'xlsx.'; } break;
+	case 'zip': { ei = 'zip.'; } break;
+	case '':
+	default: { ei = 'attachment.'; } break;
+    }
+    return '/img/ei/'+ei+'svg';
+};
+
+
+// Update dialog list
+function UpdateDialogList() {
+    if (!rl) return;
+    var o;
+
+    // clear list
+    document.getElementById('my_dialogs').innerHTML = '';
+    // Loop thru rooms and display not closed
+    var k = Object.keys(rl);
+    var current_chat_agent;
+    var ca;
+    if (k && k.length > 0) for (var i = 0; i < k.length; i++) {
+	console.log('UpdateDialogList ['+k[i]+'] t='+typeof rl[k[i]]);
+	console.log(rl);
+	ca = ddt1(k[i], rl[k[i]], 'btn');
+	if (ca != -1 && k[i] == sel_rid) current_chat_agent = ca;
+    }
+    // Update current dialog top panel
+    if (sel_rid > 0) {
+	o = document.getElementById('dialog-head');
+	o.innerHTML = DialogPanelHtml(current_chat_agent.ap, current_chat_agent.tt, current_chat_agent.ts);
+    }
+};
+
+// Send message
+function SendMessage() {
+    var rid = sel_rid;
+
+    if (typeof rl[rid] === 'undefined') { rid = 0; }
+
+    ApixCloud.CC.API.SendMessage(rid, sel_sid, sel_sut);
+}
+// Close Chat Room
+function CloseChatRoom() {
+    if (sel_rid > 0) ApixCloud.CC.API.CloseChatRoom(sel_rid);
+}
+
+// Requests, search, history
+function P3_r2(d) {
+    var o;
+    var t = '';
+    var f = '';
+    var i;
+
+    // If it history or not closed room, insert it into special element with limited back notices (read, delivery), only for e=dialog-s2
+    if (d.e && d.e.length > 0) {
+	if (d.e == 'tabs') {
+	    if (typeof d.ovl !== 'undefined' && d.ovl.length > 0) {
+		for (var vi = 0; vi < d.ovl.length; vi++) {
+		    if (typeof vl[d.ovl[vi].vid] === 'undefined') {
+			vl[d.ovl[vi].vid] = [d.ovl[vi]];
+		    }
+		}
+	    }
+	    for (i = 0; i < d.h.length; i++) {
+		var n = 0;
+		var tbs = 'btn';
+
+		if (d.h[i].mmbrs && d.h[i].mmbrs.length > 0) {
+		    for (var ii = 0; ii < d.h[i].mmbrs.length; ii++) {
+			if (d.h[i].mmbrs[ii].u == 1 && !ol[d.h[i].mmbrs[ii].m]) {
+			    ol[d.h[i].mmbrs[ii].m] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, gid:0, helper:0, id:d.h[i].mmbrs[ii].m, ln:d.h[i].mmbrs[ii].a.ln, pn:d.h[i].mmbrs[ii].p};
+			}
+			if (d.h[i].mmbrs[ii].u == 2 && !vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid]) {
+			    vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid] = [];
+			    vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid][0] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, idd:d.h[i].domid, lid:d.h[i].lid, ln:d.h[i].mmbrs[ii].a.ln, vid:d.h[i].mmbrs[ii].m+'-'+d.h[i].domid, vid2:d.h[i].mmbrs[ii].m};
+			}
+		    }
+		}
+
+		// New
+		if (d.h[i].n == 1) {
+		    n = 1;
+		    // send back delivery notify
+		    ApixCloud.CC.API.SendDeliveryNotification(d.h[i].id, 0);
+		    
+		    //??? Send SMS or other message if admin away???
+		}
+		// Transfer
+		if (d.h[i].n == 2) {
+		    n = 2;
+		}
+		// Conference
+		if (d.h[i].n == 3) {
+		    n = 3;
+		}
+		
+		if (!rl[d.h[i].id]) rl[d.h[i].id] = {};
+
+		// Update sender/recipient for room
+		rl[d.h[i].id].rid = d.h[i].rid;
+		rl[d.h[i].id].rut = d.h[i].rut;
+		rl[d.h[i].id].sid = d.h[i].sid;
+		rl[d.h[i].id].sut = d.h[i].sut;
+		if (d.h[i].qid) rl[d.h[i].id].qid = d.h[i].qid;
+		if (d.h[i].domid >= 0) rl[d.h[i].id].domid = d.h[i].domid;
+		if (d.h[i].s >= 0) rl[d.h[i].id].s = d.h[i].s;
+		if (d.h[i].st >= 0) rl[d.h[i].id].st = d.h[i].st;
+		if (d.h[i].et >= 0) rl[d.h[i].id].et = d.h[i].et;
+
+		if (d.h[i].mmbrs) rl[d.h[i].id].mmbrs = d.h[i].mmbrs;
+		if (d.h[i].vhi) rl[d.h[i].id].vhi = d.h[i].vhi;
+
+		rl[d.h[i].id].i_lat = Date.now();
+
+		// Typing hints and stop timer
+		rl[d.h[i].id].th = {};
+		rl[d.h[i].id].stht = {};
+		// Typing icon hide timer
+		rl[d.h[i].id].tht = null;
+//		console.log('-------i='+i);
+//		console.log(d.h[i]);
+
+		// Transfer
+		if (d.h[i].n == 2) {
+		    // If transfer and sender was opend
+		    if (d.h[i].sut == 1 && sel_aid == d.h[i].sid && !sel_rid) {
+			console.log('31242 display incoming transfered conversation');
+			
+			// ???
+			//ddt1(d.h[i].id, d.h[i], tbs, n, d.i);
+			UpdateDialogList();
+			//JCC.P3.oc(d.h[i].sid, 0, d.h[i].id);
+			return;
+		    }
+		}
+
+		// If I sender and recipient open - open this dialog
+		if (d.h[i].sut == 1 && d.h[i].sid == ApixCloud.CC.API.GetConfig().mid && d.h[i].rut == 1 && d.h[i].rid == sel_aid) {
+		    console.log('---111--');
+		    //JCC.P3.oc(d.h[i].rid, 0, d.h[i].id);
+		    tbs = 'btn-o';
+		}
+
+		// If I recipient and sender open - open too
+		if (d.h[i].rut == 1 && d.h[i].rid == ApixCloud.CC.API.GetConfig().mid && d.h[i].sut == 1 && d.h[i].sid == sel_aid) {
+		    console.log('---222--');
+		    //JCC.P3.oc(d.h[i].sid, 0, d.h[i].id);
+		    tbs = 'btn-o';
+		}
+
+		//ddt1(d.h[i].id, d.h[i], tbs, n, d.i);
+		UpdateDialogList();
+
+		// Auto open new chat
+//		if (ApixCloud.CC.API.GetConfig().cc_aocfq == 1 && d.h[i].qid > 0) {
+//		    var _o = JCC.$('jcc-d'+d.h[i].id+'-btn2');
+//		    if (_o) _o.click();
+//		}
+	    }
+	    return;
+	}
+	if (d.e == 'ar') {
+	    // exclude empty loops
+	    if (d.r.id > 0) {
+		var ut, id;
+		if (d.r.sut == 1 && d.r.sid == ApixCloud.CC.API.GetConfig().mid) {
+		    ut = d.r.rut;
+		    if (ut == 1) id = d.r.rid;
+		    if (ut == 2) id = d.r.rid + '-' + d.r.domid;
+		    if (ut == 200) id = d.r.rid;
+		} else {
+		    ut = d.r.sut;
+		    if (ut == 1) id = d.r.sid;
+		    if (ut == 2) id = d.r.sid + '-' + d.r.domid;
+		    if (ut == 200) id = d.r.sid;
+		}
+		if (!rl[d.r.id]) rl[d.r.id] = {};
+
+		if (d.r.mmbrs && d.r.mmbrs.length > 0) {
+		    for (var i = 0; i < d.r.mmbrs.length; i++) {
+			if (d.r.mmbrs[i].u == 1 && !ol[d.r.mmbrs[i].m]) {
+			    ol[d.r.mmbrs[i].m] = {ap:d.r.mmbrs[i].a.afn, fn:d.r.mmbrs[i].a.fn, gid:0, helper:0, id:d.r.mmbrs[i].m, ln:d.r.mmbrs[i].a.ln, pn:d.r.mmbrs[i].p};
+			}
+		    }
+		}
+
+		var th = rl[d.r.id].th;
+		var stht = rl[d.r.id].stht;
+		var tht = rl[d.r.id].tht;
+		rl[d.r.id] = d.r;
+		rl[d.r.id].th = th;
+		rl[d.r.id].stht = stht;
+		rl[d.r.id].tht = tht;
+		if (!rl[d.r.id].m && d.r.msgs[0].ut == 10 && d.r.msgs[0].mid == 150) {
+		    // Convert member obj to array
+		    rl[d.r.id].m = [];
+		    rl[d.r.id].m.push({'mid':d.r.msgs[0].m.m, 'ut': d.r.msgs[0].m.u});
+		}
+		if (!rl[d.r.id].m) {
+		    if (typeof d.r.msgs[0].m !== 'undefined') {
+			rl[d.r.id].m = d.r.msgs[0].m;
+		    } else {
+			rl[d.r.id].m = [];
+		    }
+		}
+
+		rl[d.r.id].rid = d.r.rid;
+		rl[d.r.id].rut = d.r.rut;
+		rl[d.r.id].sid = d.r.sid;
+		rl[d.r.id].sut = d.r.sut;
+
+		if (d.r.vhi) rl[d.r.id].vhi = d.r.vhi;
+
+		rl[d.r.id].domid = d.r.domid;
+		rl[d.r.id].i_lat = Date.now();
+		
+	//	console.log(d.r);
+	//	console.log(JCC.P3.rl[d.r.id]);
+
+		console.log('-JCC.P3.dc('+d.r.id+', '+ut+', '+id+');');
+		//JCC.P3.dc(d.r.id, ut, id);
+	    }
+
+	    // Display chat
+	    if (sel_rid == d.r.id) {
+		P3_d3(sel_rid);
+	    }
+
+	    return;
+	}
+/*	o = document.getElementById(d.e);
+	if (o && d.h && d.h.length > 0) {
+	    // just head of msg
+	    if (d.e == 'pdh') {
+		if (sel_aid) {
+		    ol[sel_aid].pdh = d.h[0]; console.log('PDH a added ' + d.h[0].id);
+		}
+		if (sel_vid) {
+		    vl[sel_vid].pdh = d.h[0]; console.log('PDH v added ' + d.h[0].id);
+		}
+	    }
+	    f = '';
+	    o.innerHTML = '';
+	    for (var i = 0; i < d.h.length; i++) {
+		o.innerHTML += JCC.P3.p1(d.h[i]);
+	    }
+	}
+*/
+	if (d.r) {
+	    if (!o) {o = document.getElementById(d.e+'-'+d.r.id);}
+	    if (!o) { return; }
+
+	    if (d.r.et) {
+		ec[d.r.id] = d.r;
+	    } else {
+		// active room!
+		rl[d.r.id] = d.r;
+	    }
+	    
+	    //JCC.P3.d3(null, o, d.r.id);
+	}
+    }
+    if (d.uf) {
+	switch (d.uf) {
+	    case 10: {
+		if (d.i === 'suf') {
+		    CC.P3.sufr(d.h);
+		} else {
+		    if (_e_ifs) _e_ifs.onR(d.h);
+		}
+	    } break;
+	    case 20: { /*DENY*/ } break;
+	}
+    }
+    if (d.va) {
+/*	if (typeof JCC.P1.val === 'undefined') JCC.P1.val = {};
+
+	//if (!JCC.P1.val[d.va.id]) JCC.P1.val[d.va.id] = d.va;
+	JCC.P1.val[d.va.id] = d.va;
+
+	JCC.P3.d4(d.va.id, d.je);
+*/
+    }
+};
+
+// Notifies
+function P3_n1(d) {
+    var o;
+
+    if (typeof d.r !== 'undefined' && typeof rl[d.r] !== 'undefined') rl[d.r].i_lat = Date.now();
+
+    switch(d.n) {
+	// Message transfer notify
+	case 10: {
+	    document.getElementById('dialog-input').value = '';
+	} break;
+	// Member join conversation
+	case 15: {
+	    // TODO
+	} break;
+	// Message read notify
+	case 20: {
+	    if (typeof rl[d.r] === 'undefined') return;
+	    // update message
+	    if (!rl[d.r] || !rl[d.r].msgs) return;
+
+	    var s = 0;
+	    for (s = 0; s < rl[d.r].msgs.length; s++) {
+		if (rl[d.r].msgs[s].id == d.msgid) {
+		    rl[d.r].msgs[s].rt = d.rt;
+		    break;
+		}
+	    }
+	} break;
+	// Message delivered notify
+	case 30: {
+	    if (typeof rl[d.r] === 'undefined') return;
+	    // update message
+	    if (!rl[d.r] || !rl[d.r].msgs) return;
+
+	    var s = 0;
+	    for (s = 0; s < rl[d.r].msgs.length; s++) {
+		if (rl[d.r].msgs[s].id == d.msgid) {
+		    rl[d.r].msgs[s].dt = d.dt;
+		    break;
+		}
+	    }
+	} break;
+	// Typing notify.
+	case 40: {
+	    if (typeof rl[d.r] === 'undefined') return;
+
+	    // Update in th. Delete then msg received only
+	    if (typeof rl[d.r].th === 'undefined') rl[d.r].th = {};
+	    if (d.domid) {
+	        rl[d.r].th[d.ut+'-'+d.mid+'-'+d.domid] = d.t;
+	    } else {
+		rl[d.r].th[d.ut+'-'+d.mid] = d.t;
+	    }
+	    // add "typing..." and if text avail, show text too
+console.log('th 1');
+	    if (sel_rid == d.r) {
+console.log('th 2');
+		P3_st(d.r);
+	    }
+	} break;
+	// Conference invite notify
+	case 50: {
+	    // 1. Show modal dialog message
+	    //var f1 = function(_x1, _x2, _x3, _x4) { return function() { JCC.P3.cca(_x1, _x2, _x3, _x4, 1);}; }(d.r, d.sid, d.sut, d.mid);
+	    //var f2 = function(_x1, _x2, _x3, _x4) { return function() { JCC.P3.cca(_x1, _x2, _x3, _x4, 0);}; }(d.r, d.sid, d.sut, d.mid);
+	    //JCC.m(JCC.L[67], JCC.L[50].replace('%person%', ApixCloud.CC.API.GetUserName(d.sid)), 'jcc-dialog-conference-icon.svg', 3, f1, f2, null, 1);
+	} break;
+	// Admin close room
+	case 60: {
+	    // Admin leaved room or visitor leave site, so close TAB
+	    // 0. Delete visitor from P1.vl if his is left the site
+	    // 1. Delete from rl
+	    // 2. Delete TAB and area if open, close input
+	    // 3. Select nothing. ???May need select previus selected???
+
+	    if (typeof rl[d.r] === 'undefined') return;
+	    var vid;
+	    if (typeof rl[d.r] !== 'undefined') {
+		if (rl[d.r].rut == 2) vid = rl[d.r].rid + '-' + rl[d.r].domid;
+	        if (rl[d.r].sut == 2) vid = rl[d.r].sid + '-' + rl[d.r].domid;
+		if (vid && typeof vl[vid] !== 'undefined') if (vl[vid][0].vstatus == 0) delete vl[vid];
+
+		if (rl[d.r]) { delete rl[d.r]; }
+	    }
+
+	    o = document.getElementById('jcc-d'+d.r+'-tab');
+	    if (o) { o.parentNode.removeChild(o); o = null; }
+	    if (sel_rid == d.r) {
+
+		// Go to Home screen
+
+		document.getElementById('dialog').innerHTML = '';
+		document.getElementById('dialog-head').innerHTML = 'Chat';
+		sel_rid = 0;
+		sel_sid = 0;
+		sel_sut = 0;
+	    }
+	} break;
+	// Room closed coz visitor leave a website
+	case 62: {
+	    // DM-2: do not close dialog when visitor leave site
+	    return;
+	} break;
+	// Uploading: progress
+	case 70: {
+	    // show cancel
+	    o = document.getElementById('ccufc-'+d.h);
+	    if (o && o.style.display != 'block' && d.ut == 1 && d.mid == ApixCloud.CC.API.GetConfig().mid) {
+		o.style.display = 'block';
+	    }
+	    o = document.getElementById('ccupb-'+d.h);
+	    if (o) {
+		o.style.width = d.p+'%';
+		o = document.getElementById('ccupbl-'+d.h);
+		if (o) {
+		    if (d.p < 100) o.innerHTML = '&nbsp;'+ACC.L[368].replace('%p%', d.p)+'&nbsp;';
+		    else o.innerHTML = ACC.L[369];
+		}
+	    }
+	} break;
+	// Uploading: abort / error
+	case 75: {
+	    var msg;
+	    if (d.c == 'SA') { msg = ACC.L[359]; }
+	    if (d.c == 'SE') {
+		switch (d.hs) {
+		    case 413: { msg = ACC.L[360]; } break;
+		    default: { msg = ACC.L[361]; } break;
+		}
+	    }
+	    // Remove IS message from array if avail
+	    if (typeof rl[d.r] !== 'undefined')
+	    for (var _i = 0; _i < rl[d.r].msgs.length; _i++) {
+		if (rl[d.r].msgs[_i].ut == 10 && rl[d.r].msgs[_i].mid == 200 && rl[d.r].msgs[_i].body.indexOf(':'+d.h+':') > 0) {
+		    rl[d.r].msgs.splice(_i, 1);
+		}
+	    }
+	    if (d.ut == 1 && d.mid == ApixCloud.CC.API.GetConfig().mid) alert(ACC.L[57]+' - '+msg); //JCC.m(JCC.L[57], msg, 4, 1);
+	    _e_ifs = null;
+	    var o = document.getElementById('cuft-'+d.h);
+	    if (o && msg) {
+		o.innerHTML = '<div style="margin-top:10px;font-weight:400;color:#ee4749;">'+msg+'</div>';
+	    }
+	} break;
+	// Visitor block/unblock
+	case 80: {
+	    var vli = d.vid+'-'+d.idd;
+	    if (d.c == 1 && typeof vl[vli] !== 'undefined') {
+		vl[vli][0].fo = d.fo;
+		vl[vli][0].fodo = d.fodo;
+	    }
+	    if (d.c == 2 && typeof vl[vli] !== 'undefined') {
+		delete vl[vli][0].fo;
+		delete vl[vli][0].fodo;
+	    }
+	} break;
+	// Form to visitor was sent
+	case 90: {
+	    // Replace Send button with text
+	    o = document.getElementById('cc-svf-'+d.fid);
+	    if (o) o.parentNode.innerHTML = '<div style="margin-top:20px;">'+ACC.L[287]+'</div>';
+	} break;
+    }
+};
+
+// Show typing hint
+function P3_st(r) {
+    if (typeof rl[r] === 'undefined') return;
+    var t = '', t1;
+    var o = document.getElementById('typing-hint');
+
+    for (var k in rl[r].th) {
+    	// try to find table or add new
+    	t = rl[r].th[k];
+	var a = k.split('-');
+
+	var mb = decodeURIComponent(t);
+	// Replace tag to stringable
+	mb=mb.replace(/</g,'&lt;');mb=mb.replace(/>/g,'&gt;');
+	// Replace \n to <br>
+	mb=mb.replace(/\n/g,'<br>');
+	// smiley
+    	if (ApixCloud.CC.API.GetConfig().sse == '1' && mb != '') { mb = P3_se(mb); }
+	// hilight links & show images
+	mb = P3_r1(mb) + ' ';
+
+	t1 = '';
+
+	if (typeof rl[r].m !== 'undefined' && rl[r].m.length > 2) {
+	    //a[0] = ut, a[1] = mid, a[2] = domid
+	    if (a[0] == 1) {
+		t1 = '<span class="txt-title-s2" style="font-weight: bold;">' + decodeURIComponent(ol[a[1]].fn) + ' ' + ACC.L[41];
+		if (mb == '') {
+		    t1 += '<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>';
+		}
+		t1 += '</span><br>';
+	    }
+	    if (a[0] == 2) {
+		t1 = '<span class="txt-title-s2" style="font-weight: bold;">' + ApixCloud.CC.API.GetUserName(null, a[1]+'-'+a[2]) + ' ' + ACC.L[41];
+		if (mb == '') {
+		    t1 += '<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>';
+		}
+		t1 += '</span><br>';
+	    }
+	} else {
+	    if (mb == '') {
+		t1 = '<span class="txt-title-s2" style="font-weight: bold;"><span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></span>';
+	    } else {
+		t1 = '';
+	    }
+	}
+	if (mb != '') {
+	    t1 += '<div class="txt-title-s2">' + mb + '<div class="ac-caret">&nbsp;</div></div>';
+	}
+
+	o.innerHTML = t1;
+	o.style.display = 'block';
+
+	// if no hint text - hide hint
+	if (!t || t == '') {
+	    var _tk = 'th_st_'+a[0]+'_'+a[1];
+	    if (rl[r][_tk]) { clearTimeout(rl[r][_tk]); }
+	    rl[r][_tk] = setTimeout(function (_r, _a){ return function() {
+		var rr = _r;
+		var u = _a[0];
+		var m = _a[1];
+		if (u == '2') m = _a[1]+'-'+_a[2];
+		if (sel_rid == rr && (typeof rl[rr] === 'undefined' || typeof rl[rr].th === 'undefined' || rl[rr].th[u+'-'+m] === 'undefined' || rl[rr].th[u+'-'+m] == '')) {
+		    var e = document.getElementById('typing-hint');
+		    if (e) { e.innerHTML = ''; e.style.display = 'none'; }
+		}
+		if (typeof rl[rr] !== 'undefined' && typeof rl[rr].th !== 'undefined' && rl[rr].th[u+'-'+m] == '') delete rl[rr].th[u+'-'+m];
+	    };}(r, a), 5000);
+	}
+    }
+};
+
+
+
+
+
+// Domain Name as Title
+function dntl(d) {
+    var dn = d;
+    if (dn.substring(0, 4) == 'www.')
+	dn = dn.substring(0, 4) + dn.substring(4, 5).toUpperCase() + dn.substring(5);
+    else if (dn.replace(/[^\.]/g, "").length <= 1)
+        dn = dn.substring(0, 1).toUpperCase()+dn.substring(1);
+    return dn;
+}
+
+
+</script>
+
+
+</head>
+<body onload="ready();">
+    <h3 style="color: #404040;padding-left: 5px;">Contact Center Example</h3>
+    <div class="row" style="width:27%;display:inline-block;vertical-align:top;">
+	<div class="title">1. Sign In process.</div>
+	<p>Send login information.<br>OnSuccess, get CC config, list of operators, queues, active chats ...</p>
+	<div class="btn" onclick="sign_in()">Sign In</div>
+    </div>
+    <div class="row" style="width:27%;display:inline-block;vertical-align:top;">
+	<div class="title">2. Turn on Web-Online mode.</div>
+	<p>Turn on Web-Online mode and receive current website(s) visitors and not closed chats with visitors ...</p>
+	<div class="btn" onclick="cas()">Web-Online</div>
+    </div>
+    <div class="row" style="width:27%;display:inline-block;vertical-align:top;">
+	<div class="title">3. Sign Out process.</div>
+	<p>Close session ...</p>
+	<div class="btn" onclick="sign_out()">Sign Out</div>
+    </div>
+    <div>
+	<div class="screen">
+	    <div class="head">Сотрудники</div>
+	    <div class="body" id="admins"></div>
+	</div>
+	<div class="screen">
+	    <div class="head">Очереди</div>
+	    <div class="body" id="queues"></div>
+	</div>
+	<div class="screen">
+	    <div class="head">Мои диалоги</div>
+	    <div class="body" id="my_dialogs"></div>
+	</div>
+	<div class="screen">
+	    <div class="head" id="dialog-head">Чат</div>
+	    <div class="body" id="dialog" style="height: 374px;"></div>
+	    <div id="typing-hint" style="display:none;position: absolute;top: 65px;left: 10px;right: 10px;border-radius: 10px;background: rgba(0,0,0,0.1);padding:10px;"></div>
+	    <div style="position: absolute;bottom:-47px;left: 0px;right: 0px;background: #E8E8E8;padding: 3px 0px;border: 1px solid silver;">
+		<table style="width:100%;"><tbody><tr>
+		    <td style="width: 1%;padding: 0px 10px;">@</td>
+		    <td><textarea id="dialog-input" style="display:block;width:100%;border-radius:26px;resize:none;padding:2px 5px;outline:none;border: 0;-webkit-box-shadow:none;-moz-box-shadow: none;box-shadow: none;"></textarea></td>
+		    <td style="width: 1%;padding: 0px 15px;"><div onclick="SendMessage()" style="background: #7E7EFB;border-radius: 14px; height: 28px; width: 28px; text-align: center; line-height: 34px;color: white;">^</div></td>
+		</tr></tbody></table></div>
+	</div>
+    </div>
+</body></html>
