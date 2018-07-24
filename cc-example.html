@@ -43,6 +43,15 @@
 	vertical-align: top;
 	position: relative;
     }
+    .screen .refresh {
+	position: absolute;
+	bottom: 100%;
+	right: 0;
+	font-size: 13px;
+	padding-bottom: 4px;
+	cursor: pointer;
+	opacity: 0.7;
+    }
     .screen .head {
 	color: white;
 	background: #373E4A;
@@ -198,11 +207,6 @@ var g_signin_params = {
 var g_lang = 'ru';
 
 var cb_process_messages;
-var ol = {};	// Operators list (aka admins)
-var vl = {};	// Visitors list (website visitors)
-//var rl = {};	// Room list (all chats)
-var vq;		// Virtual queues
-var aqm = {};	// Active Queued Messages (Chats)
 
 var sel_rid = 0;
 var sel_aid = 0;
@@ -232,30 +236,14 @@ function ready() {
 	// WEB-ONLINE activated. Full list of visitors.
 	if (x.s == 1 && x.v == 10) {
 	    if (x.list) {
-		P1_s1(x.list);
-		// Get active dialogs with visitors
-		//JCC.s('13080{{-}}3{{-}}2');
-		// Get queued dialogs
-		// TODO or not
 		if (typeof x.nac !== 'undefined' && x.nac.length > 0) {
-		    for (var i = 0; i < x.nac.length; i++) {
-			// Not Allocated Conversations
-			// Check previous defined
-			if (typeof aqm[x.nac[i].dqid] !== 'undefined') {
-			    if (aqm[x.nac[i].dqid].mct > 0) { clearInterval(aqm[x.nac[i].dqid].mct); }
-			}
-			aqm[x.nac[i].dqid] = x.nac[i];
-			qmc(x.nac[i].dqid);
-		    }
+		    UpdateQueuedChats();
 		}
-	    } else {
-		// not Destroy JCC.P1.vl
-		if (!vl) vl = {};
 	    }
 	}
 	// Updates for visitors. New visit (change url) and other activities
 	if (x.s == 1 && x.v == 20) {
-	    P1_u1(x);
+	    // nothing to do
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -263,165 +251,18 @@ function ready() {
 	// Update local array with users and GUI if need.
 	////////////////////////////////////////////////////////////////////////////////
 	if (x.s == 3 && x.v == 10) {
-	    var all_admins = '';
-	    var l = x.list;
-	    // Loop departments
-	    for (var d = 0; d < l.length; d++) { // >
-		// Loop admins
-		for (var a = 0; a < l[d].adms.length; a++) { // >
-		    var a_position = '';
-		    var a_name = '';
-
-		    ol[l[d].adms[a].id] = l[d].adms[a];
-		    ol[l[d].adms[a].id].gid = l[d].id;
-
-		    // Dont display admins with status Helper. (Its system users)
-		    if (ol[l[d].adms[a].id].helper) continue;
-		    // Dont display my
-		    if (l[d].adms[a].id == ApixCloud.CC.API.GetConfig().mid) continue;
-
-		    a_name = ApixCloud.CC.API.GetUserName(l[d].adms[a].id);
-		    if (l[d].adms[a].pn != null) {
-                	a_position = decodeURIComponent(l[d].adms[a].pn);
-		    }
-		    var a_avatar = 'https://'+cloud_addr+'/avatar'+ol[l[d].adms[a].id].ap;
-		    var indicator = '<div class="indicator offline" id="admin-ind-'+l[d].adms[a].id+'"></div>';
-		    // Add admin
-		    if (l[d].adms[a].st != 0) {
-			indicator = '<div class="indicator signin" id="admin-ind-'+l[d].adms[a].id+'"></div>';
-		    }
-		    if (l[d].adms[a].was == 1) { indicator = '<div class="indicator online" id="admin-ind-'+l[d].adms[a].id+'"></div>'; }
-
-		    all_admins += '<div class="admin-block">'+indicator+'<img class="avatar" style="float:left" src="'+a_avatar+'"><div>'+a_name+'</div><div>'+a_position+'</div><div>'+decodeURIComponent(l[d].name)+'</div></div>';
-		}
-	    }
-	    document.getElementById('admins').innerHTML = all_admins;
-
-	    // Update home screen, set open name and avatar
-	    // Get My Name
-	    var name_surname = ApixCloud.CC.API.GetUserName(ApixCloud.CC.API.GetConfig().mid);
-	    var avatar = 'https://'+cloud_addr+'/avatar'+ol[ApixCloud.CC.API.GetConfig().mid].ap+')';
-console.log(name_surname);
-console.log(avatar);
+	    UpdateUserList();
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	// Users. Event happen when user status changed (user login, logout, turn web-online etc)
 	// Update local array with users and GUI if need.
 	////////////////////////////////////////////////////////////////////////////////
 	if (x.s == 3 && x.v == 20) {
-	    var o;
-	    // Update admin online status
-	    if (x.adm_id > 0) {
-		if (typeof x.was !== 'undefined' && x.was == 0) {
-		    if (x.adm_id == ApixCloud.CC.API.GetConfig().mid) {
-			// Web-Online mode off
-			// update my status in GUI
-		        // ...
-		    } else {
-			// set other user status
-			if (ol[x.adm_id]) ol[x.adm_id].was = x.was;
-			// update status in GUI
-			o = document.getElementById('admin-ind-'+x.adm_id);
-			if (o) o.setAttribute('class', 'indicator signin');
-		    }
-		}
-		if (typeof x.was !== 'undefined' && x.was > 0) {
-		    if (x.adm_id == ApixCloud.CC.API.GetConfig().mid) {
-			// Web-Online mode on
-			// update status in GUI
-			// ...
-		    } else {
-			// set other user status
-			if (ol[x.adm_id]) ol[x.adm_id].was = x.was;
-			// update status in GUI
-			o = document.getElementById('admin-ind-'+x.adm_id);
-			if (o) o.setAttribute('class', 'indicator online');
-		    }
-		}
-		if (typeof x.st !== 'undefined' && x.st == 0) {
-		    // SingOut
-		    if (typeof ol[x.adm_id] !== 'undefined') ol[x.adm_id].st = x.st;
+	    UpdateUserList();
 
-		    // update status in GUI
-		    o = document.getElementById('admin-ind-'+x.adm_id);
-		    if (o) o.setAttribute('class', 'indicator offline');
-		}
-		if (typeof x.st !== 'undefined' && x.st > 0) {
-		    // SignIn
-		    if (typeof ol[x.adm_id] !== 'undefined') ol[x.adm_id].st = x.st;
-
-		    // update status in GUI
-		    o = document.getElementById('admin-ind-'+x.adm_id);
-		    if (o) o.setAttribute('class', 'indicator signin');
-		}
-	    }
-	    // Update User Options
-	    if (x.opt_t == 1 && (x.opt_f == false || x.opt_f == true)) {
-		if (typeof ol[x.aid] !== 'undefined') ol[x.aid].o_ma = x.opt_f;
-		//if (x.aid == ApixCloud.CC.API.GetConfig().mid) // My permissions changed. Update GUI if need
-		// Change permissions, user becomes manager or else, not manager now
-	    }
-	    if (x.opt_t == 2 && (x.opt_f == false || x.opt_f == true)) {
-		if (typeof ol[x.aid] !== 'undefined') ol[x.aid].o_aa = x.opt_f;
-		//if (x.aid == ApixCloud.CC.API.GetConfig().mid) // My permissions changed. Update GUI if need
-		// Change permissions, user becomes administrator or else, not administrator now
-	    }
-
-	    // Virtual queues. New/Del/Changes
+	    // Some changes in Virtual queues. New/Del/Changes
 	    if (x.qinfo) {
-		var lid = 0;
-		for (var i = 0; i < ApixCloud.CC.API.GetConfig().cl.length; i++) {
-        	    if (g_lang == ApixCloud.CC.API.GetConfig().cl[i].c) {
-            		lid = ApixCloud.CC.API.GetConfig().cl[i].id;
-            		break;
-        	    }
-    		}
-		if (lid == 0) lid = ApixCloud.CC.API.GetConfig().cl[0].id;
-
-		for (var i = 0; i < x.qinfo.length; i++) {
-		    // Update
-	    	    if (typeof vq[x.qinfo[i].id] !== 'undefined') vq[x.qinfo[i].id].qtype = x.qinfo[i].qtype;
-		    else {
-			vq[x.qinfo[i].id] = {};
-			vq[x.qinfo[i].id].id = x.qinfo[i].id;
-			vq[x.qinfo[i].id].qtype = x.qinfo[i].qtype;
-			vq[x.qinfo[i].id].qconf = {};
-		    }
-		    if (!document.getElementById('queue-btn-t-'+x.qinfo[i].id)) {
-			// Add queue to DOM
-			o = document.getElementById('jcc-qc-cnt');
-			if (o) {
-			    var n = document.createElement('div');
-			    n.setAttribute('id', 'queue-btn-'+x.qinfo[i].id);
-			    n.className = 'queue';
-			    n.innerHTML = '<div class="jcc-dep-ind" style="left:10px;right:auto;display:inline-block;padding:10px 20px;">@</div><span id="queue-btn-t-'+x.qinfo[i].id+'" class="cc-m-dep-title"></span>';
-			    o.appendChild(n);
-			    n = document.createElement('div');
-			    n.setAttribute('id', 'queue-cnt-'+x.qinfo[i].id);
-			    o.appendChild(n);
-			}
-		    }
-
-		    var qn = '';
-		    for (var ii = 0; ii < x.qinfo[i].qn.length; ii++) {
-			if (lid == x.qinfo[i].qn[ii].lid) {
-			    qn = x.qinfo[i].qn[ii].qn;
-		    	    break;
-			}
-		    }
-		    if (!qn) for (var ii = 0; ii < x.qinfo[i].qn.length; ii++) {
-			if (x.qinfo[i].qn[ii].qn) {
-			    qn = x.qinfo[i].qn[ii].qn;
-			    break;
-			}
-		    }
-		    if (qn && typeof vq[x.qinfo[i].id] !== 'undefined') vq[x.qinfo[i].id].qn = qn;
-		    if (!qn) qn = 'Новая очередь (без имени)';
-		    else qn = decodeURIComponent(qn);
-
-		    o = document.getElementById('queue-btn-t-'+x.qinfo[i].id);
-		    if (o) o.innerHTML = decodeURIComponent(qn);
-		}
+		UpdateVirtualQueuesList();
 	    }
 	}
 
@@ -429,8 +270,29 @@ console.log(avatar);
 	// Chats. Events
 	////////////////////////////////////////////////////////////////////////////////
 	if (x.s == 3 && x.v == 30) {
-	    P3_d1(x);
 	    UpdateDialogList();
+
+	    // Clear typing hint
+    	    var __the = document.getElementById('typing-hint');
+    	    if (__the) { __the.innerHTML = ''; __the.style.display = 'none'; }
+
+	    var _ro = document.getElementById('openned-room-'+x.r);
+	    if (_ro) {
+		// Send back read notify if not my msg and not system (10)
+		if (sel_rid > 0 && ((x.msg.ut == 1 && x.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (x.msg.ut != 1 && x.msg.ut != 10))) {
+		    ApixCloud.CC.API.SendReadNotification(sel_rid, x.msg.id);
+    		}
+    	    } else {
+		// Chat not openned or openned another chat.
+		// Just notice user - you have new message.
+		// x.r - room id
+
+		// send back delivery notify if not my msg and not system (10)
+		if ((x.msg.ut == 1 && x.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (x.msg.ut != 1 && x.msg.ut != 10)) {
+		    ApixCloud.CC.API.SendDeliveryNotification(x.r, x.msg.id);
+    		}
+    	    }
+
 	    if (sel_rid > 0 && sel_rid == x.r) P3_d3(x.r);
 	}
 	if (x.s == 3 && x.v == 40) {
@@ -446,62 +308,8 @@ console.log(avatar);
 	// Virtual Queues
 	////////////////////////////////////////////////////////////////////////////////
 	if (x.s == 3 && x.v == 80) {
-	    switch (x.t) {
-		case 'q': {
-		    // New queue list received.
-		    // Update JS, DOM
-		    if (!vq) {
-			vq = x.q;
-		    } else {
-			// TODO in next version
-			// Just carefuly update "vq"
-			// Delete from vq if key from vq not exists in x.q (admin delete queue in configuration)
-			// Add if new key (admin create queue in configuration)
-		    }
-	    
-		    // Display Queues (next version - only queues, which not displayed early)
-		    var t = '';
-		    t += '<div id="jcc-qc-cnt" style="p111adding-bottom: 5px; display: block;">';
-
-		    for (var k in vq) {
-			t += '<div id="queue-btn-'+k+'" class="queue">';
-			t += '<div style="left:10px;right:auto;display:inline-block;padding:10px 20px;">@</div> \
-			    <span id="queue-btn-t-'+k+'" class="cc-m-dep-title">'+decodeURIComponent(vq[k].qn?vq[k].qn:'Очередь без названия')+'</span>';
-			t += '</div>';
-			t += '<div id="queue-cnt-'+k+'"></div>';	// Container for queued chats.
-		    }
-
-		    t += '</div>';
-
-		    document.getElementById('queues').innerHTML = t;
-		} break;
-		case 'n': {
-		    // New Incoming Conversation
-		    // Check previous defined
-		    if (typeof aqm[x.dqid] !== 'undefined') {
-			if (aqm[x.dqid].mct > 0) { clearInterval(aqm[x.dqid].mct); }
-		    }
-		    aqm[x.dqid] = x.nr;
-		    qmc(x.dqid);
-		} break;
-	case 't': {
-	    // Conversation taken - delete it
-	    if (aqm[x.dqid]) {
-		clearInterval(aqm[x.dqid].mct);
-		if (typeof aqm[x.dqid]._n !== 'undefined') {
-		    aqm[x.dqid]._n.close();
-		}
-	    }
-
-	    var b = document.getElementById('qm-btn'+x.dqid);
-	    if (b) b.parentNode.removeChild(b);
-
-	    delete aqm[x.dqid];
-	} break;
-    }
-
+	    UpdateVirtualQueuesList();
 	}
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Session closed. Event happen when user logout, when someone block/delete user and etc
@@ -546,10 +354,19 @@ function sign_out() {
     // SignOut
     ApixCloud.CC.API.SignOut();
 }
+function stackTrace() {
+    var err = new Error();
+    console.log(err.stack);
+};
+
 
 /////////////////////////////////////////////////
 // Display chat in queue
 function qmc(d) {
+    var aqm = ApixCloud.CC.API.GetQueuedChats();
+    var ol = ApixCloud.CC.API.GetUsers();
+    var vl = ApixCloud.CC.API.GetVisitors();
+
     // Start timer to hilight how older message: green - red - brown
     var o = document.getElementById('queue-cnt-'+aqm[d].q);
     var b = document.createElement('div');
@@ -565,7 +382,6 @@ function qmc(d) {
     b.className = 'qm-color jcc-oper-btn-off';
     b.setAttribute('onclick', 'tqm('+d+','+aqm[d].idq+','+aqm[d].d+')');
     b.setAttribute('style', 'background-color: #00a651 !important; border-bottom: 1px solid #007338;');
-    b.style.display = 'none';
 
     // Get visitor lang
     if (aqm[d].lid && ApixCloud.CC.API.GetConfig().cl.length > 1) {
@@ -597,7 +413,7 @@ function qmc(d) {
 	if (aqm[d].ei && aqm[d].ei.ecn) {
 	    dn = decodeURIComponent(aqm[d].ei.ecn);
 	} else {
-	    dn = 'Internal message';
+	    dn = ACC.L[98];
 	}
     }
 
@@ -607,7 +423,6 @@ function qmc(d) {
 		n = ApixCloud.CC.API.GetUserName(aqm[d].sid);
 		a = '//'+cloud_addr+'/avatar'+ol[aqm[d].sid].ap;
 	    } else if (aqm[d].smi && aqm[d].smi.a) {
-		ol[aqm[d].sid] = {ap:aqm[d].smi.a.afn, fn:aqm[d].smi.a.fn, gid:0, helper:0, id:aqm[d].sid, ln:aqm[d].smi.a.ln, pn:aqm[d].smi.p};
 		n = ApixCloud.CC.API.GetUserName(null, null, aqm[d].smi);
 		a = '//'+cloud_addr+'/avatar'+aqm[d].smi.a.afn;
 	    } else {
@@ -622,8 +437,6 @@ function qmc(d) {
 		a = '//'+cloud_addr+'/avatar'+vl[aqm[d].sid+'-'+aqm[d].domid][0].ap;
 	    } else {
 		if (typeof aqm[d].sinfo !== 'undefined') {
-		    vl[aqm[d].sid+'-'+aqm[d].domid] = [];
-		    vl[aqm[d].sid+'-'+aqm[d].domid][0] = {ap:aqm[d].sinfo.a.afn, fn:aqm[d].sinfo.a.fn, idd:aqm[d].domid, lid:aqm[d].lid, ln:aqm[d].sinfo.a.ln, vid:aqm[d].sid+'-'+aqm[d].domid, vid2:aqm[d].sid};
 		    n = ApixCloud.CC.API.GetUserName(null, aqm[d].sid+'-'+aqm[d].domid);
 		    a = '//'+cloud_addr+'/avatar'+vl[aqm[d].sid+'-'+aqm[d].domid][0].ap;
 		} else {
@@ -631,7 +444,7 @@ function qmc(d) {
 		    a = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
 		}
 	    }
-	    if (!n) { n = 'Guest'; }
+	    if (!n) { n = ACC.L[7]; }
 	} break;
 	case 200: {
 	    if (typeof aqm[d].sinfo !== 'undefined') {
@@ -652,36 +465,21 @@ function qmc(d) {
 		<div style="position:absolute;right:15px;top:20px;padding:3px 5px;border-radius:12px;" class="qm-tc" id="qmb-t-'+d+'"></div> \
 	</td></tr></tbody></table>';
 
-    aqm[d].mcti = 0;
-    aqm[d].mct = setInterval(function(_d) { return function() { var dd = _d; qmt(dd); };}(d), 1000);
-
+    if (!aqm[d].mct) {
+	aqm[d].mcti = 0;
+	aqm[d].mct = setInterval(function(_d) { return function() { var dd = _d; qmt(dd); };}(d), 1000);
+    }
     b.innerHTML = t;
     if (o) o.appendChild(b);
 };
 function qmt(d) {
+    var aqm = ApixCloud.CC.API.GetQueuedChats();
     if (aqm[d].mcti < 7777777) aqm[d].mcti++;
 
     var o = document.getElementById('qmb-t-'+d);
     var dutc = new Date((new Date()).toUTCString());
 
     if (o) o.innerHTML = T_i(((dutc.getTime() / 1000) - aqm[d].st));
-
-    // Display btn when delay out
-    if (aqm[d].d == 0) {
-	aqm[d].d = -1;
-	o = document.getElementById('qm-btn'+d);
-	if (o && o.style.display == 'none') {
-	    o.style.display = 'block';
-	}
-    } else if (aqm[d].d > 0) {
-	if (aqm[d].mcti >= aqm[d].d * 10) {
-	    aqm[d].d = -1;
-    	    o = document.getElementById('qm-btn'+d);
-	    if (o && o.style.display == 'none') {
-		o.style.display = 'block';
-	    }
-	}
-    }
 
     o = document.getElementById('qm-btn'+d);
     if (!o) return;
@@ -772,336 +570,6 @@ eucf = function(x) {
     }
 };
 
-// Visitors list.
-// Add list to 'vl' variable and update it list when event happen.
-function P1_s1(l) {
-    var o;
-    
-    var d;
-    var jtd;
-    var jjf;
-
-    if (l.length == 0) {
-    } else {
-	for (var i = 0; i < l.length; i++) {
-	    var jt = l[i];
-	    if (typeof jt === 'string') jt = JSON.parse(jt);
-
-	    vl[jt.vid] = [jt];
-
-	    // Set online status
-	    vl[jt.vid][0].vstatus = 1;
-
-	    // Decode current url and title
-	    vl[jt.vid][0].curl = decodeURIComponent(vl[jt.vid][0].curl);
-	    vl[jt.vid][0].ctitle = decodeURIComponent(vl[jt.vid][0].ctitle);
-	    if (vl[jt.vid][0].vnote) vl[jt.vid][0].vnote = decodeURIComponent(vl[jt.vid][0].vnote);
-
-	    // Add jobs icons (TODO)
-	    jtd = '';
-	    jjf = jt.jobs;
-	    vl[jt.vid][3] = jjf;
-	}
-    }
-};
-// Update visitors and some states
-function P1_u1(d) {
-	var o, n;
-
-	// Updates
-	if (d.t == 'upd') {
-	    // Open Event (url, title, event tag)
-	    if (typeof d.oje !== 'undefined' && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
-		vl[d.vid+'-'+d.domid][0].oje = d.oje;
-	    }
-	    // Visitor set name (Introduce)
-	    if (d.vn && d.vn.length > 0 && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
-		var v2 = d.vid+'-'+d.domid;
-		vl[v2][0].fn = decodeURIComponent(d.vn);
-	    }
-	    // Visitor Note
-	    if (typeof d.vnote !== 'undefined' && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
-		vl[d.vid][0].vnote = decodeURIComponent(d.vnote);
-	    }
-	    // Visitor Contact Name
-	    if (typeof d.cname !== 'undefined' && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
-		vl[d.vid][0].cn = d.cname;
-	    }
-	    // Update UA
-	    if (d.ua && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
-		vl[d.vid][0].os_name = d.ua[0];
-	        vl[d.vid][0].b_name = d.ua[1];
-		vl[d.vid][0].d_name = d.ua[2];
-	    }
-	    // Update IP
-	    if (d.ip && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
-		vl[d.vid][0].ip = d.ip;
-	    }
-	    // Banned flag
-	    if (typeof d.fo !== 'undefined' && typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
-		vl[d.vid+'-'+d.domid][0].fo = d.fo;
-	    }
-	    // Update GEO
-	    if (d.geo && typeof vl[d.vid] !== 'undefined' && typeof vl[d.vid][0] !== 'undefined') {
-		vl[d.vid][0].geo_country = d.geo[0];
-		vl[d.vid][0].geo_region = d.geo[1];
-		vl[d.vid][0].geo_city = d.geo[2];
-		vl[d.vid][0].geo_lang = d.geo[3];
-		vl[d.vid][0].geo_country_en = d.geo[4];
-	    }
-	    // Update current url
-    	    if (d.curl && typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
-		vl[d.vid+'-'+d.domid][0].curl = decodeURIComponent(d.curl);
-		vl[d.vid+'-'+d.domid][0].ctitle = decodeURIComponent(d.ctitle);
-	    }
-	    if (d.calls || d.views || d.dialogs && typeof vl[d.vid+'-'+d.domid] !== 'undefined' && typeof vl[d.vid+'-'+d.domid][0] !== 'undefined') {
-		if (d.calls) {
-		    vl[d.vid+'-'+d.domid][0].calls = d.calls;
-		}
-		if (d.views) {
-		    vl[d.vid+'-'+d.domid][0].views = d.views;
-		}
-		if (d.dialogs) {
-		    vl[d.vid+'-'+d.domid][0].dialogs = d.dialogs;
-		}
-	    }
-	    // Update job state
-	    if (d.jid && d.js) {
-		if (typeof vl[d.vid+'-'+d.domid] !== 'undefined') {
-		    if (typeof vl[d.vid+'-'+d.domid][3] === 'undefined') vl[d.vid+'-'+d.domid][3] = {};
-		    vl[d.vid+'-'+d.domid][3]['job' + d.jid] = {vjid:d.vjid, js:d.js, jc:d.c};
-		}
-	    }
-	    if (d.ot == 1 && d.comm_rid > 0 && typeof rl[d.comm_rid] !== 'undefined') {
-		rl[d.comm_rid].a_comment = euc(o.value);
-	    }
-	}
-	// New Visitor
-	if (d.t == 'new') {
-	    var jt = d.ov;
-	    if (typeof vl[jt.vid] === 'object' && vl[jt.vid][0].vstatus == 1 ) {
-		console.log('Dublicate record! ' + jt.vid);
-	    } else {
-		vl[jt.vid] = [jt];
-		// Set online status
-	        vl[jt.vid][0].vstatus = 1;
-		vl[jt.vid][0].curl = decodeURIComponent(vl[jt.vid][0].curl);
-		vl[jt.vid][0].ctitle = decodeURIComponent(vl[jt.vid][0].ctitle);
-
-		// Decode
-	        if (vl[jt.vid][0].vnote) vl[jt.vid][0].vnote = decodeURIComponent(vl[jt.vid][0].vnote);
-
-		// Add jobs icons
-		var jjf = jt.jobs;
-		vl[jt.vid][3] = jjf;
-	    }
-	}
-	// Delete Visitor
-	if (d.t == 'del') {
-	    vl[d.vid][0].vstatus = 0;
-	    vl[d.vid][0].ed = d.ed;
-	    delete vl[d.vid][0].since;
-	    delete vl[d.vid][0].ctitle;
-	    delete vl[d.vid][0].curl;
-	    delete vl[d.vid][0].va;
-	}
-    };
-
-
-function P3_d1(d) {
-    var o;
-    var p;
-    var t;
-    var c;
-    var ct = 1;
-
-    console.log('RCV dialog update.');
-    console.log(d);
-    // 1 Is it new or exists dialog?
-
-    // New conversation
-    if (!rl[d.r] && d.msg.ut == 10 && d.msg.mid == 100) {
-	if (typeof d.msg.ovl !== 'undefined' && d.msg.ovl.length > 0) {
-            for (var vi = 0; vi < d.msg.ovl.length; vi++) {
-                if (typeof vl[d.msg.ovl[vi].vid] === 'undefined') {
-                    vl[d.msg.ovl[vi].vid] = [d.msg.ovl[vi]];
-                }
-            }
-	}
-	// New chat from admin
-	if (d.msg.sut == 1 && d.msg.sid != ApixCloud.CC.API.GetConfig().mid) {
-	    // Get sender info
-	    var sn = '';
-	    switch (d.msg.sut) {
-		case 1: {
-		    if (typeof ol[d.msg.sid] === 'object') {
-			sn = ApixCloud.CC.API.GetUserName(d.msg.sid, null, null, null, null, 1);
-		    } else { sn = '?'; }
-		} break;
-	    }
-	}
-	// New chat from visitor
-	if (d.msg.sut == 2 && d.msg.dc != 1) {
-	    // Get sender info
-	    var sn = '';
-	    switch (d.msg.sut) {
-		case 2: {
-		    if (typeof vl[d.msg.sid+'-'+d.msg.domid] === 'object') {
-			sn = ApixCloud.CC.API.GetUserName(null, d.msg.sid+'-'+d.msg.domid, null, null, null, 1);
-		    } else { sn = 'Guest'; }
-		} break;
-	    }
-	}
-
-	console.log('add new room');
-	rl[d.r] = {};
-	// state: 1 - dialog, 2 - conference
-	rl[d.r].s = d.msg.s;
-	// Current members
-	rl[d.r].m = d.msg.m;
-	// All members which touch dialog
-	rl[d.r].mmbrs = d.msg.mmbrs;
-
-	// Messages container
-	rl[d.r].msgs = [];
-
-	// Room sender/recipient. Update on transfer.
-	rl[d.r].rid = d.msg.rid;
-	rl[d.r].rut = d.msg.rut;
-	rl[d.r].sid = d.msg.sid;
-	rl[d.r].sut = d.msg.sut;
-
-	rl[d.r].id = d.r;
-	rl[d.r].domid = d.msg.domid;
-	rl[d.r].lid = d.msg.lid;
-
-	// Typing hints and stop typing hint
-	rl[d.r].th = {};
-	// Typing icon hide timer
-	rl[d.r].tht = null;
-
-	c = 'btn';
-	// Display new dialog tab
-	//ddt1(d.r, d.msg, c);
-	ct = 0;
-    }
-
-    // Last activity
-    if (rl[d.r]) rl[d.r].i_lat = Date.now();
-
-    // Transfer
-    if (rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
-	// Check member
-	if (typeof ol[d.msg.tm.m] === 'undefined') {
-            ol[d.msg.tm.m] = {ap:d.msg.tm.a.afn, fn:d.msg.tm.a.fn, gid:0, helper:0, id:d.msg.tm.m, ln:d.msg.tm.a.ln, pn:d.msg.tm.p};
-	}
-
-	// Update sender/recipient for room
-	if (d.msg.rid && d.msg.sid) {
-	    rl[d.r].rid = d.msg.rid;
-	    rl[d.r].rut = d.msg.rut;
-	    rl[d.r].sid = d.msg.sid;
-	    rl[d.r].sut = d.msg.sut;
-	}
-    }
-    
-    // Skip early 130 transfer msg
-    if (!rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
-	return;
-    }
-
-    if (rl[d.r] && d.msg.ut == 10 && d.msg.mid == 142) {
-	// Check member
-	if (typeof ol[d.msg.cm.m] === 'undefined') {
-            ol[d.msg.cm.m] = {ap:d.msg.cm.a.afn, fn:d.msg.cm.a.fn, gid:0, helper:0, id:d.msg.cm.m, ln:d.msg.cm.a.ln, pn:d.msg.cm.p};
-	}
-
-	rl[d.r].s = d.msg.s;
-    }
-
-    // check tab created, if not - add one
-    if (ct) {
-	o = document.getElementById('jcc-d'+d.r+'-tab');
-	if (!o && rl[d.r]) {
-	    c = 'btn-o';
-	console.log('--! create new tab');
-	console.log(rl[d.r]);
-	    //ddt1(d.r, rl[d.r], c);
-	}
-    }
-
-    if (typeof d.msg !== 'undefined' && rl[d.r]) {
-	if (rl[d.r].msgs) rl[d.r].msgs.push(d.msg);
-
-	// delete typing hint
-	if (d.msg.ut == 2) {
-	    if (rl[d.r].th && (rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid] || rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid] == '')) {
-		delete rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid];
-		console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid+'-'+rl[d.r].domid);
-	    }
-	} else {
-	    if (rl[d.r].th && (rl[d.r].th[d.msg.ut+'-'+d.msg.mid] || rl[d.r].th[d.msg.ut+'-'+d.msg.mid] == '')) {
-		delete rl[d.r].th[d.msg.ut+'-'+d.msg.mid];
-		console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid);
-	    }
-	}
-        var __the = document.getElementById('typing-hint');
-        if (__the) { __the.innerHTML = ''; __the.style.display = 'none'; }
-
-	// If chat openned - add (showing) new message at the end of dialog
-//	console.log('JCC.S.sel_rid == d.r; ' + JCC.S.sel_rid+', '+ d.r);
-	var _ro = document.getElementById('openned-room-'+d.r);
-	if (_ro) {
-	    // Chat is oppenned now, lets show new message
-
-//	    JCC.P3.d2([d.msg], JCC.$('mdialog-s2'), 2, JCC.P3.rl[d.r]);
-
-	    // System message
-	    // Send back read notify if not my msg and not system (10)
-	    if (sel_rid > 0 && ((d.msg.ut == 1 && d.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (d.msg.ut != 1 && d.msg.ut != 10))) {
-//console.log(111);
-		ApixCloud.CC.API.SendReadNotification(sel_rid, d.msg.id);
-		d.msg.read = 1;
-    	    }
-    	} else {
-	    // Animate tab - new message
-	    o = document.getElementById('jcc-d'+d.r+'-imsg');
-	    if (o) {
-		o.style.webkitAnimationName = 'blinkingX';
-	        o.style.animationName = 'blinkingX';
-		o.style.webkitAnimationIterationCount = 'infinite';
-		o.style.webkitAnimationDuration = '1.4s';
-		o.style.animationIterationCount = 'infinite';
-		o.style.animationDuration = '1.4s';
-	    }
-	    rl[d.r].thc = 0;
-	    o = document.getElementById('jcc-d'+d.r+'-itpg');
-	    if (o) {
-		o.style.opacity = 0;
-		o.style.webkitAnimationIterationCount = '0';
-		o.style.webkitAnimationDuration = '0s';
-		o.style.animationIterationCount = '0';
-		o.style.animationDuration = '0s';
-		o.style.webkitAnimationName = 'none';
-	        o.style.animationName = 'none';
-	    }
-	    o = document.getElementById('jcc-d'+d.r+'-tab');
-//	    if (o) JCC.cadd(o, 'rubberBand');
-
-	    // send back delivery notify if not my msg and not system (10)
-	    if ((d.msg.ut == 1 && d.msg.mid != ApixCloud.CC.API.GetConfig().mid) || (d.msg.ut != 1 && d.msg.ut != 10)) {
-		ApixCloud.CC.API.SendDeliveryNotification(d.r, d.msg.id);
-		d.msg.delivered = 1;
-    	    }
-    	}
-    }
-    
-    return;
-};
-
-
-
-
 // room_id, msg, class (active/not), (1-new/2-transfer/3-conference), initiator info [id,ut]
 function ddt1(d, m, c, n, ii) {
     var o;    
@@ -1111,6 +579,9 @@ function ddt1(d, m, c, n, ii) {
     var ut;
     var id;
     var prsi;
+    var ol = ApixCloud.CC.API.GetUsers();
+    var vl = ApixCloud.CC.API.GetVisitors();
+    var rl = ApixCloud.CC.API.GetChatRooms();
 
 //console.log('ddt1: n='+n);
 //console.log(m);
@@ -1301,11 +772,12 @@ function ddt1(d, m, c, n, ii) {
     if (c == 'btn') c = 'cptab'; 
     if (c == 'btn-o') c = 'cptab-o'; 
 
-    // New message counter
-    rl[d].nmc = 3; // Fake counter
+    // Unread messages
+    var rl = ApixCloud.CC.API.GetChatRooms();
     var nmb = '';
-    if (typeof rl[d] !== 'undefined' && rl[d].nmc > 0) {
-	nmb = '<span class="badge" style="position: absolute;right: 30px;top: 50%;margin-top: -10px; background: #21A9E1; color: white; padding: 3px 7px; text-align: center;font-size: 13px;border-radius: 50%;">'+rl[d].nmc+'</span>';
+    // Logic: show counter if : we have um and um member not me and um counter > 0
+    if (typeof rl[d] !== 'undefined' && typeof rl[d].um !== 'undefined' && !(rl[d].um.ut == 1 && rl[d].um.mid == ApixCloud.CC.API.GetConfig().mid) && rl[d].um.mc > 0) {
+	nmb = '<span class="badge" style="position: absolute;right: 30px;top: 50%;margin-top: -10px; background: #21A9E1; color: white; padding: 3px 7px; text-align: center;font-size: 13px;border-radius: 50%;">'+rl[d].um.mc+'</span>';
     }
 
     li.innerHTML = '<div id="jcc-d'+d+'-btn" style="display: table; table-layout: fixed; width: 100%;"> \
@@ -1326,17 +798,39 @@ function ddt1(d, m, c, n, ii) {
     return {ap:ap, tt:encodeURIComponent(tt), ts:ts};
 }
 
+function ShowDialogMenu() {
+    var o = document.getElementById('chat-control-menu');
+    var t = '';
+
+    // Transfer
+    t += '<div style="margin-bottom:7px;cursor:pointer;"><span style="margin-right:10px;float:left;">?</span><span>'+ACC.L[47]+'</span><span style="margin-right:10px;float:right;">></span></div>';
+
+    // Conference
+    t += '<div style="margin-bottom:7px;cursor:pointer;"><span style="margin-right:10px;float:left;">?</span><span>'+ACC.L[48]+'</span><span style="margin-right:10px;float:right;">></span></div>';
+
+    // Close Chat
+    t += '<div onclick="CloseChatRoom()" style="margin-bottom:7px;cursor:pointer;"><span style="margin-right:10px;float:left;">x</span><span>'+ACC.L[46]+'</span></div>';
+
+    o.innerHTML = t;
+
+    if (o.style.display == 'block') o.style.display = 'none';
+    else o.style.display = 'block';
+}
+
 function DialogPanelHtml(ap, tt, ts) {
     return '<span style="float: left;margin-left: -10px;">&lt;</span> \
 	    <img border="0" width="20" height="20" style="margin-right: -15px;vertical-align: top;width: 32px;height: 32px;margin-top: -5px;margin-bottom: -5px;float: right;" class="avatar" src="'+ap+'"> \
 	    <div style="margin-top: -5px;margin-bottom: -6px;line-height: 0.8em;"> \
-		<span style="font-size: 16px;">'+decodeURIComponent(tt)+'</span> \
-		<br> \
-		<span style="font-size: 13px;opacity: 0.7;">'+decodeURIComponent(ts)+'</span> \
-	    </div>';
+		<div style="display: inline-block;cursor:pointer;" onclick="ShowDialogMenu()"> \
+		    <span style="font-size: 16px;">'+decodeURIComponent(tt)+'</span> \
+		    <br> \
+	    	    <span style="font-size: 13px;opacity: 0.7;">'+decodeURIComponent(ts)+'</span> \
+		</div> \
+	    </div><div id="chat-control-menu" style="font-size:15px;z-index:1;text-align:left;display:none;position: absolute; background: silver; left: 0px; top: 58px; right: 0px; padding: 10px;"></div>';
 }
 
 function OpenDialog(r, ut, id, tt, ts, ap) {
+    var rl = ApixCloud.CC.API.GetChatRooms();
     var o, t;
 
     if (r > 0) {
@@ -1372,7 +866,7 @@ function P3_d3(d, e, r) {
 
     o = document.getElementById('dialog');
     o.innerHTML = '';
-    rm = rl[d];
+    rm = ApixCloud.CC.API.GetChatRooms()[d];
 
     var ma = [];
     var lm = rm.msgs[0].mid;
@@ -1382,6 +876,7 @@ function P3_d3(d, e, r) {
     rm.rut = rm.msgs[0].rut;
     rm.sid = rm.msgs[0].sid;
     rm.sut = rm.msgs[0].sut;
+    ApixCloud.CC.API.SetChatRoomOwners(rm.id, rm.msgs[0]);
 
     for (var m = 0; m < rm.msgs.length; m++) {
 	lastm = rm.msgs[m];
@@ -1417,7 +912,6 @@ function P3_d3(d, e, r) {
 	// send back read notify
         if (d && ((lastm.ut == 1 && lastm.mid != ApixCloud.CC.API.GetConfig().mid) || (lastm.ut != 1 && lastm.ut != 10)) && lastm.read != 1) {
 	    ApixCloud.CC.API.SendReadNotification(d, lastm.id);
-	    lastm.read = 1;
 	}
     }
 
@@ -1440,6 +934,9 @@ function P3_dim(p1) {
 
 // Display message. ma=MessageArray, p=Parent, l=last(show read/delivery hint), ds=DataStyle, ro=room object
 function P3_d2(ma, p, ds, ro) {
+    var ol = ApixCloud.CC.API.GetUsers();
+    var vl = ApixCloud.CC.API.GetVisitors();
+    //var rl = ApixCloud.CC.API.GetChatRooms();
     var t;
     var lds = ds;
     if (!lds) {	lds = 2; }
@@ -1465,6 +962,7 @@ function P3_d2(ma, p, ds, ro) {
 		    ro.sid = ma[m].sid;
 		    ro.sut = ma[m].sut;
 		    ro.m = ma[m].m;
+		    ApixCloud.CC.API.SetChatRoomOwners(ro.id, ma[m]);
 		}
 
 		// ??? or delete some code for mid100 msg?
@@ -2308,9 +1806,96 @@ function gai(e) {
     return '/img/ei/'+ei+'svg';
 };
 
+// Update User List
+	function UpdateUserList() {
+	    var all_admins = '';
+	    var ol = ApixCloud.CC.API.GetUsers();
+	    var dl = ApixCloud.CC.API.GetDepartments();
+	    var k = Object.keys(ol);
+	    var dn;
+	    // Loop admins by object keys
+	    for (var a = 0; a < k.length; a++) { // >
+	        var a_position = '';
+	        var a_name = '';
+
+	        // Dont display admins with status Helper. (Its system users)
+	        if (ol[k[a]].helper) continue;
+	        // Dont display my
+	        if (k[a] == ApixCloud.CC.API.GetConfig().mid) continue;
+
+	        a_name = ApixCloud.CC.API.GetUserName(k[a]);
+	        if (ol[k[a]].pn != null) {
+        		a_position = decodeURIComponent(ol[k[a]].pn);
+		}
+		var a_avatar = 'https://'+cloud_addr+'/avatar'+ol[k[a]].ap;
+		var indicator = '<div class="indicator offline" id="admin-ind-'+k[a]+'"></div>';
+		// Add admin
+		if (ol[k[a]].st != 0) {
+		    indicator = '<div class="indicator signin" id="admin-ind-'+k[a]+'"></div>';
+		}
+		if (ol[k[a]].was == 1) { indicator = '<div class="indicator online" id="admin-ind-'+k[a]+'"></div>'; }
+
+		// Loop departments to get name
+		dn = '';
+		for (var d = 0; d < dl.length; d++) { // >
+		    if (dl[d].gid == ol[k[a]].gid) dn = dl[d].name;
+		}
+
+		all_admins += '<div class="admin-block">'+indicator+'<img class="avatar" style="float:left" src="'+a_avatar+'"><div>'+a_name+'</div><div>'+a_position+'</div><div>'+decodeURIComponent(dn)+'</div></div>';
+	    }
+	    document.getElementById('admins').innerHTML = all_admins;
+
+	    // Update home screen, set open name and avatar
+	    // Get My Name
+	    var name_surname = ApixCloud.CC.API.GetUserName(ApixCloud.CC.API.GetConfig().mid);
+	    var avatar = 'https://'+cloud_addr+'/avatar'+ol[ApixCloud.CC.API.GetConfig().mid].ap+')';
+console.log(name_surname);
+console.log(avatar);
+	}
+
+// Update Queues
+	function UpdateVirtualQueuesList() {
+	    var o;
+	    var q = ApixCloud.CC.API.GetVirtualQueues();
+	    var k = Object.keys(q);
+	    // get chats list for queues
+
+	    // Add queue to DOM
+	    o = document.getElementById('jcc-qc-cnt');
+	    if (!o) return;
+	    o.innerHTML = ''; // clear current queue list
+    	    for (var i = 0; i < k.length; i++) {
+		var n = document.createElement('div');
+		n.setAttribute('id', 'queue-btn-'+q[k[i]].id);
+		n.className = 'queue';
+		n.innerHTML = '<div class="jcc-dep-ind" style="left:10px;right:auto;display:inline-block;padding:10px 20px;">@</div><span id="queue-btn-t-'+q[k[i]].id+'" class="cc-m-dep-title">'+ decodeURIComponent(q[k[i]].qn)+'</span>';
+		o.appendChild(n);
+		n = document.createElement('div');
+		n.setAttribute('id', 'queue-cnt-'+q[k[i]].id);
+		o.appendChild(n);
+	    }
+
+	    UpdateQueuedChats();
+	}
+
+// Update queued chats
+function UpdateQueuedChats() {
+    var nac = ApixCloud.CC.API.GetQueuedChats();
+console.log('---UpdateQueuedChats');
+console.log(nac);
+    var k = Object.keys(nac);
+    for (var i = 0; i < k.length; i++) {
+console.log(nac[k[i]]);
+
+        qmc(k[i]);
+    }
+}
+
 
 // Update dialog list
 function UpdateDialogList() {
+    var rl = ApixCloud.CC.API.GetChatRooms();
+
     if (!rl) return;
     var o;
 
@@ -2327,7 +1912,7 @@ function UpdateDialogList() {
 	if (ca != -1 && k[i] == sel_rid) current_chat_agent = ca;
     }
     // Update current dialog top panel
-    if (sel_rid > 0) {
+    if (sel_rid > 0 && current_chat_agent) {
 	o = document.getElementById('dialog-head');
 	o.innerHTML = DialogPanelHtml(current_chat_agent.ap, current_chat_agent.tt, current_chat_agent.ts);
     }
@@ -2336,6 +1921,7 @@ function UpdateDialogList() {
 // Send message
 function SendMessage() {
     var rid = sel_rid;
+    var rl = ApixCloud.CC.API.GetChatRooms();
 
     if (typeof rl[rid] === 'undefined') { rid = 0; }
 
@@ -2348,248 +1934,25 @@ function CloseChatRoom() {
 
 // Requests, search, history
 function P3_r2(d) {
-    var o;
-    var t = '';
-    var f = '';
-    var i;
-
     // If it history or not closed room, insert it into special element with limited back notices (read, delivery), only for e=dialog-s2
     if (d.e && d.e.length > 0) {
 	if (d.e == 'tabs') {
-	    if (typeof d.ovl !== 'undefined' && d.ovl.length > 0) {
-		for (var vi = 0; vi < d.ovl.length; vi++) {
-		    if (typeof vl[d.ovl[vi].vid] === 'undefined') {
-			vl[d.ovl[vi].vid] = [d.ovl[vi]];
-		    }
-		}
-	    }
-	    for (i = 0; i < d.h.length; i++) {
-		var n = 0;
-		var tbs = 'btn';
-
-		if (d.h[i].mmbrs && d.h[i].mmbrs.length > 0) {
-		    for (var ii = 0; ii < d.h[i].mmbrs.length; ii++) {
-			if (d.h[i].mmbrs[ii].u == 1 && !ol[d.h[i].mmbrs[ii].m]) {
-			    ol[d.h[i].mmbrs[ii].m] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, gid:0, helper:0, id:d.h[i].mmbrs[ii].m, ln:d.h[i].mmbrs[ii].a.ln, pn:d.h[i].mmbrs[ii].p};
-			}
-			if (d.h[i].mmbrs[ii].u == 2 && !vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid]) {
-			    vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid] = [];
-			    vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid][0] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, idd:d.h[i].domid, lid:d.h[i].lid, ln:d.h[i].mmbrs[ii].a.ln, vid:d.h[i].mmbrs[ii].m+'-'+d.h[i].domid, vid2:d.h[i].mmbrs[ii].m};
-			}
-		    }
-		}
-
-		// New
-		if (d.h[i].n == 1) {
-		    n = 1;
-		    // send back delivery notify
-		    ApixCloud.CC.API.SendDeliveryNotification(d.h[i].id, 0);
-		    
-		    //??? Send SMS or other message if admin away???
-		}
-		// Transfer
-		if (d.h[i].n == 2) {
-		    n = 2;
-		}
-		// Conference
-		if (d.h[i].n == 3) {
-		    n = 3;
-		}
-		
-		if (!rl[d.h[i].id]) rl[d.h[i].id] = {};
-
-		// Update sender/recipient for room
-		rl[d.h[i].id].rid = d.h[i].rid;
-		rl[d.h[i].id].rut = d.h[i].rut;
-		rl[d.h[i].id].sid = d.h[i].sid;
-		rl[d.h[i].id].sut = d.h[i].sut;
-		if (d.h[i].qid) rl[d.h[i].id].qid = d.h[i].qid;
-		if (d.h[i].domid >= 0) rl[d.h[i].id].domid = d.h[i].domid;
-		if (d.h[i].s >= 0) rl[d.h[i].id].s = d.h[i].s;
-		if (d.h[i].st >= 0) rl[d.h[i].id].st = d.h[i].st;
-		if (d.h[i].et >= 0) rl[d.h[i].id].et = d.h[i].et;
-
-		if (d.h[i].mmbrs) rl[d.h[i].id].mmbrs = d.h[i].mmbrs;
-		if (d.h[i].vhi) rl[d.h[i].id].vhi = d.h[i].vhi;
-
-		rl[d.h[i].id].i_lat = Date.now();
-
-		// Typing hints and stop timer
-		rl[d.h[i].id].th = {};
-		rl[d.h[i].id].stht = {};
-		// Typing icon hide timer
-		rl[d.h[i].id].tht = null;
-//		console.log('-------i='+i);
-//		console.log(d.h[i]);
-
-		// Transfer
-		if (d.h[i].n == 2) {
-		    // If transfer and sender was opend
-		    if (d.h[i].sut == 1 && sel_aid == d.h[i].sid && !sel_rid) {
-			console.log('31242 display incoming transfered conversation');
-			
-			// ???
-			//ddt1(d.h[i].id, d.h[i], tbs, n, d.i);
-			UpdateDialogList();
-			//JCC.P3.oc(d.h[i].sid, 0, d.h[i].id);
-			return;
-		    }
-		}
-
-		// If I sender and recipient open - open this dialog
-		if (d.h[i].sut == 1 && d.h[i].sid == ApixCloud.CC.API.GetConfig().mid && d.h[i].rut == 1 && d.h[i].rid == sel_aid) {
-		    console.log('---111--');
-		    //JCC.P3.oc(d.h[i].rid, 0, d.h[i].id);
-		    tbs = 'btn-o';
-		}
-
-		// If I recipient and sender open - open too
-		if (d.h[i].rut == 1 && d.h[i].rid == ApixCloud.CC.API.GetConfig().mid && d.h[i].sut == 1 && d.h[i].sid == sel_aid) {
-		    console.log('---222--');
-		    //JCC.P3.oc(d.h[i].sid, 0, d.h[i].id);
-		    tbs = 'btn-o';
-		}
-
-		//ddt1(d.h[i].id, d.h[i], tbs, n, d.i);
-		UpdateDialogList();
-
-		// Auto open new chat
-//		if (ApixCloud.CC.API.GetConfig().cc_aocfq == 1 && d.h[i].qid > 0) {
-//		    var _o = JCC.$('jcc-d'+d.h[i].id+'-btn2');
-//		    if (_o) _o.click();
-//		}
-	    }
+	    UpdateDialogList();
 	    return;
 	}
 	if (d.e == 'ar') {
-	    // exclude empty loops
-	    if (d.r.id > 0) {
-		var ut, id;
-		if (d.r.sut == 1 && d.r.sid == ApixCloud.CC.API.GetConfig().mid) {
-		    ut = d.r.rut;
-		    if (ut == 1) id = d.r.rid;
-		    if (ut == 2) id = d.r.rid + '-' + d.r.domid;
-		    if (ut == 200) id = d.r.rid;
-		} else {
-		    ut = d.r.sut;
-		    if (ut == 1) id = d.r.sid;
-		    if (ut == 2) id = d.r.sid + '-' + d.r.domid;
-		    if (ut == 200) id = d.r.sid;
-		}
-		if (!rl[d.r.id]) rl[d.r.id] = {};
-
-		if (d.r.mmbrs && d.r.mmbrs.length > 0) {
-		    for (var i = 0; i < d.r.mmbrs.length; i++) {
-			if (d.r.mmbrs[i].u == 1 && !ol[d.r.mmbrs[i].m]) {
-			    ol[d.r.mmbrs[i].m] = {ap:d.r.mmbrs[i].a.afn, fn:d.r.mmbrs[i].a.fn, gid:0, helper:0, id:d.r.mmbrs[i].m, ln:d.r.mmbrs[i].a.ln, pn:d.r.mmbrs[i].p};
-			}
-		    }
-		}
-
-		var th = rl[d.r.id].th;
-		var stht = rl[d.r.id].stht;
-		var tht = rl[d.r.id].tht;
-		rl[d.r.id] = d.r;
-		rl[d.r.id].th = th;
-		rl[d.r.id].stht = stht;
-		rl[d.r.id].tht = tht;
-		if (!rl[d.r.id].m && d.r.msgs[0].ut == 10 && d.r.msgs[0].mid == 150) {
-		    // Convert member obj to array
-		    rl[d.r.id].m = [];
-		    rl[d.r.id].m.push({'mid':d.r.msgs[0].m.m, 'ut': d.r.msgs[0].m.u});
-		}
-		if (!rl[d.r.id].m) {
-		    if (typeof d.r.msgs[0].m !== 'undefined') {
-			rl[d.r.id].m = d.r.msgs[0].m;
-		    } else {
-			rl[d.r.id].m = [];
-		    }
-		}
-
-		rl[d.r.id].rid = d.r.rid;
-		rl[d.r.id].rut = d.r.rut;
-		rl[d.r.id].sid = d.r.sid;
-		rl[d.r.id].sut = d.r.sut;
-
-		if (d.r.vhi) rl[d.r.id].vhi = d.r.vhi;
-
-		rl[d.r.id].domid = d.r.domid;
-		rl[d.r.id].i_lat = Date.now();
-		
-	//	console.log(d.r);
-	//	console.log(JCC.P3.rl[d.r.id]);
-
-		console.log('-JCC.P3.dc('+d.r.id+', '+ut+', '+id+');');
-		//JCC.P3.dc(d.r.id, ut, id);
-	    }
-
 	    // Display chat
 	    if (sel_rid == d.r.id) {
 		P3_d3(sel_rid);
 	    }
-
 	    return;
 	}
-/*	o = document.getElementById(d.e);
-	if (o && d.h && d.h.length > 0) {
-	    // just head of msg
-	    if (d.e == 'pdh') {
-		if (sel_aid) {
-		    ol[sel_aid].pdh = d.h[0]; console.log('PDH a added ' + d.h[0].id);
-		}
-		if (sel_vid) {
-		    vl[sel_vid].pdh = d.h[0]; console.log('PDH v added ' + d.h[0].id);
-		}
-	    }
-	    f = '';
-	    o.innerHTML = '';
-	    for (var i = 0; i < d.h.length; i++) {
-		o.innerHTML += JCC.P3.p1(d.h[i]);
-	    }
-	}
-*/
-	if (d.r) {
-	    if (!o) {o = document.getElementById(d.e+'-'+d.r.id);}
-	    if (!o) { return; }
-
-	    if (d.r.et) {
-		ec[d.r.id] = d.r;
-	    } else {
-		// active room!
-		rl[d.r.id] = d.r;
-	    }
-	    
-	    //JCC.P3.d3(null, o, d.r.id);
-	}
-    }
-    if (d.uf) {
-	switch (d.uf) {
-	    case 10: {
-		if (d.i === 'suf') {
-		    CC.P3.sufr(d.h);
-		} else {
-		    if (_e_ifs) _e_ifs.onR(d.h);
-		}
-	    } break;
-	    case 20: { /*DENY*/ } break;
-	}
-    }
-    if (d.va) {
-/*	if (typeof JCC.P1.val === 'undefined') JCC.P1.val = {};
-
-	//if (!JCC.P1.val[d.va.id]) JCC.P1.val[d.va.id] = d.va;
-	JCC.P1.val[d.va.id] = d.va;
-
-	JCC.P3.d4(d.va.id, d.je);
-*/
     }
 };
 
 // Notifies
 function P3_n1(d) {
     var o;
-
-    if (typeof d.r !== 'undefined' && typeof rl[d.r] !== 'undefined') rl[d.r].i_lat = Date.now();
 
     switch(d.n) {
 	// Message transfer notify
@@ -2602,43 +1965,13 @@ function P3_n1(d) {
 	} break;
 	// Message read notify
 	case 20: {
-	    if (typeof rl[d.r] === 'undefined') return;
-	    // update message
-	    if (!rl[d.r] || !rl[d.r].msgs) return;
 
-	    var s = 0;
-	    for (s = 0; s < rl[d.r].msgs.length; s++) {
-		if (rl[d.r].msgs[s].id == d.msgid) {
-		    rl[d.r].msgs[s].rt = d.rt;
-		    break;
-		}
-	    }
 	} break;
 	// Message delivered notify
 	case 30: {
-	    if (typeof rl[d.r] === 'undefined') return;
-	    // update message
-	    if (!rl[d.r] || !rl[d.r].msgs) return;
-
-	    var s = 0;
-	    for (s = 0; s < rl[d.r].msgs.length; s++) {
-		if (rl[d.r].msgs[s].id == d.msgid) {
-		    rl[d.r].msgs[s].dt = d.dt;
-		    break;
-		}
-	    }
 	} break;
 	// Typing notify.
 	case 40: {
-	    if (typeof rl[d.r] === 'undefined') return;
-
-	    // Update in th. Delete then msg received only
-	    if (typeof rl[d.r].th === 'undefined') rl[d.r].th = {};
-	    if (d.domid) {
-	        rl[d.r].th[d.ut+'-'+d.mid+'-'+d.domid] = d.t;
-	    } else {
-		rl[d.r].th[d.ut+'-'+d.mid] = d.t;
-	    }
 	    // add "typing..." and if text avail, show text too
 console.log('th 1');
 	    if (sel_rid == d.r) {
@@ -2655,24 +1988,9 @@ console.log('th 2');
 	} break;
 	// Admin close room
 	case 60: {
-	    // Admin leaved room or visitor leave site, so close TAB
-	    // 0. Delete visitor from P1.vl if his is left the site
-	    // 1. Delete from rl
-	    // 2. Delete TAB and area if open, close input
-	    // 3. Select nothing. ???May need select previus selected???
+	    // Admin leaved room or visitor leave site, so update dialog list
 
-	    if (typeof rl[d.r] === 'undefined') return;
-	    var vid;
-	    if (typeof rl[d.r] !== 'undefined') {
-		if (rl[d.r].rut == 2) vid = rl[d.r].rid + '-' + rl[d.r].domid;
-	        if (rl[d.r].sut == 2) vid = rl[d.r].sid + '-' + rl[d.r].domid;
-		if (vid && typeof vl[vid] !== 'undefined') if (vl[vid][0].vstatus == 0) delete vl[vid];
-
-		if (rl[d.r]) { delete rl[d.r]; }
-	    }
-
-	    o = document.getElementById('jcc-d'+d.r+'-tab');
-	    if (o) { o.parentNode.removeChild(o); o = null; }
+	    UpdateDialogList()
 	    if (sel_rid == d.r) {
 
 		// Go to Home screen
@@ -2701,7 +2019,7 @@ console.log('th 2');
 		o.style.width = d.p+'%';
 		o = document.getElementById('ccupbl-'+d.h);
 		if (o) {
-		    if (d.p < 100) o.innerHTML = '&nbsp;'+ACC.L[368].replace('%p%', d.p)+'&nbsp;';
+		    if (d.p < 100) o.innerHTML = '&nbsp;'+ACC.L[368].replace('%p%', d.p)+'&nbsp;';	// >
 		    else o.innerHTML = ACC.L[369];
 		}
 	    }
@@ -2716,13 +2034,6 @@ console.log('th 2');
 		    default: { msg = ACC.L[361]; } break;
 		}
 	    }
-	    // Remove IS message from array if avail
-	    if (typeof rl[d.r] !== 'undefined')
-	    for (var _i = 0; _i < rl[d.r].msgs.length; _i++) {
-		if (rl[d.r].msgs[_i].ut == 10 && rl[d.r].msgs[_i].mid == 200 && rl[d.r].msgs[_i].body.indexOf(':'+d.h+':') > 0) {
-		    rl[d.r].msgs.splice(_i, 1);
-		}
-	    }
 	    if (d.ut == 1 && d.mid == ApixCloud.CC.API.GetConfig().mid) alert(ACC.L[57]+' - '+msg); //JCC.m(JCC.L[57], msg, 4, 1);
 	    _e_ifs = null;
 	    var o = document.getElementById('cuft-'+d.h);
@@ -2732,15 +2043,6 @@ console.log('th 2');
 	} break;
 	// Visitor block/unblock
 	case 80: {
-	    var vli = d.vid+'-'+d.idd;
-	    if (d.c == 1 && typeof vl[vli] !== 'undefined') {
-		vl[vli][0].fo = d.fo;
-		vl[vli][0].fodo = d.fodo;
-	    }
-	    if (d.c == 2 && typeof vl[vli] !== 'undefined') {
-		delete vl[vli][0].fo;
-		delete vl[vli][0].fodo;
-	    }
 	} break;
 	// Form to visitor was sent
 	case 90: {
@@ -2753,6 +2055,7 @@ console.log('th 2');
 
 // Show typing hint
 function P3_st(r) {
+    var rl = ApixCloud.CC.API.GetChatRooms();
     if (typeof rl[r] === 'undefined') return;
     var t = '', t1;
     var o = document.getElementById('typing-hint');
@@ -2861,18 +2164,22 @@ function dntl(d) {
     </div>
     <div>
 	<div class="screen">
+	    <div class="refresh" onclick="UpdateUserList();">refresh</div>
 	    <div class="head">Сотрудники</div>
 	    <div class="body" id="admins"></div>
 	</div>
 	<div class="screen">
+	    <div class="refresh" onclick="UpdateVirtualQueuesList();">refresh</div>
 	    <div class="head">Очереди</div>
-	    <div class="body" id="queues"></div>
+	    <div class="body" id="queues"><div id="jcc-qc-cnt" style="p111adding-bottom: 5px; display: block;"></div></div>
 	</div>
 	<div class="screen">
+	    <div class="refresh" onclick="UpdateDialogList()">refresh</div>
 	    <div class="head">Мои диалоги</div>
 	    <div class="body" id="my_dialogs"></div>
 	</div>
 	<div class="screen">
+	    <div class="refresh" onclick="">refresh</div>
 	    <div class="head" id="dialog-head">Чат</div>
 	    <div class="body" id="dialog" style="height: 374px;"></div>
 	    <div id="typing-hint" style="display:none;position: absolute;top: 65px;left: 10px;right: 10px;border-radius: 10px;background: rgba(0,0,0,0.1);padding:10px;"></div>

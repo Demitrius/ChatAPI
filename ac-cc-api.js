@@ -26,6 +26,18 @@ ApixCloud.CC.API = (function() {
 		    JCC.P1.s1(d.list);
 		    // Get active dialogs with visitors
 		    JCC.s('13080{{-}}3{{-}}2');
+
+		    // Get queued dialogs
+		    if (typeof d.nac !== 'undefined' && d.nac.length > 0) {
+			for (var i = 0; i < d.nac.length; i++) {
+			    // Not Allocated Conversations
+			    // Check previous defined
+			    if (typeof JCC.P3.aqm[d.nac[i].dqid] !== 'undefined') {
+				if (JCC.P3.aqm[d.nac[i].dqid].mct > 0) { clearInterval(JCC.P3.aqm[x.nac[i].dqid].mct); }
+			    }
+			    JCC.P3.aqm[d.nac[i].dqid] = d.nac[i];
+			}
+		    }
 		} else {
 		    // not Destroy JCC.P1.vl
 		    if (!JCC.P1.vl) JCC.P1.vl = {};
@@ -83,6 +95,15 @@ ApixCloud.CC.API = (function() {
 	    case 20: {
 		JCC.P3.u1(d);
 	    } break;
+	    case 30: {
+		JCC.P3.d1(d);
+	    } break;
+	    case 40: {
+		JCC.P3.n1(d);
+	    } break;
+	    case 50: {
+		JCC.P3.r2(d);
+	    } break;
 	    case 70: {
 		JCC.P3.omff(d);
 	    } break;
@@ -107,25 +128,239 @@ ApixCloud.CC.API = (function() {
 	}
     }
     JCC.P3.qm = function(d) {
-    //    console.log(d);
+//    console.log(d);
 	switch (d.t) {
 	    case 'q': {
 		// New queue list received.
-		// Update JS
+		// Update JS, DOM
 		if (!JCC.P3.queues) {
 		    JCC.P3.queues = d.q;
+		} else {
+		    // TODO
+		    // Just update JS, keep dynamic data
+		    // Delete if key not in d.q
+		    // Add if new key
+		    // Keep .dyn object and replace key, then add .dyn back
 		}
+		// Display Queues. DM. Do it in GUI
+		//JCC.P3.qd();
+	    } break;
+	    case 'n': {
+		// New Incoming Conversation
+		// Check previous defined
+		if (typeof JCC.P3.aqm[d.dqid] !== 'undefined') {
+		    if (JCC.P3.aqm[d.dqid].mct > 0) { clearInterval(JCC.P3.aqm[d.dqid].mct); }
+		}
+		JCC.P3.aqm[d.dqid] = d.nr;
+		JCC.P3.qmc(d.dqid); // Exclude GUI
+	    } break;
+	    case 't': {
+		// Conversation taken - delete it
+		if (JCC.P3.aqm[d.dqid]) {
+		    clearInterval(JCC.P3.aqm[d.dqid].mct);
+		    if (typeof JCC.P3.aqm[d.dqid]._n !== 'undefined') {
+			JCC.P3.aqm[d.dqid]._n.close();
+		    }
+		}
+
+		delete JCC.P3.aqm[d.dqid];
 	    } break;
 	}
     };
 
+JCC.P3.qmc = function(d) {
+    switch (JCC.P3.aqm[d].sut) {
+	case 1: {
+	    if (typeof JCC.P3.ol[JCC.P3.aqm[d].sid] !== 'undefined') {
+	    } else if (JCC.P3.aqm[d].smi && JCC.P3.aqm[d].smi.a) {
+		JCC.P3.ol[JCC.P3.aqm[d].sid] = {ap:JCC.P3.aqm[d].smi.a.afn, fn:JCC.P3.aqm[d].smi.a.fn, gid:0, helper:0, id:JCC.P3.aqm[d].sid, ln:JCC.P3.aqm[d].smi.a.ln, pn:JCC.P3.aqm[d].smi.p};
+	    } else {
+	    }
+	} break;
+	case 2: {
+	    if (typeof JCC.P1.vl[JCC.P3.aqm[d].sid+'-'+JCC.P3.aqm[d].domid] === 'object') {
+	    } else {
+		if (typeof JCC.P3.aqm[d].sinfo !== 'undefined') {
+		    JCC.P1.vl[JCC.P3.aqm[d].sid+'-'+JCC.P3.aqm[d].domid] = [];
+		    JCC.P1.vl[JCC.P3.aqm[d].sid+'-'+JCC.P3.aqm[d].domid][0] = {ap:JCC.P3.aqm[d].sinfo.a.afn, fn:JCC.P3.aqm[d].sinfo.a.fn, idd:JCC.P3.aqm[d].domid, lid:JCC.P3.aqm[d].lid, ln:JCC.P3.aqm[d].sinfo.a.ln, vid:JCC.P3.aqm[d].sid+'-'+JCC.P3.aqm[d].domid, vid2:JCC.P3.aqm[d].sid};
+		} else {
+		}
+	    }
+	} break;
+	case 200: {
+	} break;
+    }
+};
+
+// Notifies
+JCC.P3.n1 = function(d) {
+    var o;
+
+    if (typeof d.r !== 'undefined' && typeof JCC.P3.rl[d.r] !== 'undefined') JCC.P3.rl[d.r].i_lat = Date.now();
+
+    switch(d.n) {
+	// Message transfer notify
+	case 10: {
+	    // Clear in GUI
+	    //JCC.$('jcc-dialog-input').value = '';
+	} break;
+	// Member join conversation
+	case 15: {
+	    // TODO
+	} break;
+	// Message read notify
+	case 20: {
+	    if (typeof JCC.P3.rl[d.r] === 'undefined') return;
+	    // update message
+	    if (!JCC.P3.rl[d.r] || !JCC.P3.rl[d.r].msgs) return;
+
+	    var s = 0;
+	    for (s = 0; s < JCC.P3.rl[d.r].msgs.length; s++) {
+		if (JCC.P3.rl[d.r].msgs[s].id == d.msgid) {
+		    JCC.P3.rl[d.r].msgs[s].rt = d.rt;
+		    break;
+		}
+	    }
+	} break;
+	// Message delivered notify
+	case 30: {
+	    if (typeof JCC.P3.rl[d.r] === 'undefined') return;
+	    // update message
+	    if (!JCC.P3.rl[d.r] || !JCC.P3.rl[d.r].msgs) return;
+
+	    var s = 0;
+	    for (s = 0; s < JCC.P3.rl[d.r].msgs.length; s++) {
+		if (JCC.P3.rl[d.r].msgs[s].id == d.msgid) {
+		    JCC.P3.rl[d.r].msgs[s].dt = d.dt;
+		    break;
+		}
+	    }
+	} break;
+	// Typing notify.
+	case 40: {
+	    if (typeof JCC.P3.rl[d.r] === 'undefined') return;
+	    // Update in th. Delete then msg received only
+	    if (typeof JCC.P3.rl[d.r].th === 'undefined') JCC.P3.rl[d.r].th = {};
+	    if (d.domid) {
+	        JCC.P3.rl[d.r].th[d.ut+'-'+d.mid+'-'+d.domid] = d.t;
+	    } else {
+		JCC.P3.rl[d.r].th[d.ut+'-'+d.mid] = d.t;
+	    }
+	} break;
+	// Conference invite notify
+	case 50: {
+	    // GUI
+	} break;
+	// Admin close room
+	case 60: {
+	    // Admin leaved room or visitor leave site, so close TAB
+	    // 0. Delete visitor from P1.vl if his is left the site
+	    // 1. Delete from rl
+	    // 2. Delete TAB and area if open, close input
+	    // 3. Select nothing. ???May need select previus selected???
+
+	    if (typeof JCC.P3.rl[d.r] === 'undefined') return;
+	    var vid;
+	    if (typeof JCC.P3.rl[d.r] !== 'undefined') {
+		if (JCC.P3.rl[d.r].rut == 2) vid = JCC.P3.rl[d.r].rid + '-' + JCC.P3.rl[d.r].domid;
+	        if (JCC.P3.rl[d.r].sut == 2) vid = JCC.P3.rl[d.r].sid + '-' + JCC.P3.rl[d.r].domid;
+		if (vid && typeof JCC.P1.vl[vid] !== 'undefined') if (JCC.P1.vl[vid][0].vstatus == 0) delete JCC.P1.vl[vid];
+
+		if (JCC.P3.rl[d.r]) { delete JCC.P3.rl[d.r]; }
+	    }
+	} break;
+	// Uploading: progress
+	case 70: {
+	    // GUI
+	} break;
+	// Uploading: abort / error
+	case 75: {
+	    // Remove IS message from array if avail
+	    if (typeof JCC.P3.rl[d.r] !== 'undefined')
+	    for (var _i = 0; _i < JCC.P3.rl[d.r].msgs.length; _i++) {
+		if (JCC.P3.rl[d.r].msgs[_i].ut == 10 && JCC.P3.rl[d.r].msgs[_i].mid == 200 && JCC.P3.rl[d.r].msgs[_i].body.indexOf(':'+d.h+':') > 0) {
+		    JCC.P3.rl[d.r].msgs.splice(_i, 1);
+		}
+	    }
+	} break;
+	// Visitor block/unblock
+	case 80: {
+	    var vli = d.vid+'-'+d.idd;
+	    if (d.c == 1 && typeof JCC.P1.vl[vli] !== 'undefined') {
+		JCC.P1.vl[vli][0].fo = d.fo;
+		JCC.P1.vl[vli][0].fodo = d.fodo;
+	    }
+	    if (d.c == 2 && typeof JCC.P1.vl[vli] !== 'undefined') {
+		delete JCC.P1.vl[vli][0].fo;
+		delete JCC.P1.vl[vli][0].fodo;
+	    }
+	} break;
+	// Form to visitor was sent
+	case 90: {
+	    // Replace Send button with text
+	    // GUI
+	} break;
+	// Tags: add new
+	case 100: {
+	    if (!JCC.C.tags) JCC.C.tags = [];
+	    JCC.C.tags.push(decodeURIComponent(d.t));
+	} break;
+	// Tags: update tag in list
+	case 101: {
+	    if (!JCC.C.tags && d.t != '') {
+		JCC.C.tags = [];
+		JCC.C.tags.push(decodeURIComponent(d.t));
+	    } else {
+		for (var i = 0; i < JCC.C.tags.length; i++) {
+		    if (decodeURIComponent(d.o) == JCC.C.tags[i]) {
+			if (d.t == '') {
+			    JCC.C.tags.splice(i, 1);
+			} else {
+			    JCC.C.tags[i] = decodeURIComponent(d.t);
+			}
+			break;
+		    }
+		}
+	    }
+	} break;
+	// Tags: change Tags event
+	case 103: {
+	    switch (d.ot) {
+		case 1: {
+		    if (typeof JCC.P3.rl[d.r] === 'undefined') return;
+		    JCC.P3.rl[d.r].tags = d.t;
+		} break;
+	    }
+	} break;
+	// Category: change category event
+	case 106: {
+	    switch (d.ot) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5: {
+		    if (d.ot == 1) {
+		        if (typeof JCC.P3.rl[d.oid] === 'undefined') return;
+			JCC.P3.rl[d.oid].idcat = d.c;
+		    }
+		} break;
+	    }
+	} break;
+    }
+};
+
+
+
     // Add admins
     JCC.P3.s1 = function(l) {
+	JCC.P3.dl = [];
 	for (var d = 0; d < l.length; d++) {
 	    for (var a = 0; a < l[d].adms.length; a++) {
 		JCC.P3.ol[l[d].adms[a].id] = l[d].adms[a];
 		JCC.P3.ol[l[d].adms[a].id].gid = l[d].id;
 	    }
+	    JCC.P3.dl.push({gid: l[d].id, name: l[d].name});
 	}
     }
 
@@ -233,6 +468,338 @@ ApixCloud.CC.API = (function() {
 
 
 
+    // Chat events
+    JCC.P3.d1 = function(d) {
+	var o;
+        var p;
+	var t;
+	var c;
+	var ct = 1;
+
+    console.log('RCV dialog update.');
+    console.log(d);
+    // 1 Is it new or exists dialog?
+
+	// New conversation
+	if (!JCC.P3.rl[d.r] && d.msg.ut == 10 && d.msg.mid == 100) {
+	    if (typeof d.msg.ovl !== 'undefined' && d.msg.ovl.length > 0) {
+        	for (var vi = 0; vi < d.msg.ovl.length; vi++) {
+            	    if (typeof JCC.P1.vl[d.msg.ovl[vi].vid] === 'undefined') {
+                	JCC.P1.vl[d.msg.ovl[vi].vid] = [d.msg.ovl[vi]];
+            	    }
+        	}
+	    }
+	    // New chat from admin
+	    if (d.msg.sut == 1 && d.msg.sid != JCC.C.mid) {
+		// Get sender info
+		var sn = '';
+		switch (d.msg.sut) {
+		    case 1: {
+			if (typeof JCC.P3.ol[d.msg.sid] === 'object') {
+			    sn = ovn(d.msg.sid, null, null, null, null, 1);
+		        } else { sn = '?'; }
+		    } break;
+		}
+	    }
+	    // New chat from visitor
+	    if (d.msg.sut == 2 && d.msg.dc != 1) {
+		// Get sender info
+		var sn = '';
+		switch (d.msg.sut) {
+		    case 2: {
+			if (typeof JCC.P1.vl[d.msg.sid+'-'+d.msg.domid] === 'object') {
+			    sn = ovn(null, d.msg.sid+'-'+d.msg.domid, null, null, null, 1);
+		        } else { sn = ACC.L[7]; }
+		    } break;
+		}
+	    }
+
+	    console.log('add new room');
+	    JCC.P3.rl[d.r] = {};
+	    // state: 1 - dialog, 2 - conference
+	    JCC.P3.rl[d.r].s = d.msg.s;
+	    // Current members
+	    JCC.P3.rl[d.r].m = d.msg.m;
+	    // All members which touch dialog
+	    JCC.P3.rl[d.r].mmbrs = d.msg.mmbrs;
+
+	    // Messages container
+	    JCC.P3.rl[d.r].msgs = [];
+
+	    // Room sender/recipient. Update on transfer.
+	    JCC.P3.rl[d.r].rid = d.msg.rid;
+	    JCC.P3.rl[d.r].rut = d.msg.rut;
+	    JCC.P3.rl[d.r].sid = d.msg.sid;
+	    JCC.P3.rl[d.r].sut = d.msg.sut;
+
+	    JCC.P3.rl[d.r].id = d.r;
+	    JCC.P3.rl[d.r].domid = d.msg.domid;
+	    JCC.P3.rl[d.r].lid = d.msg.lid;
+
+	    // Typing hints and stop typing hint
+	    JCC.P3.rl[d.r].th = {};
+	    // Typing icon hide timer
+	    JCC.P3.rl[d.r].tht = null;
+	    // Unread Messages
+	    JCC.P3.rl[d.r].um = {};
+
+	    c = 'btn';
+	    ct = 0;
+	} else {
+	    // Not new
+	    // and Not my and Not system
+	    if (d.msg && d.msg.ut != 10 && !(d.msg.ut == 1 && d.msg.mid == JCC.C.mid)) {
+		if (typeof JCC.P3.rl[d.r] !== 'undefined') {
+		    if (JCC.P3.rl[d.r].um.ut == d.msg.ut && JCC.P3.rl[d.r].um.mid == d.msg.mid) {
+			JCC.P3.rl[d.r].um.mc++;
+			// Event to GUI callback
+		    } else if (typeof JCC.P3.rl[d.r].um.ut === 'undefined') {
+			JCC.P3.rl[d.r].um = {mc:1, ut:d.msg.ut, mid:d.msg.mid};
+			// Event to GUI callback
+		    }
+		}
+	    }
+	}
+
+	// Last activity
+        if (JCC.P3.rl[d.r]) JCC.P3.rl[d.r].i_lat = Date.now();
+
+	// Transfer
+        if (JCC.P3.rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
+	    // Check member
+	    if (typeof JCC.P3.ol[d.msg.tm.m] === 'undefined') {
+        	JCC.P3.ol[d.msg.tm.m] = {ap:d.msg.tm.a.afn, fn:d.msg.tm.a.fn, gid:0, helper:0, id:d.msg.tm.m, ln:d.msg.tm.a.ln, pn:d.msg.tm.p};
+	    }
+
+	    // Update sender/recipient for room
+	    if (d.msg.rid && d.msg.sid) {
+		JCC.P3.rl[d.r].rid = d.msg.rid;
+	        JCC.P3.rl[d.r].rut = d.msg.rut;
+	        JCC.P3.rl[d.r].sid = d.msg.sid;
+		JCC.P3.rl[d.r].sut = d.msg.sut;
+	    }
+	}
+    
+	// Skip early 130 transfer msg
+	if (!JCC.P3.rl[d.r] && d.msg.ut == 10 && d.msg.mid == 130) {
+	    return;
+	}
+
+	if (JCC.P3.rl[d.r] && d.msg.ut == 10 && d.msg.mid == 142) {
+	    // Check member
+	    if (typeof JCC.P3.ol[d.msg.cm.m] === 'undefined') {
+        	JCC.P3.ol[d.msg.cm.m] = {ap:d.msg.cm.a.afn, fn:d.msg.cm.a.fn, gid:0, helper:0, id:d.msg.cm.m, ln:d.msg.cm.a.ln, pn:d.msg.cm.p};
+	    }
+
+	    JCC.P3.rl[d.r].s = d.msg.s;
+	}
+
+	if (typeof d.msg !== 'undefined' && JCC.P3.rl[d.r]) {
+	    if (JCC.P3.rl[d.r].msgs) JCC.P3.rl[d.r].msgs.push(d.msg);
+
+	    // delete typing hint
+	    if (d.msg.ut == 2) {
+		if (JCC.P3.rl[d.r].th && (JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+JCC.P3.rl[d.r].domid] || JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+JCC.P3.rl[d.r].domid] == '')) {
+		    delete JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid+'-'+JCC.P3.rl[d.r].domid];
+		    console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid+'-'+JCC.P3.rl[d.r].domid);
+		}
+	    } else {
+		if (JCC.P3.rl[d.r].th && (JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid] || JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid] == '')) {
+		    delete JCC.P3.rl[d.r].th[d.msg.ut+'-'+d.msg.mid];
+		    console.log('HINT deleted for ' + d.r + ' room, '+d.msg.ut+'-'+d.msg.mid);
+		}
+	    }
+	}
+	return;
+    };
+
+    //
+    JCC.P3.r2 = function(d) {
+	var o;
+	var t = '';
+	var f = '';
+	var i;
+
+	// If it history or not closed room, insert it into special element with limited back notices (read, delivery), only for e=dialog-s2
+	if (d.e && d.e.length > 0) {
+	    if (d.e == 'tabs') {
+		if (typeof d.ovl !== 'undefined' && d.ovl.length > 0) {
+		    for (var vi = 0; vi < d.ovl.length; vi++) {
+			if (typeof JCC.P1.vl[d.ovl[vi].vid] === 'undefined') {
+			    JCC.P1.vl[d.ovl[vi].vid] = [d.ovl[vi]];
+			}
+		    }
+		}
+		for (i = 0; i < d.h.length; i++) {
+		    var n = 0;
+		    var tbs = 'btn';
+
+		    if (d.h[i].mmbrs && d.h[i].mmbrs.length > 0) {
+			for (var ii = 0; ii < d.h[i].mmbrs.length; ii++) {
+			    if (d.h[i].mmbrs[ii].u == 1 && !JCC.P3.ol[d.h[i].mmbrs[ii].m]) {
+				JCC.P3.ol[d.h[i].mmbrs[ii].m] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, gid:0, helper:0, id:d.h[i].mmbrs[ii].m, ln:d.h[i].mmbrs[ii].a.ln, pn:d.h[i].mmbrs[ii].p};
+			    }
+			    if (d.h[i].mmbrs[ii].u == 2 && !JCC.P1.vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid]) {
+				JCC.P1.vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid] = [];
+			        JCC.P1.vl[d.h[i].mmbrs[ii].m+'-'+d.h[i].domid][0] = {ap:d.h[i].mmbrs[ii].a.afn, fn:d.h[i].mmbrs[ii].a.fn, idd:d.h[i].domid, lid:d.h[i].lid, ln:d.h[i].mmbrs[ii].a.ln, vid:d.h[i].mmbrs[ii].m+'-'+d.h[i].domid, vid2:d.h[i].mmbrs[ii].m};
+			    }
+			}
+		    }
+
+		    // New
+		    if (d.h[i].n == 1) {
+			n = 1;
+			// send back delivery notify
+			JCC.s('13040{{-}}3{{-}}' + d.h[i].id + '{{-}}0', 500);
+		    }
+		    // Transfer
+		    if (d.h[i].n == 2) {
+			n = 2;
+		    }
+		    // Conference
+		    if (d.h[i].n == 3) {
+			n = 3;
+		    }
+		
+		    if (!JCC.P3.rl[d.h[i].id]) JCC.P3.rl[d.h[i].id] = {};
+
+		    // Update sender/recipient for room
+		    JCC.P3.rl[d.h[i].id].rid = d.h[i].rid;
+		    JCC.P3.rl[d.h[i].id].rut = d.h[i].rut;
+	    	    JCC.P3.rl[d.h[i].id].sid = d.h[i].sid;
+		    JCC.P3.rl[d.h[i].id].sut = d.h[i].sut;
+		    JCC.P3.rl[d.h[i].id].um = d.h[i].um;
+		    if (d.h[i].qid) JCC.P3.rl[d.h[i].id].qid = d.h[i].qid;
+		    if (d.h[i].domid >= 0) JCC.P3.rl[d.h[i].id].domid = d.h[i].domid;
+		    if (d.h[i].s >= 0) JCC.P3.rl[d.h[i].id].s = d.h[i].s;
+		    if (d.h[i].st >= 0) JCC.P3.rl[d.h[i].id].st = d.h[i].st;
+		    if (d.h[i].et >= 0) JCC.P3.rl[d.h[i].id].et = d.h[i].et;
+
+		    if (d.h[i].mmbrs) JCC.P3.rl[d.h[i].id].mmbrs = d.h[i].mmbrs;
+		    if (d.h[i].vhi) JCC.P3.rl[d.h[i].id].vhi = d.h[i].vhi;
+
+		    JCC.P3.rl[d.h[i].id].i_lat = Date.now();
+
+		    // Typing hints and stop timer
+		    JCC.P3.rl[d.h[i].id].th = {};
+		    JCC.P3.rl[d.h[i].id].stht = {};
+		    // Typing icon hide timer
+		    JCC.P3.rl[d.h[i].id].tht = null;
+		}
+		return;
+	    }
+	    if (d.e == 'ar') {
+		// exclude empty loops
+		if (d.r.id > 0) {
+		    var ut, id;
+		    if (d.r.sut == 1 && d.r.sid == JCC.C.mid) {
+			ut = d.r.rut;
+//		    id = d.r.rid;
+			if (ut == 1) id = d.r.rid;
+			if (ut == 2) id = d.r.rid + '-' + d.r.domid;
+			if (ut == 200) id = d.r.rid;
+		    } else {
+			ut = d.r.sut;
+//		    id = d.r.sid;
+		        if (ut == 1) id = d.r.sid;
+			if (ut == 2) id = d.r.sid + '-' + d.r.domid;
+			if (ut == 200) id = d.r.sid;
+		    }
+		    if (!JCC.P3.rl[d.r.id]) JCC.P3.rl[d.r.id] = {};
+
+		    if (d.r.mmbrs && d.r.mmbrs.length > 0) {
+			for (var i = 0; i < d.r.mmbrs.length; i++) {
+			    if (d.r.mmbrs[i].u == 1 && !JCC.P3.ol[d.r.mmbrs[i].m]) {
+				JCC.P3.ol[d.r.mmbrs[i].m] = {ap:d.r.mmbrs[i].a.afn, fn:d.r.mmbrs[i].a.fn, gid:0, helper:0, id:d.r.mmbrs[i].m, ln:d.r.mmbrs[i].a.ln, pn:d.r.mmbrs[i].p};
+			    }
+			}
+		    }
+
+		    var th = JCC.P3.rl[d.r.id].th;
+		    var stht = JCC.P3.rl[d.r.id].stht;
+		    var tht = JCC.P3.rl[d.r.id].tht;
+		    JCC.P3.rl[d.r.id] = d.r;
+		    JCC.P3.rl[d.r.id].th = th;
+		    JCC.P3.rl[d.r.id].stht = stht;
+		    JCC.P3.rl[d.r.id].tht = tht;
+		    if (!JCC.P3.rl[d.r.id].m && d.r.msgs[0].ut == 10 && d.r.msgs[0].mid == 150) {
+			// Convert member obj to array
+			JCC.P3.rl[d.r.id].m = [];
+			JCC.P3.rl[d.r.id].m.push({'mid':d.r.msgs[0].m.m, 'ut': d.r.msgs[0].m.u});
+		    }
+		    if (!JCC.P3.rl[d.r.id].m) {
+			if (typeof d.r.msgs[0].m !== 'undefined') {
+			    JCC.P3.rl[d.r.id].m = d.r.msgs[0].m;
+			} else {
+			    JCC.P3.rl[d.r.id].m = [];
+			}
+		    }
+
+		    JCC.P3.rl[d.r.id].rid = d.r.rid;
+		    JCC.P3.rl[d.r.id].rut = d.r.rut;
+		    JCC.P3.rl[d.r.id].sid = d.r.sid;
+		    JCC.P3.rl[d.r.id].sut = d.r.sut;
+
+		    if (d.r.vhi) JCC.P3.rl[d.r.id].vhi = d.r.vhi;
+
+		    JCC.P3.rl[d.r.id].domid = d.r.domid;
+		    JCC.P3.rl[d.r.id].i_lat = Date.now();
+		}
+		return;
+	    }
+	    if (d.r) {
+		if (d.r.et) {
+		    JCC.P3.ec[d.r.id] = d.r;
+		} else {
+		    // active room!
+		    JCC.P3.rl[d.r.id] = d.r;
+		}
+	    }
+	}
+	if (d.uf) {
+	    switch (d.uf) {
+		case 10: {
+		    if (d.i === 'suf') {
+			CC.P3.sufr(d.h);
+		    } else {
+			if (JCC.P3._e_ifs) JCC.P3._e_ifs.onR(d.h);
+	    	    }
+	        } break;
+		case 20: { /*DENY*/ } break;
+	    }
+        }
+	if (d.va) {
+	    //if (typeof JCC.P1.val === 'undefined') JCC.P1.val = {};
+	    //JCC.P1.val[d.va.id] = d.va;
+	    //JCC.P3.d4(d.va.id, d.je);
+	}
+    };
+
+    JCC.P3.umc = function(r) {
+	// Unread Messages Count
+	var umc = 0;
+	if (typeof JCC.P3.rl[r] !== 'undefined' && JCC.P3.rl[r].msgs && JCC.P3.rl[r].msgs.length > 0) {
+	    for (var i = JCC.P3.rl[r].msgs.length; i > 0; i--) {
+		if (JCC.P3.rl[r].msgs[i].ut == 10) continue;
+		console.log(JCC.P3.rl[r].msgs[i]);
+		// If message not mine and rt is 0 - +1 unread
+		// If (umc > 0 and message mine) or rt > 0 - stop count
+		if (!(JCC.P3.rl[r].msgs[i].ut == 1 && JCC.P3.rl[r].msgs[i].mid == JCC.C.mid) && !JCC.P3.rl[r].msgs[i].rt) {
+		    umc++;
+		    continue;
+		}
+		if (!(JCC.P3.rl[r].msgs[i].ut == 1 && JCC.P3.rl[r].msgs[i].mid == JCC.C.mid) && JCC.P3.rl[r].msgs[i].rt > 0) {
+		    return umc;
+		}
+		if (JCC.P3.rl[r].msgs[i].ut == 1 && JCC.P3.rl[r].msgs[i].mid == JCC.C.mid) {
+		    return umc;
+		}
+
+	    }
+	}
+    };
+
+
     // Update
     JCC.P3.u1 = function(d) {
 console.log(d);
@@ -313,6 +880,8 @@ console.log(d);
 			break;
 		    }
 		}
+		if (!qn) qn = ACC.L[383];
+
 		if (qn && typeof JCC.P3.queues[d.qinfo[i].id] !== 'undefined') JCC.P3.queues[d.qinfo[i].id].qn = qn;
 	    }
 	}
@@ -769,6 +1338,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	JCC.llc = null;
 
 	JCC.P1.vl = {};
+	JCC.P3.dl = [];
 	JCC.P3.ol = {};
 	JCC.P3.rl = {};
 	JCC.P3.ec = {};
@@ -899,15 +1469,35 @@ console.log('onClose reconnect:'+JCC.llc);
     }
     // Send delivery notification
     function sdn(r, m) {
+	if (typeof JCC.P3.rl[r] !== 'undefined' && typeof JCC.P3.rl[r].msgs !== 'undefined') {
+	    for (var i = 0; i < JCC.P3.rl[r].msgs.length; i++) {
+		if (JCC.P3.rl[r].msgs[i].id == m) {
+		    JCC.P3.rl[r].msgs[i].delivered = 1;
+		    break;
+		}
+	    }
+	}
+
 	JCC.s('13040{{-}}3{{-}}' + r + '{{-}}' + m, 500);
     }
     // Send read notification
     function srn(r, m) {
+	if (typeof JCC.P3.rl[r] !== 'undefined' && typeof JCC.P3.rl[r].msgs !== 'undefined') {
+	    for (var i = 0; i < JCC.P3.rl[r].msgs.length; i++) {
+		if (JCC.P3.rl[r].msgs[i].id == m) {
+		    JCC.P3.rl[r].msgs[i].read = 1;
+		    break;
+		}
+	    }
+	    // Clear unread messages
+	    JCC.P3.rl[r].um = {};
+	}
+
 	JCC.s('13030{{-}}3{{-}}' + r + '{{-}}' + m, 500);
     }
     // Get room messages
-    function get_chat_room(r, a) {
-	// Request body
+    function get_chat_room_msgs(r, a) {
+	// Request body. Chat messges returner at event P 3/50
 	if (r) {
 	    JCC.s('13100{{-}}3{{-}}' + r + '{{-}}ar{{-}}0{{-}}0');
 	} else {
@@ -968,6 +1558,21 @@ console.log('onClose reconnect:'+JCC.llc);
 	JCC.s('13020{{-}}3{{-}}' + mid + '{{-}}' + ut + '{{-}}' + rid + '{{-}}' + JCC.euc(m)+ai);
     };
 
+    function get_users() { return JCC.P3.ol; }
+    function get_departments() { return JCC.P3.dl; }
+    function get_virtual_queues() { return JCC.P3.queues; }
+    function get_visitors() { return JCC.P1.vl; }
+    function get_chat_rooms() { return JCC.P3.rl; }
+    function get_queued_chats() { return JCC.P3.aqm; }
+
+    function set_chat_room_owners(r, m) {
+	if (!JCC.P3.rl[r]) return;
+        JCC.P3.rl[r].rid = m.rid;
+	JCC.P3.rl[r].rut = m.rut;
+	JCC.P3.rl[r].sid = m.sid;
+	JCC.P3.rl[r].sut = m.sut;
+	if (m.m) JCC.P3.rl[r].m = m.m;
+    }
 
     function go_test() {
 console.log(JCC.so);
@@ -982,14 +1587,21 @@ console.log(JCC.so);
 	GetForms: get_forms,
 	GetUserName: ovn,
 	GetUserFrom: guf,
+	GetUsers: get_users,
+	GetVirtualQueues: get_virtual_queues,
+	GetVisitors: get_visitors,
+	GetDepartments: get_departments,
 	GetMemberInfo: osn,
-	GetChatRoomMessages: get_chat_room,
+	GetChatRooms: get_chat_rooms,
+	GetChatRoomMessages: get_chat_room_msgs,
+	GetQueuedChats: get_queued_chats,
 	ChangeAvailableStatus: cas,
 	TakeChatFromQueue: tqm,
 	SendDeliveryNotification: sdn,
 	SendReadNotification: srn,
 	SendMessage: send_message,
+	SetChatRoomOwners: set_chat_room_owners,
 	CloseChatRoom: close_chat_room,
-	test: go_test
+	test: JCC.P3.umc
     };
 })();
