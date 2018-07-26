@@ -794,3 +794,6 @@ ACC.L[529] = 'Sign in Contact Center by user name <b>%acc%</b>';
 ACC.L[530] = 'Live Chat';
 ACC.L[531] = ['Contact Center Customer Support', 'New chat', 'Subject', 'Message', 'Message subject', 'Enter message ...', 'Start chat', 'Your chat in the queue, the consultant will answer you shortly ...'];
 ACC.L[532] = 'All operators are offline.<br><br>The message is directed to the queue. The first available operator will answer you.';
+ACC.L[533] = 'member';
+ACC.L[534] = 'members';
+ACC.L[535] = 'members';

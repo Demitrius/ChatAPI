@@ -1430,6 +1430,185 @@ console.log('onClose reconnect:'+JCC.llc);
 
 	return o != null ? on : null;
     };
+    var gdti = function(d, m) {
+	var ut;
+	var id;
+	var ap;
+	var ts;
+	var prsi;
+	var tt;
+	// UT. 1 - Admin; 2 - Visitor; 200 - Viber
+	// Conversation
+	if (m.s == 1) {
+	    if (m.sut == 1 && m.sid == JCC.C.mid) {
+		// Its me, show recipient avatar
+		ut = m.rut;
+		if (ut == 1) id = m.rid;
+		if (ut == 2) id = m.rid+'-'+m.domid;
+		if (ut == 200 || ut == 201) id = m.rid;
+
+		if (m.rut == 1) {
+		    // Show admin avatar
+		    if (typeof JCC.P3.ol[m.rid] !== 'undefined') {
+			ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.rid].ap;
+			ts = guf(m.rid, 1);
+			if (JCC.P3.ol[id].st >= 1) prsi = 'jcc-prs-on';
+			else prsi = 'jcc-prs-off';
+		    }
+		    tt = ovn(m.rid);
+		}
+		if (m.rut == 2) {
+		    // Show visitor avatar
+		    if (typeof JCC.P1.vl[id] !== 'undefined') {
+			ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap;
+		    } else {
+			// Chat from social or messenger or from "offline" page (may on mobile)
+		    }
+		    if (JCC.P3.rl[d] && !JCC.P3.rl[d].et) prsi = 'jcc-prs-on';
+		    else prsi = 'jcc-prs-off';
+		    tt = ovn(null, id);
+		    ts = guf(id, 2);
+		}
+		if (m.rut == 200 || m.rut == 201) {
+		    var si = osn(m.rid, m.rut, m.mmbrs);
+		    if (si.length > 0) {
+			tt = si[0];
+			ap = si[1];
+		    }
+		    prsi = 'jcc-prs-off';
+	    	    if (JCC.P3.rl[d]) ts = guf(0, 0, d);
+		}
+    	    } else {
+		// New incoming dialog from world
+		// Show admin avatar
+		ut = m.sut;
+		if (ut == 1) id = m.sid;
+		if (ut == 2) id = m.sid+'-'+m.domid;
+		if (ut == 200 || ut == 201) id = m.sid;
+
+		if (m.sut == 1) {
+		    if (typeof JCC.P3.ol[m.sid] !== 'undefined') {
+			ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.sid].ap;
+			ts = guf(m.sid, 1);
+			if (JCC.P3.ol[id].st >= 1) prsi = 'jcc-prs-on';
+			else prsi = 'jcc-prs-off';
+		    }
+		    tt = ovn(m.sid);
+		}
+		if (m.sut == 2) {
+		    // Show visitor avatar
+		    if (typeof JCC.P1.vl[m.sid+'-'+m.domid] !== 'undefined') {
+			if (typeof JCC.P1.vl[id] !== 'undefined') {
+			    ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap;
+			}
+		    } else {
+			// Chat from social or messenger or from "offline" page (may on mobile)
+		    }
+		    if (JCC.P3.rl[d] && !JCC.P3.rl[d].et) prsi = 'jcc-prs-on';
+		    else prsi = 'jcc-prs-off';
+		    tt = ovn(null, id);
+		    ts = guf(id, 2);
+    		}
+		if (m.sut == 200 || m.sut == 201) {
+		    var si = osn(m.sid, m.sut, m.mmbrs);
+		    if (si.length > 0) {
+			tt = si[0];
+			ap = si[1];
+		    }
+		    prsi = 'jcc-prs-off';
+		    if (JCC.P3.rl[d]) ts = guf(m.sid, m.sut, JCC.P3.rl[d].domid);
+		}
+	    }
+	    if (ap == '') ap = '//'+JCC.$h+'/avatar/question.svg';
+	}
+	// Conference
+	if (m.s == 2) {
+	    ut = m.sut;
+	    prsi = 'jcc-prs-conf';
+	    if (ut == 1) id = m.sid;
+	    if (ut == 2) id = m.sid+'-'+m.domid;
+	    if (ut == 200 || ut == 201) id = m.sid;
+	    if (m.sut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.sid].ap; }
+
+	    if (m.sut == 1 && m.sid == JCC.C.mid) {
+		ut = m.rut;
+	        if (ut == 1) id = m.rid;
+		if (ut == 2) id = m.rid+'-'+m.domid;
+	        if (ut == 200 || ut == 201) id = m.rid;
+
+		if (m.rut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[id].ap; }
+	        if (m.rut == 2) { ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap; }
+	    } else if (m.rut == 1 && m.rid == JCC.C.mid) {
+		ut = m.sut;
+		if (ut == 1) id = m.sid;
+		if (ut == 2) id = m.sid+'-'+m.domid;
+		if (ut == 200 || ut == 201) id = m.sid;
+		if (m.sut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[id].ap; }
+		if (m.sut == 2) { ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap; }
+	    } else {
+		// Im not sender and not recipient
+		// If visitor present - his avatar display
+		// If admin-admin - lets initiator avatar display (sender)
+		if (m.sut == 1 && m.rut == 1) {
+		    if (m.sid == JCC.C.mid) {
+			id = m.rid;
+			ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.rid].ap;
+		    } else if (m.rid == JCC.C.mid) {
+			id = m.sid;
+			ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.sid].ap;
+		    } else {
+			id = m.sid;
+			ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.sid].ap;
+		    }
+		} else {
+		    if (m.sut == 2 && m.rut == 1) {
+			ut = m.sut;
+			id = m.sid+'-'+m.domid;
+		    }
+		    if (m.sut == 1 && m.rut == 2) {
+			ut = m.rut;
+		        id = m.rid+'-'+m.domid;
+		    }
+		    if (id && typeof JCC.P1.vl[id] === 'object') {
+			ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap;
+		    } else {
+			// Messenger subscriber
+			if (m.sut == 200 || m.sut == 201) {
+			    ut = m.sut;
+			    id = m.sid;
+		        } else if (m.rut == 200 || m.rut == 201) {
+		    	    ut = m.rut;
+			    id = m.rid;
+		        } else {
+		    	    console.log('Error: new dialog tab with visitor or messenger subscriber received, but visitor not in list. VID:'+m.sid+'-'+m.domid);
+			    return -1;
+			}
+		    }		
+		}
+	    }
+	    if (ut == 200 || ut == 201) {
+		if (typeof JCC.P3.rl[d] !== 'undefined') {
+		    var ro = JCC.P3.rl[d];
+		    if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
+            		if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == id && ro.mmbrs[__i].a) {
+                    	    ap = '//'+JCC.$h+'/avatar/a/vt/avt-0-0.svg';
+                    	    if (ro.mmbrs[__i].a.afn) ap = ro.mmbrs[__i].a.afn;
+                    	    break;
+            		}
+            	    }
+		}
+	    }
+
+	    tt = ACC.L[68];
+	    var m0 = 0, m1 = 0, m2 = 0;
+	    if (typeof JCC.P3.rl[d].m !== 'undefined') m1 = JCC.P3.rl[d].m.length;
+	    if (typeof JCC.P3.rl[d].mmbrs !== 'undefined') m2 = JCC.P3.rl[d].mmbrs.length;
+	    m0 = m1;
+	    if (m2 > m1) m0 = m2;
+	    ts = m0 + ' '+ACC.L[533+ACC.glp(m0)];
+	}
+	return {'ap':ap, 'ts':ts, 'prsi':prsi, 'tt':tt, 'ut':ut, 'id':id};
+    }
     var cas = function() {
 	if (JCC.S.oas == true) {
 	    JCC.s('13010{{-}}3{{-}}0');
@@ -1588,6 +1767,7 @@ console.log(JCC.so);
 	GetUserName: ovn,
 	GetUserFrom: guf,
 	GetUsers: get_users,
+	GetDialogTitleInfo: gdti,
 	GetVirtualQueues: get_virtual_queues,
 	GetVisitors: get_visitors,
 	GetDepartments: get_departments,

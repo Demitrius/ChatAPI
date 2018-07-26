@@ -68,6 +68,7 @@
     .admin-block {
 	padding: 7px 14px;
 	position: relative;
+	cursor: pointer;
     }
     .avatar {
 	width: 46px;
@@ -570,8 +571,8 @@ eucf = function(x) {
     }
 };
 
-// room_id, msg, class (active/not), (1-new/2-transfer/3-conference), initiator info [id,ut]
-function ddt1(d, m, c, n, ii) {
+// room_id, msg, class (active/not)
+function ddt1(d, m, c) {
     var o;    
     var ap = '';
     var tt = '';
@@ -583,179 +584,13 @@ function ddt1(d, m, c, n, ii) {
     var vl = ApixCloud.CC.API.GetVisitors();
     var rl = ApixCloud.CC.API.GetChatRooms();
 
-//console.log('ddt1: n='+n);
-//console.log(m);
-
-    // UT. 1 - Admin; 2 - Visitor; 200 - Viber
-    // Conversation
-    if (m.s == 1) {
-	if (m.sut == 1 && m.sid == ApixCloud.CC.API.GetConfig().mid) {
-	    // Its me, show recipient avatar
-	    ut = m.rut;
-	    if (ut == 1) id = m.rid;
-	    if (ut == 2) id = m.rid+'-'+m.domid;
-	    if (ut == 200 || ut == 201) id = m.rid;
-
-	    if (m.rut == 1) {
-		// Show admin avatar
-		if (typeof ol[m.rid] !== 'undefined') {
-		    ap = '//'+cloud_addr+'/avatar' + ol[m.rid].ap;
-		    ts = ApixCloud.CC.API.GetUserFrom(m.rid, 1);
-		    if (ol[id].st >= 1) prsi = 'jcc-prs-on';
-		    else prsi = 'jcc-prs-off';
-		}
-		tt = ApixCloud.CC.API.GetUserName(m.rid);
-	    }
-	    if (m.rut == 2) {
-		// Show visitor avatar
-		if (typeof vl[id] !== 'undefined') {
-		    ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
-		} else {
-		    // Chat from social or messenger or from "offline" page (may on mobile)
-		}
-		if (rl[d] && !rl[d].et) prsi = 'jcc-prs-on';
-		else prsi = 'jcc-prs-off';
-		tt = ApixCloud.CC.API.GetUserName(null, id);
-		ts = ApixCloud.CC.API.GetUserFrom(id, 2);
-	    }
-	    if (m.rut == 200 || m.rut == 201) {
-		var si = ApixCloud.CC.API.GetMemberInfo(m.rid, m.rut, m.mmbrs);
-		if (si.length > 0) {
-		    tt = si[0];
-		    ap = si[1];
-		}
-		prsi = 'jcc-prs-off';
-	        if (rl[d]) ts = ApixCloud.CC.API.GetUserFrom(0, 0, d);
-	    }
-        } else {
-	    // New incoming dialog from world
-	    // Show admin avatar
-	    ut = m.sut;
-	    if (ut == 1) id = m.sid;
-	    if (ut == 2) id = m.sid+'-'+m.domid;
-	    if (ut == 200 || ut == 201) id = m.sid;
-
-	    if (m.sut == 1) {
-		if (typeof ol[m.sid] !== 'undefined') {
-		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
-		    ts = ApixCloud.CC.API.GetUserFrom(m.sid, 1);
-		    if (ol[id].st >= 1) prsi = 'jcc-prs-on';
-		    else prsi = 'jcc-prs-off';
-		}
-		tt = ApixCloud.CC.API.GetUserName(m.sid);
-	    }
-	    if (m.sut == 2) {
-		// Show visitor avatar
-		if (typeof vl[m.sid+'-'+m.domid] !== 'undefined') {
-		    if (typeof vl[id] !== 'undefined') {
-			ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
-		    }
-		} else {
-		    // Chat from social or messenger or from "offline" page (may on mobile)
-		}
-		if (rl[d] && !rl[d].et) prsi = 'jcc-prs-on';
-		else prsi = 'jcc-prs-off';
-		tt = ApixCloud.CC.API.GetUserName(null, id);
-		ts = ApixCloud.CC.API.GetUserFrom(id, 2);
-    	    }
-	    if (m.sut == 200 || m.sut == 201) {
-		var si = ApixCloud.CC.API.GetMemberInfo(m.sid, m.sut, m.mmbrs);
-		if (si.length > 0) {
-		    tt = si[0];
-		    ap = si[1];
-		}
-		prsi = 'jcc-prs-off';
-	        if (rl[d]) ts = ApixCloud.CC.API.GetUserFrom(m.sid, m.sut, rl[d].domid);
-	    }
-	}
-	if (ap == '') ap = '//'+cloud_addr+'/avatar/question.svg';
-    }
-    // Conference
-    if (m.s == 2) {
-	ut = m.sut;
-	prsi = 'jcc-prs-conf';
-	if (ut == 1) id = m.sid;
-	if (ut == 2) id = m.sid+'-'+m.domid;
-	if (ut == 200 || ut == 201) id = m.sid;
-	if (m.sut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap; }
-
-	if (m.sut == 1 && m.sid == ApixCloud.CC.API.GetConfig().mid) {
-	    ut = m.rut;
-	    if (ut == 1) id = m.rid;
-	    if (ut == 2) id = m.rid+'-'+m.domid;
-	    if (ut == 200 || ut == 201) id = m.rid;
-
-	    if (m.rut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[id].ap; }
-	    if (m.rut == 2) { ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap; }
-	} else if (m.rut == 1 && m.rid == ApixCloud.CC.API.GetConfig().mid) {
-	    ut = m.sut;
-	    if (ut == 1) id = m.sid;
-	    if (ut == 2) id = m.sid+'-'+m.domid;
-	    if (ut == 200 || ut == 201) id = m.sid;
-	    if (m.sut == 1) { ap = '//'+cloud_addr+'/avatar' + ol[id].ap; }
-	    if (m.sut == 2) { ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap; }
-	} else {
-	    // Im not sender and not recipient
-	    // If visitor present - his avatar display
-	    // If admin-admin - lets initiator avatar display (sender)
-	    if (m.sut == 1 && m.rut == 1) {
-		if (m.sid == ApixCloud.CC.API.GetConfig().mid) {
-		    id = m.rid;
-		    ap = '//'+cloud_addr+'/avatar' + ol[m.rid].ap;
-		} else if (m.rid == ApixCloud.CC.API.GetConfig().mid) {
-		    id = m.sid;
-		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
-		} else {
-		    id = m.sid;
-		    ap = '//'+cloud_addr+'/avatar' + ol[m.sid].ap;
-		}
-	    } else {
-		if (m.sut == 2 && m.rut == 1) {
-		    ut = m.sut;
-		    id = m.sid+'-'+m.domid;
-		}
-		if (m.sut == 1 && m.rut == 2) {
-		    ut = m.rut;
-		    id = m.rid+'-'+m.domid;
-		}
-		if (id && typeof vl[id] === 'object') {
-		    ap = '//'+cloud_addr+'/avatar' + vl[id][0].ap;
-		} else {
-		    // Messenger subscriber
-		    if (m.sut == 200 || m.sut == 201) {
-			ut = m.sut;
-			id = m.sid;
-		    } else if (m.rut == 200 || m.rut == 201) {
-			ut = m.rut;
-			id = m.rid;
-		    } else {
-		        console.log('Error: new dialog tab with visitor or messenger subscriber received, but visitor not in list. VID:'+m.sid+'-'+m.domid);
-			return -1;
-		    }
-		}		
-	    }
-	}
-	if (ut == 200 || ut == 201) {
-	    if (typeof rl[d] !== 'undefined') {
-		var ro = rl[d];
-		if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
-            	    if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == id && ro.mmbrs[__i].a) {
-                    	ap = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
-                    	if (ro.mmbrs[__i].a.afn) ap = ro.mmbrs[__i].a.afn;
-                    	break;
-            	    }
-            	}
-	    }
-	}
-
-	tt = 'Conference';
-	var m = 0, m1 = 0, m2 = 0;
-	if (typeof rl[d].m !== 'undefined') m1 = rl[d].m.length;
-	if (typeof rl[d].mmbrs !== 'undefined') m2 = rl[d].mmbrs.length;
-	m = m1;
-	if (m2 > m1) m = m2;
-	ts = m + ' member(s)';
-    }
+    var dti = ApixCloud.CC.API.GetDialogTitleInfo(d, m);
+    ap = dti.ap;
+    ts = dti.ts;
+    prsi = dti.prsi;
+    tt = dti.tt;
+    ut = dti.ut;
+    id = dti.id;
 
     var li = document.createElement('div')
     li.className = 'dc';
@@ -848,7 +683,6 @@ console.log('OpenDialog '+ut);
 	} else {
 	    ApixCloud.CC.API.GetChatRoomMessages(sel_rid);
 	}
-
     } else {
 	// Open empty dialog
 	sel_rid = 0;
@@ -1841,7 +1675,7 @@ function gai(e) {
 		    if (dl[d].gid == ol[k[a]].gid) dn = dl[d].name;
 		}
 
-		all_admins += '<div class="admin-block">'+indicator+'<img class="avatar" style="float:left" src="'+a_avatar+'"><div>'+a_name+'</div><div>'+a_position+'</div><div>'+decodeURIComponent(dn)+'</div></div>';
+		all_admins += '<div class="admin-block" onclick="UserClick('+k[a]+')">'+indicator+'<img class="avatar" style="float:left" src="'+a_avatar+'"><div>'+a_name+'</div><div>'+a_position+'</div><div>'+decodeURIComponent(dn)+'</div></div>';
 	    }
 	    document.getElementById('admins').innerHTML = all_admins;
 
@@ -1851,6 +1685,26 @@ function gai(e) {
 	    var avatar = 'https://'+cloud_addr+'/avatar'+ol[ApixCloud.CC.API.GetConfig().mid].ap+')';
 console.log(name_surname);
 console.log(avatar);
+	}
+
+	// UserClick. Click on user.
+	function UserClick(d) {
+	    // Action
+	    // If we chatting with this user - open dialog
+	    // else - open empty chat
+	    var rl = ApixCloud.CC.API.GetChatRooms();
+	    var k = Object.keys(rl);
+	    var me = ApixCloud.CC.API.GetConfig().mid;
+	    if (k && k.length > 0) for (var i = 0; i < k.length; i++) { //>
+		if (rl[k[i]].s == 1 &&
+		    ((rl[k[i]].sid == me && rl[k[i]].sut == 1 && rl[k[i]].rid == d && rl[k[i]].rut == 1) ||
+		    (rl[k[i]].sid == d && rl[k[i]].sut == 1 && rl[k[i]].rid == me && rl[k[i]].rut == 1))) {
+		    // Found dialog with user and me
+		    var dti = ApixCloud.CC.API.GetDialogTitleInfo(k[i], rl[k[i]]);
+		    OpenDialog(k[i], dti.ut, dti.id, encodeURIComponent(dti.tt), dti.ts, dti.ap);
+		}
+	    }
+	    
 	}
 
 // Update Queues
