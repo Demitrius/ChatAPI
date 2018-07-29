@@ -797,3 +797,4 @@ ACC.L[532] = 'All operators are offline.<br><br>The message is directed to the q
 ACC.L[533] = 'member';
 ACC.L[534] = 'members';
 ACC.L[535] = 'members';
+ACC.L[536] = 'Start a New Chat';
