@@ -1253,6 +1253,12 @@ console.log(d);
 		case 110: {
 		    JCC.S.sc1t();
 		} break;
+		case 320: {
+		    if (d.t == 16530) {
+			// User statistics, pass it to GUI
+			if (JCC.api_cb) JCC.api_cb(d);
+		    }
+		} break;
 		// 9XX - Any errors
 		case 900: {
 		    JCC.log('Error from server: ' + d.e);
@@ -1838,6 +1844,10 @@ console.log('onClose reconnect:'+JCC.llc);
     function conference_call_answer(p1, p2, p3, p4, p5) {
 	JCC.s('13122{{-}}3{{-}}' + p1 + '{{-}}' + p2 + '{{-}}' + p3  + '{{-}}' + p4 + '{{-}}' + p5);
     }
+    // Get User Statistics
+    function get_user_statistics(aid) {
+        JCC.s('13005{{-}}3{{-}}'+aid+'{{-}}0');
+    }
 
     function send_message(r, _mid, _ut) {
 	// Ok, lets send msg
@@ -1987,6 +1997,7 @@ console.log(JCC.so);
 	GetForms: get_forms,
 	GetUserName: ovn,
 	GetUserFrom: guf,
+	GetUserStatistics: get_user_statistics,
 	GetUsers: get_users,
 	GetDialogTitleInfo: gdti,
 	GetNewDialogTitleInfo: gndti,

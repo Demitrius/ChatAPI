@@ -798,3 +798,5 @@ ACC.L[533] = 'member';
 ACC.L[534] = 'members';
 ACC.L[535] = 'members';
 ACC.L[536] = 'Start a New Chat';
+ACC.L[537] = ['All channels', 'Did not answer', 'In queues', 'Out of five stars', 'Voting', 'First message', 'Picking up from queue'];
+ACC.L[538] = ['Thumb up', 'Thumb down'];
