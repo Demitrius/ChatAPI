@@ -18,6 +18,9 @@ ApixCloud.CC.API = (function() {
     JCC.P3 = {};
     JCC.S = {};
 
+    // Strip url to hostname regexp
+    JCC.P1.rsh = new RegExp('^http(?:s)?\://([^/]+)', 'im');
+
     JCC.P1.d = function(d) {
 	switch (d.v) {
 	    // WEB-ONLINE activated. Full list of visitors.
@@ -1293,6 +1296,104 @@ console.log(d);
 	JCC.s('!');
     };
 
+    JCC.gtd = function(t1, t2, f) {
+	var d = 0;
+	var h = 0;
+	var m = 0;
+	var s = 0;
+	var r = '';
+
+	if (t1 >= 0 && t2 >= 0) s = t2 - t1;
+	else { t1 = 0; t2 = 0; }
+
+	// > 1 day
+	if (s >= 86400) {
+	    d = parseInt(Math.floor(s / 86400));
+	    s = s - (86400 * d);
+	}
+	if (s >= 3600) {
+	    h = parseInt(Math.floor(s / 3600));
+	    s = s - (h * 3600);
+	}
+	if (s >= 60) {
+	    m = parseInt(Math.floor(s / 60));
+	    s = s - (m * 60);
+	}
+
+	if (s < 0) s = 0;
+
+	if (s < 10) { s = '0' + s; }
+
+	// Return formats:
+	// 1 - DD, HH:MM:SS
+	// 2 - D day(s) H hour(s) M minute(s)
+	// 3 - D day(s)
+	// 4 - D (full days, > 24h)
+	// 5 - D (round, > 0.1 day = 1) need for service active days left
+	// 6 - MMM:SS (like 2 but no minute trunk)
+	// 7 - HH h, MM min
+	// 8 - Return array [d, h, m, s]
+	if (f == 8) {
+	    return [d, h, m, parseInt(s)];
+        }
+	if (f == 6) {
+	    m = Math.floor((t2 - t1) / 60);
+	    s = (t2 - t1) - (m * 60);
+	    if (m >= 1) r += m + ' ' + ACC.L[218];
+	    if (s > 0) {
+		if (m > 0) r += ', ';
+		r += s + ' ' + ACC.L[217];
+	    }
+	    if (t2 - t1 == 0) r = '0 ' + ACC.L[217];
+	    return r;
+	}
+	if (f == 7) {
+	    h = Math.floor((t2 - t1) / (60*60));
+	    m = Math.floor(((t2 - t1) - (h*60*60)) / 60);
+	    s = (t2 - t1) - (m * 60);
+	    if (s >= 30) m++;
+
+	    if (h > 0) r += h+' '+ACC.L[215];
+	    if (m > 0) {
+		if (r != '') r += ', ';
+		r += m + ' ' + ACC.L[218];
+	    }
+	    if (t2 - t1 == 0) r = '0 ' + ACC.L[217];
+	    return r;
+	}
+	if (d > 0) {
+//	if (h < 10) { h = '0' + h; }
+//	if (m < 10) { m = '0' + m; }
+	    switch(f) {
+		case 1: { if (m < 10) { m = '0' + m; } r = '' + d + ', ' + h + ':'+ m + ':' + s; } break;
+	        case 2: { r = '' + d + ' ' + ACC.L[163 + ACC.glp(d)] + ' ' + h + ' ' + ACC.L[160 + ACC.glp(h)] + ' '+ m + ' ' + ACC.L[157 + ACC.glp(m)]; } break;
+		case 3: { r = '' + d + ' ' + ACC.L[163 + ACC.glp(d)]; } break;
+	        case 4: { r = d; } break;
+		case 5: { r = d; } break;
+	    }
+	} else if (h > 0) {
+//	if (m < 10) { m = '0' + m; }
+	    switch(f) {
+		case 1: { if (m < 10) { m = '0' + m; } r = '' + h + ':'+ m + ':' + s; } break;
+		case 2: { r = '' + h + ' ' + ACC.L[160 + ACC.glp(h)] + ' ' + m + ' ' + ACC.L[157 + ACC.glp(m)]; } break;
+		case 3: { r = '' + 0 + ' ' + ACC.L[163 + ACC.glp(0)]; } break;
+		case 4: { r = 0; } break;
+		case 5: { r = 1; } break;
+	    }
+	} else {
+	    switch(f) {
+		case 1: { r = '' + m + ':' + s; } break;
+	        case 2: { if (m == 0) m = 1; r = '' + m + ' ' + ACC.L[157 + ACC.glp(m)]; } break;
+		case 3: { r = '' + 0 + ' ' + ACC.L[163 + ACC.glp(0)]; } break;
+	        case 4: { r = 0; } break;
+		case 5: { r = 0; } break;
+	    }
+	}
+
+	return r;
+    };
+
+
 JCC.c = function(addr, app) {
     var host;
     var aa = '?ua='+JCC.euc(navigator.userAgent);
@@ -1509,7 +1610,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	if (a && a > 0) { o = JCC.P3.ol[a]; }
 	if (b) {
 	    if (typeof JCC.P1.vl[b] !== 'undefined') o = JCC.P1.vl[b][0];
-	    else return 'Guest';
+	    else return ACC.L[7];
 	}
 	if (d) o = d.a;
 
@@ -1526,7 +1627,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	    if (o.cn) {
 		on = decodeURIComponent(o.cn);
 	    } else {
-		on = 'Guest';
+		on = ACC.L[7];
 	    }
 	}
 
@@ -1538,7 +1639,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	    if (o.cn) {
 		on = decodeURIComponent(o.cn);
 	    } else {
-		on = 'Guest';
+		on = ACC.L[7];
 	    }
 	}
 
@@ -1718,7 +1819,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	    if (typeof JCC.P3.rl[d].m !== 'undefined') m1 = JCC.P3.rl[d].m.length;
 	    if (typeof JCC.P3.rl[d].mmbrs !== 'undefined') m2 = JCC.P3.rl[d].mmbrs.length;
 	    m0 = m1;
-	    if (m2 > m1) m0 = m2;
+	    if (!m0 && m2 > 0) m0 = m2;
 	    ts = m0 + ' '+ACC.L[533+ACC.glp(m0)];
 	}
 	return {'ap':ap, 'ts':ts, 'prsi':prsi, 'tt':tt, 'ut':ut, 'id':id};
@@ -1845,9 +1946,67 @@ console.log('onClose reconnect:'+JCC.llc);
 	JCC.s('13122{{-}}3{{-}}' + p1 + '{{-}}' + p2 + '{{-}}' + p3  + '{{-}}' + p4 + '{{-}}' + p5);
     }
     // Get User Statistics
-    function get_user_statistics(aid) {
-        JCC.s('13005{{-}}3{{-}}'+aid+'{{-}}0');
+    function get_user_statistics(aid, rid) {
+        JCC.s('13005{{-}}3{{-}}'+aid+'{{-}}0{{-}}'+rid);
     }
+    // Get Flat History
+    function get_flat_history(mid, mut) {
+	JCC.s('13064{{-}}3{{-}}'+mid+'{{-}}'+mut);
+    }
+
+    function get_geo_location(mid, mut) {
+	var g = ['',''];
+
+	if (mut == 2) {
+	    if (typeof JCC.P1.vl[mid] === 'undefined') return g // empty;
+	    var vl = JCC.P1.vl[mid];
+
+	    // Location
+	    g[0] = JCC.P1.pg(vl[0].geo_country, vl[0].geo_region, vl[0].geo_city);
+	    // Flag
+	    if (vl[0].geo_country_en && vl[0].geo_country_en != '') {
+	        g[1] = '//'+JCC.$h+'/cc/img/flags/' +vl[0].geo_country_en.toLowerCase().replace(new RegExp(" ","gm"), '_') + '.svg';
+	    }
+	}
+	return g;
+    }
+
+    // (Country, Region, City, Split By, Sequence)
+    JCC.P1.pg = function(c, r, c1, s, sq) {
+	var rn = '';
+	var d1 = '';
+	var d2 = '';
+	// split
+	if (!s) s = ', ';
+	if (!sq) sq = JCC.C.vgs;
+
+	if (JCC.C.vgch == '0') { c = ''; }
+	if (JCC.C.vgrh == '0') { r = ''; }
+	if (JCC.C.vgc1h == '0') { c1 = ''; }
+
+	if (r == c1) { c1 = ''; }
+
+	switch (sq) {
+	    // City, Region, Country
+	    case '2': {if ((r != '' || c != '') && c1 != '') { d1 = s; } if (r != '' && c != '') { d2 = s; } rn = c1 + d1 + r + d2 + c;} break;
+	    // Country, [Region || City]
+	    case '1':
+	    default: {
+		if ((r != '' || c1 != '') && c != '') {
+		    d1 = s;
+	        }
+		if (r != '' && c1 != '') {
+		    d2 = s;
+		}
+		if (c1) r = c1;
+		rn = c + d1 + r;
+	    } break;
+	}
+
+        if (rn == '') {rn = JCC.L[20];}
+
+	return decodeURIComponent(rn);
+    };
 
     function send_message(r, _mid, _ut) {
 	// Ok, lets send msg
@@ -1923,6 +2082,26 @@ console.log('onClose reconnect:'+JCC.llc);
 	return dn;
     }
 
+    function get_channel_name(d) {
+	var cn = '', ct = '';
+	if (d > 0) {
+	    for (var i = 0; i < JCC.C.domains.length; i++) {
+		if (d == JCC.C.domains[i].id) {
+		    cn = dntl(JCC.C.domains[i].domain);
+		    ct = ACC.MCT[JCC.C.domains[i].ctype];
+		    break;
+		}
+	    }
+	}
+	return [cn, ct];
+    }
+    function strip_url(r) {
+	var t = decodeURIComponent(r).match(JCC.P1.rsh);
+	if (t && t.length > 0) {
+	    t = dntl(t[1]);
+	}
+	return t;
+    }
     function get_queued_chat_info(d) {
 	var dn, n, a;
 	if (JCC.P3.aqm[d].domid) {
@@ -1930,10 +2109,10 @@ console.log('onClose reconnect:'+JCC.llc);
 		if (JCC.P3.aqm[d].domid == JCC.C.domains[i].id) {
 		    dn = dntl(JCC.C.domains[i].domain);
 		    if (JCC.C.domains[i].ctype == 200) {
-			dn = 'Viber - '+dn;
+			dn = ACC.MCT[JCC.C.domains[i].ctype][0]+' - '+dn;
 		    }
 		    if (JCC.C.domains[i].ctype == 201) {
-			dn = 'Telegram - '+dn;
+			dn = ACC.MCT[JCC.C.domains[i].ctype][0]+' - '+dn;
 		    }
 		    break;
 		}
@@ -1984,8 +2163,44 @@ console.log('onClose reconnect:'+JCC.llc);
 	return {'dn':dn, 'n':n, 'a':a};
     }
 
+
+    function get_time_since(since) {
+	    var dutc = new Date((new Date()).toUTCString());
+	    var cis = dutc.getTime() / 1000;
+	    var ta = JCC.gtd(since, cis, 8);
+
+	    var si = '';
+	    var tf;
+	    if (ta[0] > 0) {
+		// X days X hours
+		tf += ta[0]+' ' + ACC.L[163+ACC.glp(ta[0])];
+		si += ta[0]+' ' + ACC.L[163+ACC.glp(ta[0])];
+		if (ta[1] > 0) {
+		    tf += ' '+ta[1]+' ' + ACC.L[160+ACC.glp(ta[1])];
+		    si += ACC.L[258]+ta[1]+' ' + ACC.L[160+ACC.glp(ta[1])] + ' ' + ACC.L[259];
+		}
+	    } else if (ta[1] > 0) {
+		// X hours
+		tf += ta[1]+' ' + ACC.L[160+ACC.glp(ta[1])];
+		si += ta[1]+' ' + ACC.L[160+ACC.glp(ta[1])] + ' ' + ACC.L[259];
+	    } else if (ta[2] > 0) {
+		// X mins
+		tf += ta[2]+' ' + ACC.L[157+ACC.glp(ta[2])];
+		si += ta[2]+' ' + ACC.L[157+ACC.glp(ta[2])] + ' ' + ACC.L[259];
+	    } else {
+		// X secs
+		tf += ta[3]+' ' + ACC.L[211+ACC.glp(ta[3])];
+		si += ta[3]+' ' + ACC.L[211+ACC.glp(ta[3])] + ' ' + ACC.L[259];
+	    }
+
+	    return si;
+    };
+
     function go_test() {
 console.log(JCC.so);
+    }
+    function test_error() {
+	JCC.s('13070{{-}}3{{-}}');
     }
 
 
@@ -2001,14 +2216,19 @@ console.log(JCC.so);
 	GetUsers: get_users,
 	GetDialogTitleInfo: gdti,
 	GetNewDialogTitleInfo: gndti,
+	GetChannelName: get_channel_name,
 	GetVirtualQueues: get_virtual_queues,
 	GetVisitors: get_visitors,
 	GetDepartments: get_departments,
 	GetMemberInfo: osn,
 	GetChatRooms: get_chat_rooms,
 	GetChatRoomMessages: get_chat_room_msgs,
+	GetFlatHistory: get_flat_history,
+	GetGEOLocation: get_geo_location,
 	GetQueuedChats: get_queued_chats,
 	GetQueuedChatInfo: get_queued_chat_info,
+	GetTimeSince: get_time_since,
+	FormatTime: JCC.gtd,
 	ChangeAvailableStatus: cas,
 	TakeChatFromQueue: tqm,
 	TransferChatRoom: transfer_chat_room,
@@ -2020,6 +2240,7 @@ console.log(JCC.so);
 	SetChatRoomOwners: set_chat_room_owners,
 	CloseChatRoom: close_chat_room,
 	DetectDataInMessage: JCC.P3.r1,
-	test: JCC.P3.umc
+	_strip_url: strip_url,
+	test: test_error
     };
 })();

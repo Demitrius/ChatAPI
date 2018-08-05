@@ -222,7 +222,7 @@ var app_version = '1.0';		// Use it for protocol compatible in future.
 var g_login = 'test3';
 var g_password = 'test1212';
 var g_signin_params = {
-    push_config: {"device_id": "1271e23d-b38f-4cd2-b122-2564774131e3"},
+    push_config: {"device_id": "1271e23d-b38f-4cd2-b122-2564774131e0"},
     push_service: 1,
     brand: brand_id,
     dev_model: device_model,
@@ -346,6 +346,20 @@ function ready() {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	// Chat History
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 60) {
+	    if (x.t == 13064) { // Flat history
+		/*
+		    .mid		- Member id (sel_sid)
+		    .ut			- Member type (1 - user, 2 - visitor, 200 - telegram ...) (sel_sut)
+		    .flat_history	- Msgs array
+		*/
+		console.log(x);
+	    }
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
 	// Virtual Queues
 	////////////////////////////////////////////////////////////////////////////////
 	if (x.s == 3 && x.v == 80) {
@@ -413,9 +427,9 @@ console.log(x);
 			    if (o) o.innerHTML = x.aa[i].dvi.td > 0 ? x.aa[i].dvi.td : 0;
 			    // Answer time and Reaction speed
 			    var __aat = '-';
-			    if (x.aa[i].aat != null && typeof x.aa[i].aat !== 'undefined') __aat = x.aa[i].aat + ' '+ACC.L[217];
+			    if (x.aa[i].aat != null && typeof x.aa[i].aat !== 'undefined') __aat = ApixCloud.CC.API.FormatTime(0, x.aa[i].aat, 1);
 			    var __art = '-';
-			    if (x.aa[i].art != null && typeof x.aa[i].art !== 'undefined') __art = x.aa[i].art + ' '+ACC.L[217];
+			    if (x.aa[i].art != null && typeof x.aa[i].art !== 'undefined') __art = ApixCloud.CC.API.FormatTime(0, x.aa[i].art, 1);
 			    o = document.getElementById('user_popover_aat_'+x.aa[i].aid);
 			    if (o) o.innerHTML = __aat;
 			    o = document.getElementById('user_popover_art_'+x.aa[i].aid);
@@ -426,6 +440,31 @@ console.log(x);
 
 		} break;
 	    }
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	// Errors / Notificatoins
+	////////////////////////////////////////////////////////////////////////////////
+	if (x.s == 3 && x.v == 900) {
+	    console.log('ERROR HAPPEN');
+	    console.log(x);
+
+	    // set title, button combination, icon and msg
+	    switch(x.t) {
+		case 'error': { s1 = 3; t = ACC.L[54]; i = 2; b = 2; m = ACC.MSG[x.t][x.c]; if (x.c == 'deny') { t = ACC.L[55]; i = 3; } } break;
+		case 'info': { s1 = 2; t = ACC.L[57]; i = 5; b = 1; m = ACC.MSG[x.t][x.c]; } break;
+		case 'success': { s1 = 2; t = ACC.L[53]; i = 1; b = 1; } break;
+		case 'warning': { s1 = 1; t = ACC.L[56]; i = 4; b = 2; } break;
+		case 'edit_box': { s1 = 2; t = x.t; m = ACC.MSG[x.t][x.c]; if (x.btn) b = x.btn; else b = 5; } break;
+		default: { t = ACC.L[57]; i = 5; m = ACC.MSG[x.t][x.c]; b = 1; } break;
+	    }
+	    if (!m) m = x.c;
+
+	    /* Error/notification information */
+	    console.log('s1='+s1+'; Sound notification. Ignore now.');
+	    console.log('t='+t+'; Message title.');
+	    console.log('i='+i+'; Icon. 0 - No icon; 1 - Success; 2 - Error; 3 - Access Denied; 4 - Warning; 5 - Information; 6 - Question');
+	    console.log('b='+b+'; Ignore now.');
+	    console.log('m='+m+'; Message.');
 	}
 
     }
@@ -2092,42 +2131,44 @@ function DialogInfoMenu() {
     var rl = ApixCloud.CC.API.GetChatRooms();
 
     if (typeof rl[sel_rid] !== 'undefined') {
-	if (rl[sel_rid].s == 1) {
-	    var dti = ApixCloud.CC.API.GetDialogTitleInfo(sel_rid, rl[sel_rid]);
+	var dti = ApixCloud.CC.API.GetDialogTitleInfo(sel_rid, rl[sel_rid]);
 console.log('dti');
 console.log(dti);
-	    // Conversation with User
-	    if (dti.ut == 1 && dti.id > 0) {
-		html = BuildConversationUserPopoverHTML(dti.id);
-		// Request API for User info
-		ApixCloud.CC.API.GetUserStatistics(sel_sid);
-	    }
-	    // Conversation with Visitor
-	    // TODO
+	// Conversation with User
+	if (dti.ut == 1 && dti.id > 0) {
+	    html = BuildConversationUserPopoverHTML(dti.id, sel_rid, dti);
+	    // Request API for User info
+	    ApixCloud.CC.API.GetUserStatistics(sel_sid, sel_rid);
 	}
-	if (rl[sel_rid].s == 2) {
-	    // Conference info
-	    html = '<div>Conference</div>';
+	// Conversation with Visitor
+	if (dti.ut == 2) {
+	    html = BuildConversationVisitorPopoverHTML(dti.id, sel_rid, dti);
 	}
+	// Conversation with "Visitor" from social, messengers
+	if (dti.ut > 2) {
+	    html = BuildConversationVisitorPopoverHTML(dti.id, sel_rid, dti);
+	}
+
     } else {
 	// Show info about selected User
 	if (sel_sid > 0 && sel_sut == 1) {
 	    html = BuildConversationUserPopoverHTML(sel_sid);
 	    // Request API for User info
-	    ApixCloud.CC.API.GetUserStatistics(sel_sid);
+	    ApixCloud.CC.API.GetUserStatistics(sel_sid, 0);
 	}
     }
     if (html) {
 	var e = document.createElement('div');
 	e.innerHTML = html;
 	e.setAttribute('id', 'dialog-info');
-	e.setAttribute('style', 'overflow: auto;position: absolute;top: 0;left: 0;bottom: -47px;right: 60px;background: #373E4A;background: -webkit-linear-gradient(-45deg, #4b515c 0%,#373e4a 100%);box-shadow: 0px 0px 15px rgba(0,0,0,0.7);color: white;padding: 20px;');
+	e.setAttribute('style', 'overflow: auto;position: absolute;top: 0;left: 0;bottom: -47px;right: 60px;background: white;box-shadow: 0px 0px 15px rgba(0,0,0,0.7);padding: 20px;');
 	document.getElementById('dialog-head').parentNode.appendChild(e);
     }
 };
 
-function BuildConversationUserPopoverHTML(sid) {
+function BuildConversationUserPopoverHTML(sid, rid, dti) {
 	    var ol = ApixCloud.CC.API.GetUsers();
+	    var rl = ApixCloud.CC.API.GetChatRooms();
 	    var og = ApixCloud.CC.API.GetDepartments();
 	    var on = ApixCloud.CC.API.GetUserName(sid);
 	    var oa = 'https://'+cloud_addr+'/avatar'+ol[sid].ap;
@@ -2141,58 +2182,240 @@ function BuildConversationUserPopoverHTML(sid) {
 		    }
 		}
 	    }
+	    var _rl = null;
+	    if (rid > 0 && typeof rl[rid] !== 'undefined') _rl = rl[rid];
 
-	    var html = '<div id="user_popover_'+sid+'" style="text-align: center;"><img class="avatar" style="width: 60px;height: 60px;" src="'+oa+'"></div><div style="/* font-size: 12px; */margin-top: 10px;opacity: 1.5;text-align: center;">'+on+'</div><div style="font-size: 12px;margin-bottom: 0px;margin-top: 5px;/* opacity: 0.5; */text-align: center;">'+od+'</div><div style="font-size: 12px;margin-bottom: 10px;/* margin-top: 5px; *//* opacity: 0.5; */text-align: center;">'+op+'</div><hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-left: -20px;margin-right: -20px;margin-top: 20px;"> \
+	    var html = '<div id="user_popover_'+sid+'" style="text-align: center;"><img class="avatar" style="width: 60px;height: 60px;" src="'+oa+'"></div><div style="/* font-size: 12px; */margin-top: 10px;opacity: 1.5;text-align: center;">'+on+'</div><div style="font-size: 12px;margin-bottom: 0px;margin-top: 5px;/* opacity: 0.5; */text-align: center;">'+od+'</div><div style="font-size: 12px;margin-bottom: 10px;/* margin-top: 5px; *//* opacity: 0.5; */text-align: center;">'+op+'</div><hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-left: -20px;margin-right: -20px;margin-top: 20px;"> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[289]+'<br><span style="font-size: 11px;">'+ACC.L[537][0]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_chats_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px; margin-left: 28px; margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px; margin-left: 28px; margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[291]+'<br><span style="font-size: 11px;">'+ACC.L[537][1]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_mdc_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:;margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[290]+'<br><span style="font-size: 11px;">'+ACC.L[537][2]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_mqc_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[292]+'<br><span style="font-size: 11px;">'+ACC.L[537][3]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_rating_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[538][0]+'<br><span style="font-size: 11px;">'+ACC.L[537][4]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_tu_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[538][1]+'<br><span style="font-size: 11px;">'+ACC.L[537][4]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_td_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[294]+'<br><span style="font-size: 11px;">'+ACC.L[537][5]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_aat_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div> \
 		<div style="margin: 15px 0px;"> \
 		    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
 		    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ACC.L[295]+'<br><span style="font-size: 11px;">'+ACC.L[537][6]+'</span></div> \
 		    <div style="display: inline-block;float: right;margin: 10px 0;" id="user_popover_art_'+sid+'"></div> \
-		    <hr style="border: 0;border-top: 1px solid rgba(255,255,255,0.2);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
+		    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right: -20px;margin-left: 28px;margin-top: 15px;"> \
 		</div>';
+console.log(rid);
+    // If conference, display members section
+    if (_rl != null && _rl.s == 2) {
+	var _list = BuidConferenceMembersList(_rl);
+	html += '<div style="margin: 15px 0px;white-space:nowrap;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+_list+'<span style="font-size: 11px;">'+ACC.L[66]+'</span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 10px;"> \
+	</div>';
+    }
 
     return html;
+}
+
+function BuildConversationVisitorPopoverHTML(sid, rid, dti) {
+    var ol = ApixCloud.CC.API.GetUsers();
+    var vl = ApixCloud.CC.API.GetVisitors();
+    var on = '';
+    var rl = ApixCloud.CC.API.GetChatRooms();
+    var html = '';
+
+console.log('visitor------------');
+console.log(sid);
+console.log(rid);
+console.log(dti);
+    var since = 0;
+    var tol = '';
+    var _vl = null;
+    var _rl = null;
+    var c_v = 0;
+    var c_ch = 0;
+    var c_cl = 0;
+    var ct = '';
+
+    if (rid > 0 && typeof rl[rid] !== 'undefined') _rl = rl[rid];
+    if (typeof vl[sid] !== 'undefined') _vl = vl[sid][0];
+    if (_vl != null) {
+	if (_vl.since > 0) tol = ApixCloud.CC.API.GetTimeSince(_vl.since);
+	if (_vl.visits > 0) c_v = _vl.visits;
+	if (_vl.dialogs > 0) c_ch = _vl.dialogs;
+	if (_vl.calls > 0) c_cl = _vl.calls;
+    }
+    if (_rl != null) {
+	if (_rl.domid > 0) {
+	    ct = ApixCloud.CC.API.GetChannelName(_rl.domid);
+	}
+    }
+    var _r = ACC.L[143];
+    if (_vl != null && _vl.rurl) {
+	_r = ApixCloud.CC.API.strip_url(_vl.rurl);
+    }
+    var _g = ApixCloud.CC.API.GetGEOLocation(sid, 2);
+    var _mid = sid;
+    if (dti.ut == 2) {
+	// Crop domain for Visitors ids
+	_mid = sid.split('-')[0];
+    }
+    for (var i = 0; i < _rl.mmbrs.length; i++) {
+	if (_rl.mmbrs[i].m == _mid && _rl.mmbrs[i].u == dti.ut) {
+	    on = ApixCloud.CC.API.GetUserName(null, null, _rl.mmbrs[i]);
+	    break;
+	}
+    }
+    var html = '<div id="user_popover_'+sid+'" style="text-align: center;"><img class="avatar" style="width: 60px;height: 60px;" src="'+dti.ap+'"></div><div style="margin-top: 10px;opacity: 1.5;text-align: center;">'+on+'</div><div style="font-size: 12px;margin-bottom: 10px;text-align: center;">'+tol+'</div> \
+	<div style="margin-left: -20px;margin-right: -20px;"><table style="width: 100%;table-layout: fixed;text-transform: capitalize;text-align: center;border-spacing: 0;border: 0;border-top: 1px solid rgba(0,0,0,0.1);border-bottom: 1px solid rgba(0,0,0,0.1);"><tbody><tr> \
+	    <td style="border: 0; border-right: 1px solid rgba(0,0,0,0.1); padding: 10px 0px;">'+c_v+'<br>'+ACC.L[246+ACC.glp(c_v)]+'</td> \
+	    <td style="border: 0;padding: 10px 0px;">'+c_ch+'<br>'+ACC.L[252+ACC.glp(c_ch)]+'</td> \
+	    <td style="border: 0; border-left: 1px solid rgba(0,0,0,0.1);padding: 10px 0px;">'+c_cl+'<br>'+ACC.L[255+ACC.glp(c_cl)]+'</td> \
+	</tr></tbody></table></div> \
+	<div style="margin: 15px 0px;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+ct[0]+'<br><span style="font-size: 11px;">'+ct[1][1]+'</span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 15px;"> \
+	</div>';
+    if (dti.ut == 2) {
+	html += '<div style="margin: 15px 0px;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+_r+'<br><span style="font-size: 11px;">'+ACC.L[272]+'</span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 15px;"> \
+	</div>';
+    }
+    // If UTM available - display campaign section
+    if (_vl != null && _vl.utm) {
+	var _u = '';
+	if (_vl.utm.sr) _u += '<span style="background: #1FAD00;padding: 3px 10px;border-radius: 10px;color: white;margin-bottom: 5px;margin-right: 5px;display: inline-block;font-size: 11px;line-height: 15px;">'+decodeURIComponent(_vl.utm.sr)+'</span> ';
+	if (_vl.utm.md) _u += '<span style="background: #1FAD00;padding: 3px 10px;border-radius: 10px;color: white;margin-bottom: 5px;margin-right: 5px;display: inline-block;font-size: 11px;line-height: 15px;">'+decodeURIComponent(_vl.utm.md)+'</span> ';
+	if (_vl.utm.cp) _u += '<span style="background: #1FAD00;padding: 3px 10px;border-radius: 10px;color: white;margin-bottom: 5px;margin-right: 5px;display: inline-block;font-size: 11px;line-height: 15px;">'+decodeURIComponent(_vl.utm.cp)+'</span> ';
+	if (_vl.utm.ct) _u += '<span style="background: #1FAD00;padding: 3px 10px;border-radius: 10px;color: white;margin-bottom: 5px;margin-right: 5px;display: inline-block;font-size: 11px;line-height: 15px;">'+decodeURIComponent(_vl.utm.ct)+'</span> ';
+	if (_vl.utm.tr) _u += '<span style="background: #1FAD00;padding: 3px 10px;border-radius: 10px;color: white;margin-bottom: 5px;margin-right: 5px;display: inline-block;font-size: 11px;line-height: 15px;">'+decodeURIComponent(_vl.utm.tr)+'</span> ';
+
+	if (_u != '') html += '<div style="margin: 15px 0px;white-space:nowrap;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;white-space:normal;">'+_u+'<br><span style="font-size: 11px;"></span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 10px;"> \
+	</div>';
+    }
+    // If GEO info available, display GEO section
+    if (_g[0] != '') {
+	html += '<div style="margin: 15px 0px;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;"><img src="'+_g[1]+'"></div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+_g[0]+'<br><span style="font-size: 11px;">'+ACC.L[22]+'</span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 15px;"> \
+	</div>';
+    }
+    // If conference, display members section
+    if (_rl != null && _rl.s == 2) {
+	var _list = BuidConferenceMembersList(_rl);
+	html += '<div style="margin: 15px 0px;white-space:nowrap;"> \
+	    <div style="display: inline-block;float: left;margin: 10px 0;">#</div> \
+	    <div style="display: inline-block;padding: 0px 20px;font-size: 14px;">'+_list+'<span style="font-size: 11px;">'+ACC.L[66]+'</span></div> \
+	    <div style="display: inline-block;float: right;margin: 10px 0;"></div> \
+	    <hr style="border: 0;border-top:1px solid rgba(0,0,0,0.1);margin-right:20px;margin-left: 20px;margin-top: 10px;"> \
+	</div>';
+    }
+
+    return html;
+}
+
+function BuidConferenceMembersList(r) {
+	var ol = ApixCloud.CC.API.GetUsers();
+	var dl = ApixCloud.CC.API.GetDepartments();
+	var _mlist = '';
+	var _mi;
+	var mm = [];
+	for (var ii = 0; ii < r.mmbrs.length; ii++) {
+	    mm.push(r.mmbrs[ii]);
+	}
+	for (var i = 0; i < r.m.length; i++) { // >
+	    _mi = -1;
+	    for (var ii = 0; ii < mm.length; ii++) {
+		if (r.m[i].mid == mm[ii].m && r.m[i].ut == mm[ii].u) {
+		    _mi = ii;
+		    break;
+		}
+	    }
+	    if (_mi == -1) {
+		// Try Users and add as member
+		if (r.m[i].ut == 1 && typeof ol[r.m[i].mid] !== 'undefined') {
+		    var _dep = '';
+		    // Loop departments to get name
+		    for (var d = 0; d < dl.length; d++) { // >
+			if (dl[d].gid == ol[r.m[i].mid].gid) {
+			    _dep = dl[d].name;
+			    break;
+			}
+		    }
+		    _mi = mm.push({"m":r.m[i].mid,"u":r.m[i].ut,"v":0,"dc":1,"d":_dep,"p":ol[r.m[i].mid].pn,"a":{"afn":ol[r.m[i].mid].ap,"fn":ol[r.m[i].mid].fn,"ln":ol[r.m[i].mid].ln}}) -1;
+		} else continue;
+	    }
+	    switch (mm[_mi].u) {
+		case 1: {
+		    _mlist = _mlist+'<div style="margin-bottom:10px;"><img style="border: 0px solid; border-radius:50%;vertical-align: top;margin-right: 10px;" height="30" width="30" src="//'+cloud_addr+'/avatar'+mm[_mi].a.afn+'"><div style="display: inline-block;line-height: 1em;"> \
+			    <span style="line-height:1.2em;">'+decodeURIComponent(mm[_mi].a.fn)+' '+decodeURIComponent(mm[_mi].a.ln)+'</span><br> \
+			    <span style="font-size:11px;">'+decodeURIComponent(mm[_mi].d)+'</span><br> \
+			    <span style="font-size:11px;">'+decodeURIComponent(mm[_mi].p)+'</span><br> \
+			</div></div>';
+		} break;
+		default: {
+		    var _fn = decodeURIComponent(mm[_mi].a.fn)+' '+decodeURIComponent(mm[_mi].a.ln);
+		    if (mm[_mi].u == 2) {
+			if (!mm[_mi].a.fn && !mm[_mi].a.ln) {
+			    _fn = ACC.L[7]+' '+mm[_mi].m;
+			}
+		    }
+		    var _ap = '';
+		    if (mm[_mi].a.afn.indexOf('http') == 0 || mm[_mi].a.afn.indexOf('//') == 0) {
+			_ap = mm[_mi].a.afn;
+		    } else if (mm[_mi].a.afn.indexOf('/') == 0) {
+			_ap = '//'+cloud_addr+'/avatar'+mm[_mi].a.afn+'';
+		    }
+		    _mlist = '<div style="margin-bottom:10px;"><img style="border: 0px solid; border-radius:50%;vertical-align: top;margin-right: 10px;" height="30" width="30" src="'+_ap+'"><div style="display: inline-block;line-height: 1em;"> \
+			    <span style="line-height:1.2em;">'+_fn+'</span><br> \
+			</div></div>'+_mlist; /* simple sort. Who is not User - add to top */
+		} break;
+	    }
+	}
+	return _mlist;
 }
 
 </script>
