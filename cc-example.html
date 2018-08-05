@@ -1919,6 +1919,18 @@ function P3_r2(d) {
 	    return;
 	}
     }
+    // Upload File Permissions
+    if (d.uf > 0) {
+	switch (d.uf) {
+	    case 10: {
+		/* SUCC. Start uploading */
+		console.log('Call JCC.uf onR(d.h) (pass hash to onR).');
+	    } break;
+	    case 20: {
+		/* DENY. Not implemented */
+	    } break;
+	}
+    }
 };
 
 // Notifies
@@ -1976,7 +1988,7 @@ console.log('th 2');
 	    // DM-2: do not close dialog when visitor leave site
 	    return;
 	} break;
-	// Uploading: progress
+	// Uploading: progress event
 	case 70: {
 	    // show cancel if I uploading file
 	    o = document.getElementById('ccufc-'+d.h);

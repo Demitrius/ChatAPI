@@ -1953,6 +1953,18 @@ console.log('onClose reconnect:'+JCC.llc);
     function get_flat_history(mid, mut) {
 	JCC.s('13064{{-}}3{{-}}'+mid+'{{-}}'+mut);
     }
+    // Upload file stuff
+    function upload_file_permissions(rid, ts, fl) {
+	JCC.s('13170{{-}}3{{-}}'+rid+'{{-}}'+ts+'{{-}}'+JCC.euc(fl));
+	// Wait callback with hash for upload
+    }
+    function upload_file_progress(rid, h, lp) {
+	JCC.s('13175{{-}}3{{-}}'+rid+'{{-}}'+h+'{{-}}'+lp);
+    }
+    function upload_file_failed(rid, h, http_status) {
+	JCC.s('13177{{-}}3{{-}}'+rid+'{{-}}'+h+'{{-}}SE{{-}}'+http_status);
+    }
+    
 
     function get_geo_location(mid, mut) {
 	var g = ['',''];
@@ -2240,6 +2252,9 @@ console.log(JCC.so);
 	SetChatRoomOwners: set_chat_room_owners,
 	CloseChatRoom: close_chat_room,
 	DetectDataInMessage: JCC.P3.r1,
+	UploadFilePermissions: upload_file_permissions,
+	UploadFileProgress: upload_file_progress,
+	UploadFileFailed: upload_file_failed,
 	_strip_url: strip_url,
 	test: test_error
     };
