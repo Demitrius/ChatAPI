@@ -1964,7 +1964,15 @@ console.log('onClose reconnect:'+JCC.llc);
     function upload_file_failed(rid, h, http_status) {
 	JCC.s('13177{{-}}3{{-}}'+rid+'{{-}}'+h+'{{-}}SE{{-}}'+http_status);
     }
-    
+    function push_subscribe_fb(token, device_model, device_serial) {
+	// model - ONE A2003 (phone manufacture name)
+	// serial - Static unique device serial number (device or proc or gsm modem etc)
+	JCC.s('10070{{-}}1{{-}}'+2+'{{-}}'+JCC.euc(token)+'{{-}}'+JCC.euc(device_model)+'{{-}}'+JCC.euc(device_serial));
+    }
+    function push_unsubscribe_fb(token) {
+	JCC.s('10075{{-}}1{{-}}'+JCC.euc(token)+'{{-}}'+1);
+    }
+
 
     function get_geo_location(mid, mut) {
 	var g = ['',''];
@@ -2255,6 +2263,8 @@ console.log(JCC.so);
 	UploadFilePermissions: upload_file_permissions,
 	UploadFileProgress: upload_file_progress,
 	UploadFileFailed: upload_file_failed,
+	PushSubscribe: push_subscribe_fb,
+	PushUnsubscribe: push_unsubscribe_fb,
 	_strip_url: strip_url,
 	test: test_error
     };
