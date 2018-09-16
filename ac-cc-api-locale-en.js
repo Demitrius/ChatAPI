@@ -810,3 +810,4 @@ ACC.L[545] = 'The device was successfully unsubscribed from push notifications.'
 ACC.L[546] = 'Push notification was successfully sent.';
 ACC.L[547] = 'Receive notifications';
 ACC.L[548] = 'Attention! Some devices do not show notifications by default. The option is turns on in system settings for notifications or applications.';
+ACC.L[549] = 'Log in to access the Contact Center.';
