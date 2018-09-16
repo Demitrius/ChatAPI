@@ -1972,6 +1972,13 @@ console.log('onClose reconnect:'+JCC.llc);
     function push_unsubscribe_fb(token) {
 	JCC.s('10075{{-}}1{{-}}'+JCC.euc(token)+'{{-}}'+1);
     }
+    function push_get_subscribed_devices() {
+	JCC.s('10072{{-}}1{{-}}');
+    }
+    function push_set_status_fb(token, status) {
+	if (status == 0) JCC.s('10075{{-}}1{{-}}'+JCC.euc(token)+'{{-}}2');
+	if (status == 1) JCC.s('10075{{-}}1{{-}}'+JCC.euc(token)+'{{-}}3');
+    }
 
 
     function get_geo_location(mid, mut) {
@@ -2265,6 +2272,8 @@ console.log(JCC.so);
 	UploadFileFailed: upload_file_failed,
 	PushSubscribe: push_subscribe_fb,
 	PushUnsubscribe: push_unsubscribe_fb,
+	PushGetSubscribedDevices: push_get_subscribed_devices,
+	PushSetStatus: push_set_status_fb,
 	_strip_url: strip_url,
 	test: test_error
     };
