@@ -1019,17 +1019,22 @@ console.log(d);
     };
 
     // Send API request
-    JCC.s = function(m, d) {
+    JCC.s = function(m, d, r) {
 	if (JCC.so && JCC.so != null && JCC.so.readyState != 1) { console.log('Socket in state: '+ JCC.so.readyState + '; MSG "'+m+'". Returning.'); return; }
 	if (m != '') {
-	    var f = function(_m, _x) {
+	    var f = function(_m, _x, _r) {
 		return function () {
+		    if (!_r && (!_x.so || _x.so == null)) {
+			_x.c(_x.$h, '/cc/dst');
+			setTimeout(function(__m, __x) { return function() { if (__x.so) __x.s(__m, 1, 1); }; }(_m, _x), 3000);
+			return;
+		    }
 	    	    var mm = _m;
 		    _x.so.send(mm);
 		};
     	    };
 	    var dd = 1; if (d) dd = d;
-	    setTimeout(f(m, JCC), dd);
+	    setTimeout(f(m, JCC, r), dd);
 	}
     };
 
@@ -1046,12 +1051,10 @@ console.log(d);
 
     JCC.S.a1 = function() {
 	if (!JCC.so || JCC.so == null) {
-console.log('---------connecting...');
 	    JCC.c(JCC.$h, '/cc/dst');
-	}
-	if (JCC.S.vL && JCC.S.vP && JCC.st >= 10) {
+	} else if (JCC.S.vL && JCC.S.vP && JCC.st >= 10) {
 	    // Send Credentials
-	    JCC.S.s2();
+	    if (JCC.st != 20) JCC.S.s2();
 	}
     };
 
@@ -1524,9 +1527,12 @@ console.log('onClose reconnect:'+JCC.llc);
 
 
 
-
-
-
+    var ws_reconnect = function() {
+	if (JCC.S.vL && JCC.S.vP && (!JCC.so || JCC.so == null)) {
+	    JCC.st = 10;
+	    JCC.c(JCC.$h, '/cc/dst');
+	}
+    };
 
     var initialize_api = function(host, lang, cb) {
 	// WebSocket addres
@@ -1538,8 +1544,8 @@ console.log('onClose reconnect:'+JCC.llc);
 	// Default sound notification theme
 	JCC.snt = '1/';
 
-	// 50sec keepaive timeout
-	JCC.kait = 50000;
+	// 15sec keepaive timeout
+	JCC.kait = 15000;
 	JCC.kat = 0;
     };
 
@@ -2224,7 +2230,11 @@ console.log('onClose reconnect:'+JCC.llc);
     };
 
     function go_test() {
+//console.log(JCC.so);
+//JCC.so.close();
+//JCC.so = null;
 console.log(JCC.so);
+console.log(JCC);
     }
     function test_error() {
 	JCC.s('13070{{-}}3{{-}}');
@@ -2235,6 +2245,7 @@ console.log(JCC.so);
 	Initialize: initialize_api,
 	SignIn: sign_in,
 	SignOut: sign_out,
+	Reconnect: ws_reconnect,
 	GetConfig: get_config,
 	GetForms: get_forms,
 	GetUserName: ovn,
@@ -2275,6 +2286,6 @@ console.log(JCC.so);
 	PushGetSubscribedDevices: push_get_subscribed_devices,
 	PushSetStatus: push_set_status_fb,
 	_strip_url: strip_url,
-	test: test_error
+	test: go_test
     };
 })();
