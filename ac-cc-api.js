@@ -1533,8 +1533,14 @@ console.log('onClose reconnect:'+JCC.llc);
 
 
     var ws_reconnect = function() {
-	if (JCC.S.vL && JCC.S.vP && (!JCC.so || JCC.so == null)) {
-	    JCC.st = 10;
+	if (JCC.so) {
+	    JCC.so.close();
+	    JCC.so = null;
+	    if (JCC.S.vL && JCC.S.vP) {
+		JCC.S.rt1 = 0;
+		JCC.st = 15;
+	    }
+	} else {
 	    JCC.c(JCC.$h, '/cc/dst');
 	}
     };
