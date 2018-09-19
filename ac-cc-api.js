@@ -1176,6 +1176,7 @@ console.log(d);
 		case 2: {
 		    JCC.S.asis = 1;
 		    console.log("Login: invalid login or password");
+		    if (JCC.so) JCC.so.close();
 		    if (JCC.api_cb) JCC.api_cb(d);
 		} break;
 		case 3: {
@@ -1183,21 +1184,25 @@ console.log(d);
 		    console.log("Login: need reuse confirmation");
 		    // Check flag when onClose event to ask user
 		    JCC.S.f1 = 1;
+		    if (JCC.so) JCC.so.close();
 		    if (JCC.api_cb) JCC.api_cb(d);
 		} break;
 		case 4: {
 		    JCC.S.asis = 1;
 		    console.log("Login: internal error");
+		    if (JCC.so) JCC.so.close();
 		    if (JCC.api_cb) JCC.api_cb(d);
 		} break;
 		case 5: {
 		    JCC.S.asis = 1;
 		    console.log("Login: account blocked");
+		    if (JCC.so) JCC.so.close();
 		    if (JCC.api_cb) JCC.api_cb(d);
 		} break;
 		case 6: {
 		    JCC.S.asis = 1;
 		    console.log("Login: ASI auth failed");
+		    if (JCC.so) JCC.so.close();
 		    if (JCC.api_cb) JCC.api_cb(d);
 		} break;
 	    }
