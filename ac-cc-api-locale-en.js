@@ -44,12 +44,6 @@ ACC.MSG['info']['visitor_left_site_1'] = 'The visitor left the site, the message
 ACC.MSG['info']['admin_profile_not_complete'] = 'User profile is not completed. First of all, you should fill out the profile.';
 ACC.MSG['info']['room_autotransfer'] = 'The widget automatically transferred this conversation to a virtual queue, because the visitor did not receive confirmation of the message delivery during the course of %val1% seconds.';
 
-ACC.MCT = {};
-ACC.MCT[1] = ['Website', 'Website'];
-ACC.MCT[200] = ['Viber PA', 'Viber Public Account'];
-ACC.MCT[201] = ['Telegram', 'Telegram Bot'];
-ACC.MCT[202] = ['Application', 'API for Application'];
-
 ACC.CUR = {};
 ACC.CUR['RUB'] = 'rub';
 ACC.CUR['USD'] = 'USD';
@@ -817,3 +811,4 @@ ACC.L[552] = 'Queues';
 ACC.L[553] = 'Settings';
 ACC.L[554] = 'Online';
 ACC.L[555] = 'Offline';
+ACC.L[556] = 'Connecting ...';

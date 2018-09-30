@@ -221,6 +221,8 @@ var app_version = '1.0';		// Use it for protocol compatible in future.
 // Login and pass. Get from form.
 var g_login = 'test3';
 var g_password = 'test1212';
+//var g_login = 'ip';
+//var g_password = '';
 var g_signin_params = {
     push_config: {"device_id": "1271e23d-b38f-4cd2-b122-2564774131e0"},
     push_service: 1,
@@ -1291,6 +1293,17 @@ function P3_d2(ma, p, ds, ro) {
 
 	case 200:
 	case 201:
+	case 202:
+	case 203:
+	case 204:
+	case 205:
+	case 206:
+	case 207:
+	case 208:
+	case 209:
+	case 210:
+	case 211:
+	case 212:
 	case 2: {
 	    var md = '';
 
@@ -1335,15 +1348,15 @@ function P3_d2(ma, p, ds, ro) {
 	    }
 
 	    // Visitors messages always left
-	    if (ma[0].ut == 2 || ma[0].ut == 200 || ma[0].ut == 201) {
+	    if (ma[0].ut == 2 || ma[0].ut == 200 || ma[0].ut == 201 || ApixCloud.CC.API.GetConfig().uc.indexOf(ma[0].ut) > -1) {
 		md = 'left';
 	    }
 
     	    var vfn;
 	    var __ap;
-	    if (ma[0].ut == 200 || ma[0].ut == 201) {
+	    if (ma[0].ut == 200 || ma[0].ut == 201 || ApixCloud.CC.API.GetConfig().uc.indexOf(ma[0].ut) > -1) {
 	        if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
-		    if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == ma[0].mid && ro.mmbrs[__i].a) {
+		    if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201 || ApixCloud.CC.API.GetConfig().uc.indexOf(ro.mmbrs[__i].u) > -1) && ro.mmbrs[__i].m == ma[0].mid && ro.mmbrs[__i].a) {
 			vfn = decodeURIComponent(ro.mmbrs[__i].a.fn);
 			__ap = '//'+cloud_addr+'/avatar/a/vt/avt-0-0.svg';
 			if (ro.mmbrs[__i].a.afn) __ap = ro.mmbrs[__i].a.afn;
@@ -2310,6 +2323,8 @@ console.log(dti);
 	    break;
 	}
     }
+console.log('ct');
+console.log(ct);
     var html = '<div id="user_popover_'+sid+'" style="text-align: center;"><img class="avatar" style="width: 60px;height: 60px;" src="'+dti.ap+'"></div><div style="margin-top: 10px;opacity: 1.5;text-align: center;">'+on+'</div><div style="font-size: 12px;margin-bottom: 10px;text-align: center;">'+tol+'</div> \
 	<div style="margin-left: -20px;margin-right: -20px;"><table style="width: 100%;table-layout: fixed;text-transform: capitalize;text-align: center;border-spacing: 0;border: 0;border-top: 1px solid rgba(0,0,0,0.1);border-bottom: 1px solid rgba(0,0,0,0.1);"><tbody><tr> \
 	    <td style="border: 0; border-right: 1px solid rgba(0,0,0,0.1); padding: 10px 0px;">'+c_v+'<br>'+ACC.L[246+ACC.glp(c_v)]+'</td> \

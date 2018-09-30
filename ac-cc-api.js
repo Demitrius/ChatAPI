@@ -175,8 +175,8 @@ JCC.P3.qmc = function(d) {
     switch (JCC.P3.aqm[d].sut) {
 	case 1: {
 	    if (typeof JCC.P3.ol[JCC.P3.aqm[d].sid] !== 'undefined') {
-	    } else if (JCC.P3.aqm[d].smi && JCC.P3.aqm[d].smi.a) {
-		JCC.P3.ol[JCC.P3.aqm[d].sid] = {ap:JCC.P3.aqm[d].smi.a.afn, fn:JCC.P3.aqm[d].smi.a.fn, gid:0, helper:0, id:JCC.P3.aqm[d].sid, ln:JCC.P3.aqm[d].smi.a.ln, pn:JCC.P3.aqm[d].smi.p};
+	    } else if (JCC.P3.aqm[d].sinfo && JCC.P3.aqm[d].sinfo.a) {
+		JCC.P3.ol[JCC.P3.aqm[d].sid] = {ap:JCC.P3.aqm[d].sinfo.a.afn, fn:JCC.P3.aqm[d].sinfo.a.fn, gid:0, helper:0, id:JCC.P3.aqm[d].sid, ln:JCC.P3.aqm[d].sinfo.a.ln, pn:JCC.P3.aqm[d].sinfo.p};
 	    } else {
 	    }
 	} break;
@@ -808,12 +808,14 @@ JCC.P3.r1 = function(t) {
 			if (ut == 1) id = d.r.rid;
 			if (ut == 2) id = d.r.rid + '-' + d.r.domid;
 			if (ut == 200) id = d.r.rid;
+			if (JCC.C.uc.indexOf(ut) > -1) id = d.r.rid;
 		    } else {
 			ut = d.r.sut;
 //		    id = d.r.sid;
 		        if (ut == 1) id = d.r.sid;
 			if (ut == 2) id = d.r.sid + '-' + d.r.domid;
 			if (ut == 200) id = d.r.sid;
+			if (JCC.C.uc.indexOf(ut) > -1) id = d.r.sid;
 		    }
 		    if (!JCC.P3.rl[d.r.id]) JCC.P3.rl[d.r.id] = {};
 
@@ -1017,6 +1019,30 @@ console.log(d);
 	    default: return x;
 	}
     };
+    JCC.sisn = function(x) {
+	var n1 = '', n2 = '';
+
+	if (!x || !x.a) return '';
+
+	if (x.a.fn != null) n1 = decodeURIComponent(x.a.fn);
+	if (x.a.ln != null) n2 = decodeURIComponent(x.a.ln);
+    		
+	if (n1 == '') {
+    	    n1 = n2;
+    	    n2 = '';
+	}
+        if (n2 != '' && n2) n1 = n1+' '+n2;
+
+	return n1;
+    };
+    JCC.puc = function() {
+	for (var k in JCC.C.ci) {
+	    JCC.C.ci[k][0] = decodeURIComponent(JCC.C.ci[k][0]);
+	    JCC.C.ci[k][1] = decodeURIComponent(JCC.C.ci[k][1]);
+	    JCC.C.ci[k][2] = decodeURIComponent(JCC.C.ci[k][2]);
+	    JCC.C.ci[k][3] = decodeURIComponent(JCC.C.ci[k][3]);
+	}
+    };
 
     // Send API request
     JCC.s = function(m, d, r) {
@@ -1076,7 +1102,7 @@ console.log(d);
 	    switch (d.v) {
 		case 0: {
 		    if (d.c) JCC.C = d.c;
-		    //JCC.puc();
+		    JCC.puc();
 		    //JCC.S.jmm();
 		    if (typeof JCC.C !== 'undefined' && typeof JCC.C.aec !== 'undefined' && JCC.C.aec.ccsnt) JCC.snt = JCC.C.aec.ccsnt + '/';
 		    if (JCC.C.domains) for (var i = 0; i < JCC.C.domains.length; i++) JCC.C.domains[i].domain = decodeURIComponent(JCC.C.domains[i].domain);
@@ -1104,7 +1130,7 @@ console.log(d);
 		case 0: {
 		    if (d.c) JCC.C = d.c;
 	    console.log('Config done ' + 1);
-		    //JCC.puc();
+		    JCC.puc();
 		    if (typeof JCC.C !== 'undefined' && typeof JCC.C.aec !== 'undefined' && JCC.C.aec.ccsnt) JCC.snt = JCC.C.aec.ccsnt + '/';
 		    //JCC.ap = new JCC.pam();
 		    //if (!JCC.ap) JCC.ap = new JCC.pam();
@@ -1677,7 +1703,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		ut = m.rut;
 		if (ut == 1) id = m.rid;
 		if (ut == 2) id = m.rid+'-'+m.domid;
-		if (ut == 200 || ut == 201) id = m.rid;
+		if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) id = m.rid;
 
 		if (m.rut == 1) {
 		    // Show admin avatar
@@ -1701,7 +1727,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		    tt = ovn(null, id);
 		    ts = guf(id, 2);
 		}
-		if (m.rut == 200 || m.rut == 201) {
+		if (m.rut == 200 || m.rut == 201 || JCC.C.uc.indexOf(ut) > -1) {
 		    var si = osn(m.rid, m.rut, m.mmbrs);
 		    if (si.length > 0) {
 			tt = si[0];
@@ -1716,7 +1742,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		ut = m.sut;
 		if (ut == 1) id = m.sid;
 		if (ut == 2) id = m.sid+'-'+m.domid;
-		if (ut == 200 || ut == 201) id = m.sid;
+		if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) id = m.sid;
 
 		if (m.sut == 1) {
 		    if (typeof JCC.P3.ol[m.sid] !== 'undefined') {
@@ -1741,7 +1767,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		    tt = ovn(null, id);
 		    ts = guf(id, 2);
     		}
-		if (m.sut == 200 || m.sut == 201) {
+		if (m.sut == 200 || m.sut == 201 || JCC.C.uc.indexOf(ut) > -1) {
 		    var si = osn(m.sid, m.sut, m.mmbrs);
 		    if (si.length > 0) {
 			tt = si[0];
@@ -1759,14 +1785,14 @@ console.log('onClose reconnect:'+JCC.llc);
 	    prsi = 'jcc-prs-conf';
 	    if (ut == 1) id = m.sid;
 	    if (ut == 2) id = m.sid+'-'+m.domid;
-	    if (ut == 200 || ut == 201) id = m.sid;
+	    if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) id = m.sid;
 	    if (m.sut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[m.sid].ap; }
 
 	    if (m.sut == 1 && m.sid == JCC.C.mid) {
 		ut = m.rut;
 	        if (ut == 1) id = m.rid;
 		if (ut == 2) id = m.rid+'-'+m.domid;
-	        if (ut == 200 || ut == 201) id = m.rid;
+	        if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) id = m.rid;
 
 		if (m.rut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[id].ap; }
 	        if (m.rut == 2) { ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap; }
@@ -1774,7 +1800,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		ut = m.sut;
 		if (ut == 1) id = m.sid;
 		if (ut == 2) id = m.sid+'-'+m.domid;
-		if (ut == 200 || ut == 201) id = m.sid;
+		if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) id = m.sid;
 		if (m.sut == 1) { ap = '//'+JCC.$h+'/avatar' + JCC.P3.ol[id].ap; }
 		if (m.sut == 2) { ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap; }
 	    } else {
@@ -1805,10 +1831,10 @@ console.log('onClose reconnect:'+JCC.llc);
 			ap = '//'+JCC.$h+'/avatar' + JCC.P1.vl[id][0].ap;
 		    } else {
 			// Messenger subscriber
-			if (m.sut == 200 || m.sut == 201) {
+			if (m.sut == 200 || m.sut == 201 || JCC.C.uc.indexOf(m.sut) > -1) {
 			    ut = m.sut;
 			    id = m.sid;
-		        } else if (m.rut == 200 || m.rut == 201) {
+		        } else if (m.rut == 200 || m.rut == 201 || JCC.C.uc.indexOf(m.rut) > -1) {
 		    	    ut = m.rut;
 			    id = m.rid;
 		        } else {
@@ -1818,11 +1844,11 @@ console.log('onClose reconnect:'+JCC.llc);
 		    }		
 		}
 	    }
-	    if (ut == 200 || ut == 201) {
+	    if (ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) {
 		if (typeof JCC.P3.rl[d] !== 'undefined') {
 		    var ro = JCC.P3.rl[d];
 		    if (typeof ro.mmbrs !== 'undefined' && ro.mmbrs.length > 0) for (var __i = 0; __i < ro.mmbrs.length; __i++) {
-            		if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201) && ro.mmbrs[__i].m == id && ro.mmbrs[__i].a) {
+            		if ((ro.mmbrs[__i].u == 200 || ro.mmbrs[__i].u == 201 || JCC.C.uc.indexOf(ro.mmbrs[__i].u) > -1) && ro.mmbrs[__i].m == id && ro.mmbrs[__i].a) {
                     	    ap = '//'+JCC.$h+'/avatar/a/vt/avt-0-0.svg';
                     	    if (ro.mmbrs[__i].a.afn) ap = ro.mmbrs[__i].a.afn;
                     	    break;
@@ -1902,8 +1928,13 @@ console.log('onClose reconnect:'+JCC.llc);
 		sp = 'Viber - ';
 	    } break;
 	}
-	if (c > 0) for (var i = 0; i < JCC.C.domains.length; i++) {
-	    if (c == JCC.C.domains[i].id) return sp+JCC.C.domains[i].domain;
+	if (c > 0) {
+	    if (!sp && JCC.C.uc.indexOf(t) > -1) {
+		sp = JCC.C.ci[t][0] + ' - ';
+	    }
+	    for (var i = 0; i < JCC.C.domains.length; i++) {
+		if (c == JCC.C.domains[i].id) return sp+JCC.C.domains[i].domain;
+	    }
 	}
 
 	return '';
@@ -2069,7 +2100,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	}
 
 	// If WEB-ONLINE turn off - can't send message
-	if ((ut == 2 || ut == 200 || ut == 201) && JCC.S.oas != true) {
+	if ((ut == 2 || ut == 200 || ut == 201 || JCC.C.uc.indexOf(ut) > -1) && JCC.S.oas != true) {
 	    //JCC.P3.m({'t':'info', 'c':'webonline_turned_off'});
 	    alert(ACC.MSG['info']['webonline_turned_off']);
 	    return;
@@ -2132,7 +2163,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	    for (var i = 0; i < JCC.C.domains.length; i++) {
 		if (d == JCC.C.domains[i].id) {
 		    cn = dntl(JCC.C.domains[i].domain);
-		    ct = ACC.MCT[JCC.C.domains[i].ctype];
+		    ct = JCC.C.ci[JCC.C.domains[i].ctype];
 		    break;
 		}
 	    }
@@ -2153,10 +2184,13 @@ console.log('onClose reconnect:'+JCC.llc);
 		if (JCC.P3.aqm[d].domid == JCC.C.domains[i].id) {
 		    dn = dntl(JCC.C.domains[i].domain);
 		    if (JCC.C.domains[i].ctype == 200) {
-			dn = ACC.MCT[JCC.C.domains[i].ctype][0]+' - '+dn;
+			dn = JCC.C.ci[JCC.C.domains[i].ctype][0]+' - '+dn;
 		    }
 		    if (JCC.C.domains[i].ctype == 201) {
-			dn = ACC.MCT[JCC.C.domains[i].ctype][0]+' - '+dn;
+			dn = JCC.C.ci[JCC.C.domains[i].ctype][0]+' - '+dn;
+		    }
+		    if (JCC.C.uc.indexOf(JCC.C.domains[i].ctype) > -1) {
+			dn = JCC.C.ci[JCC.C.domains[i].ctype][0]+' - '+dn;
 		    }
 		    break;
 		}
@@ -2175,9 +2209,9 @@ console.log('onClose reconnect:'+JCC.llc);
 		if (typeof JCC.P3.ol[JCC.P3.aqm[d].sid] !== 'undefined') {
 		    n = ovn(JCC.P3.aqm[d].sid);
 		    a = '//'+JCC.$h+'/avatar'+JCC.P3.ol[JCC.P3.aqm[d].sid].ap;
-		} else if (JCC.P3.aqm[d].smi && JCC.P3.aqm[d].smi.a) {
-		    n = ovn(null, null, JCC.P3.aqm[d].smi);
-		    a = '//'+JCC.$h+'/avatar'+JCC.P3.aqm[d].smi.a.afn;
+		} else if (JCC.P3.aqm[d].sinfo && JCC.P3.aqm[d].sinfo.a) {
+		    n = ovn(null, null, JCC.P3.aqm[d].sinfo);
+		    a = '//'+JCC.$h+'/avatar'+JCC.P3.aqm[d].sinfo.a.afn;
 		} else {
 		    // Unknown admin. ??? What TODO ?
 		    a = '//'+JCC.$h+'/avatar/a/vt/avt-0-0.svg';
@@ -2199,11 +2233,18 @@ console.log('onClose reconnect:'+JCC.llc);
 	    } break;
 	    case 200: {
 		if (typeof JCC.P3.aqm[d].sinfo !== 'undefined') {
-		    n = decodeURIComponent(JCC.P3.aqm[d].sinfo.name);
-		    a = decodeURIComponent(JCC.P3.aqm[d].sinfo.avatar);
+		    n = decodeURIComponent(JCC.P3.aqm[d].sinfo.a.fn);
+		    a = decodeURIComponent(JCC.P3.aqm[d].sinfo.a.afn);
 		}
 	    } break;
 	}
+	if (!n && !a && typeof JCC.P3.aqm[d].sinfo !== 'undefined') {
+	    n = JCC.sisn(JCC.P3.aqm[d].sinfo);
+    	    if (!n) n = ACC.L[7];
+	    if (JCC.P3.aqm[d].sinfo.a.afn.indexOf('http') == 0) a = decodeURIComponent(JCC.P3.aqm[d].sinfo.a.afn);
+	    else a = '//'+JCC.$h+'/avatar'+decodeURIComponent(JCC.P3.aqm[d].sinfo.a.afn);
+	}
+
 	return {'dn':dn, 'n':n, 'a':a};
     }
 
