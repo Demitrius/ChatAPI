@@ -1727,7 +1727,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		    tt = ovn(null, id);
 		    ts = guf(id, 2);
 		}
-		if (m.rut == 200 || m.rut == 201 || JCC.C.uc.indexOf(ut) > -1) {
+		if (m.rut == 200 || m.rut == 201 || JCC.C.uc.indexOf(m.rut) > -1) {
 		    var si = osn(m.rid, m.rut, m.mmbrs);
 		    if (si.length > 0) {
 			tt = si[0];
@@ -1767,7 +1767,7 @@ console.log('onClose reconnect:'+JCC.llc);
 		    tt = ovn(null, id);
 		    ts = guf(id, 2);
     		}
-		if (m.sut == 200 || m.sut == 201 || JCC.C.uc.indexOf(ut) > -1) {
+		if (m.sut == 200 || m.sut == 201 || JCC.C.uc.indexOf(m.sut) > -1) {
 		    var si = osn(m.sid, m.sut, m.mmbrs);
 		    if (si.length > 0) {
 			tt = si[0];
