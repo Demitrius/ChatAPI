@@ -1032,6 +1032,11 @@ console.log(d);
     	    n2 = '';
 	}
         if (n2 != '' && n2) n1 = n1+' '+n2;
+	if (!n1) {
+	    if (x.phone_number) {
+		n1 = decodeURIComponent(x.phone_number);
+	    }
+	}
 
 	return n1;
     };
@@ -1944,7 +1949,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	if (typeof JCC.P3.rl[r] !== 'undefined' && typeof JCC.P3.rl[r].msgs !== 'undefined') {
 	    for (var i = 0; i < JCC.P3.rl[r].msgs.length; i++) {
 		if (JCC.P3.rl[r].msgs[i].id == m) {
-		    JCC.P3.rl[r].msgs[i].delivered = 1;
+		    JCC.P3.rl[r].msgs[i].dt = parseInt(new Date().getTime()/1000);
 		    break;
 		}
 	    }
@@ -1957,7 +1962,7 @@ console.log('onClose reconnect:'+JCC.llc);
 	if (typeof JCC.P3.rl[r] !== 'undefined' && typeof JCC.P3.rl[r].msgs !== 'undefined') {
 	    for (var i = 0; i < JCC.P3.rl[r].msgs.length; i++) {
 		if (JCC.P3.rl[r].msgs[i].id == m) {
-		    JCC.P3.rl[r].msgs[i].read = 1;
+		    JCC.P3.rl[r].msgs[i].rt = parseInt(new Date().getTime()/1000);
 		    break;
 		}
 	    }
