@@ -1331,9 +1331,19 @@ console.log(d);
 	    JCC.kat = 0;
 	    return;
 	}
-    
+
+	// wait for a pong 3sec. If no pong - close websocket
+	setTimeout(JCC.ccs, 3000);
+	JCC.ccs_wp = 1;
 	JCC.s('!');
     };
+    JCC.ccs = function() {
+	if (JCC.ccs_wp == 1 && JCC.so && JCC.so != null) {
+	    JCC.so.close();
+	    JCC.so = null;
+	}
+	JCC.ccs_wp = 0;
+    }
 
     JCC.gtd = function(t1, t2, f) {
 	var d = 0;
@@ -1528,6 +1538,9 @@ console.log('onClose reconnect:'+JCC.llc);
 
     	    JCC.so.onmessage = function (m) {
 //        	console.log('RECV: ' + m.data + '. JCC.state=' + JCC.st);
+
+		// Reset connection state checker flag
+		JCC.ccs_wp = 0;
 
 		var j;
 		try {
