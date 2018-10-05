@@ -1483,6 +1483,7 @@ JCC.c = function(addr, app) {
         	console.log(m + ' JCC.state=' + JCC.st);
 
 	        JCC.so = null;
+		JCC.oncl = m;
 
 		if (JCC.st == 10) {
 		    // Automatic Sign-In
@@ -1534,6 +1535,7 @@ console.log('onClose reconnect:'+JCC.llc);
         	console.log(m + ' JCC.state=' + JCC.st);
 
         	JCC.so = null;
+		JCC.errs = m;
     	    };
 
     	    JCC.so.onmessage = function (m) {
@@ -1568,6 +1570,22 @@ console.log('onClose reconnect:'+JCC.llc);
     return 0;
 };
 
+    var get_socket_state = function() {
+	if (!JCC.so || JCC.so == null) {
+	    return null;
+	} else {
+	    return JCC.so.readyState;
+	}
+    };
+    var get_socket_events = function() {
+	return {
+	    error: JCC.errs ? JCC.errs : '-',
+	    onclose: JCC.oncl ? JCC.oncl : '-'
+	};
+    };
+    var so_close = function() {
+	JCC.so.close();
+    };
 
 
 
@@ -2356,6 +2374,9 @@ console.log(JCC);
 	PushGetSubscribedDevices: push_get_subscribed_devices,
 	PushSetStatus: push_set_status_fb,
 	_strip_url: strip_url,
-	test: go_test
+	test: go_test,
+	GetSocketState: get_socket_state,
+	GetSocketEvents: get_socket_events,
+	CloseSocket: so_close
     };
 })();
